@@ -1,0 +1,19 @@
+BanMe:
+  messages:
+    ban:
+      GlobalBanMessage: '%kicker% banned %victim% for %reason%'
+      BanMessage: 'You have been banned by %kicker%, for %reason%'
+    kick:
+      GlobalKickMessage: '%kicker% kicked %victim% for %reason%'
+      KickMessage: 'You have been kicked by %kicker%, for %reason%'
+    warn:
+      WarnMessage: '%victim% has been warned by %kicker%, for %reason%'
+    TempBanMessage: ''
+    UnBanMessage: ''
+    WarnMessage: ''
+  MySql:
+    database: ''
+    user: ''
+    password: ''
+    table: 
+    table-user: 
