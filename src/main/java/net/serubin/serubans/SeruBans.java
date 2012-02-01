@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import net.serubin.serubans.commands.BanCommand;
 import net.serubin.serubans.commands.KickCommand;
+import net.serubin.serubans.commands.TempBanCommand;
 import net.serubin.serubans.commands.WarnCommand;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.MySqlDatabase;
@@ -27,6 +28,7 @@ public class SeruBans extends JavaPlugin {
 	public static String BanMessage;
 	public static String GlobalBanMessage;
 	public static String TempBanMessage;
+	public static String GlobalTempBanMessage;
 	public static String KickMessage;
 	public static String GlobalKickMessage;
 	public static String WarnMessage;
@@ -57,7 +59,9 @@ public class SeruBans extends JavaPlugin {
 		GlobalBanMessage = getConfig().getString(
 				"SeruBans.messages.ban.GlobalBanMessage");
 		TempBanMessage = getConfig().getString(
-				"SeruBans.messages.TempBanMessage");
+				"SeruBans.messages.tempban.TempBanMessage");
+		GlobalTempBanMessage = getConfig().getString(
+				"SeruBans.messages.tempban.GlobalTempBanMessage");
 		// kick messages
 		KickMessage = getConfig().getString(
 				"SeruBans.messages.kick.KickMessage");
@@ -76,6 +80,7 @@ public class SeruBans extends JavaPlugin {
 
 		BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
 				plugin);
+		TempBanCommand TempBan = new TempBanCommand(TempBanMessage, GlobalTempBanMessage, name, plugin);
 		KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage,
 				name, plugin);
 		WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage, name, plugin);
@@ -83,12 +88,13 @@ public class SeruBans extends JavaPlugin {
 				plugin);
 
 		getCommand("ban").setExecutor(Ban);
+		getCommand("tempban").setExecutor(TempBan);
 		getCommand("kick").setExecutor(Kick);
 		getCommand("warn").setExecutor(Warn);
 	}
 
 	public static void printInfo(String line) {
-		GetColor(line);
+		ArgProcessing.GetColor(line);
 		System.out.println("[SeruBans] " + line);
 	}
 
@@ -96,7 +102,7 @@ public class SeruBans extends JavaPlugin {
 		Player[] players = Bukkit.getOnlinePlayers();
 		for (Player player : players) {
 			if(player.hasPermission("serubans.broadcast") || player.isOp()) {
-				GetColor(line);
+				ArgProcessing.GetColor(line);
 				player.sendMessage(line);
 			}
 		}
@@ -109,27 +115,5 @@ public class SeruBans extends JavaPlugin {
 	public static void printWarning(String line) {
 		System.out.println("[warning] [SeruBans] " + line);
 	}
-
-	public static String GetColor(String line) {
-		line = line;
-		line = line.replace("&0", "§0");
-		line = line.replace("&1", "§1");
-		line = line.replace("&2", "§2");
-		line = line.replace("&3", "§3");
-		line = line.replace("&4", "§4");
-		line = line.replace("&5", "§5");
-		line = line.replace("&6", "§6");
-		line = line.replace("&7", "§7");
-		line = line.replace("&8", "§8");
-		line = line.replace("&9", "§9");
-		line = line.replace("&a", "§a");
-		line = line.replace("&b", "§b");
-		line = line.replace("&c", "§c");
-		line = line.replace("&d", "§d");
-		line = line.replace("&e", "§e");
-		line = line.replace("&f", "§f");
-		return line;
-	}
-
 
 }

@@ -45,6 +45,9 @@ public class BanCommand implements CommandExecutor {
 			} else if (args.length == 1) {
 				reason = "undefined";
 			}
+			else if(args.length > 1){
+				reason = ArgProcessing.reasonArgs(args);
+			}
 			mod = player.getName();
 			// processes kick message
 			// finds victim

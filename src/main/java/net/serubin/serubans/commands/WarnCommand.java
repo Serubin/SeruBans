@@ -18,7 +18,7 @@ public class WarnCommand implements CommandExecutor {
     Server server = Bukkit.getServer();
 	Player victim;
 	String mod;
-	String reason;
+	String reason = "";
 	private String WarnMessage;
 	private String name;
 	private SeruBans plugin;
@@ -44,8 +44,8 @@ public class WarnCommand implements CommandExecutor {
 			else if(args.length == 1){
 				reason = "undefined";
 			}
-			else if(args.length < 1){
-				reason = ap.reasonArgs(args);
+			else if(args.length > 1){
+				reason = ArgProcessing.reasonArgs(args);
 			}
 			mod = player.getName();
 			//processes Warn message

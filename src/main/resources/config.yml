@@ -1,19 +1,19 @@
 SeruBans:
   messages:
     ban:
-      GlobalBanMessage: "%kicker% banned %victim% for %reason%"
-      BanMessage: "You have been banned by %kicker%, for %reason%"
+      GlobalBanMessage: '&f%kicker% banned %victim% for %reason%'
+      BanMessage: '&cYou have been banned by &4%kicker%, &cfor &4%reason%'
     kick:
-      GlobalKickMessage: "%kicker% kicked %victim% for %reason%"
-      KickMessage: "You have been kicked by %kicker%, for %reason%"
+      GlobalKickMessage: '&f%kicker% kicked %victim% for %reason%'
+      KickMessage: '&fYou have been kicked by %kicker%, for %reason%'
     warn:
-      WarnMessage: "%victim% has been warned by %kicker%, for %reason%"
-      WarnPlayerMessage: "You were warned by %kicker%, for %reason%"
-    TempBanMessage: ""
-    UnBanMessage: ""
+      WarnMessage: '&f%victim% has been warned by %kicker%, for %reason%'
+      WarnPlayerMessage: '&fYou were warned by %kicker%, for %reason%'
+    tempban:
+      GlobalTempBanMessage: ''
+      TempBanMessage: ''
+    UnBanMessage: ''
   MySql:
-    database: ""
-    user: ""
-    password: ""
-    table: 
-    table-user: 
+    database: ''
+    user: ''
+    password: ''

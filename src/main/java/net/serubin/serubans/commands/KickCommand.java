@@ -45,8 +45,10 @@ public class KickCommand implements CommandExecutor {
 			else if(args.length == 1){
 				reason = "undefined";
 			}
+			else if(args.length > 1){
+				reason = ArgProcessing.reasonArgs(args);
+			}
 			mod = player.getName();
-			p = args[0];
 
 			//finds victim
 			victim = server.getPlayer(args[0]);
