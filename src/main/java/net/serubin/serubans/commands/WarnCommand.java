@@ -22,10 +22,12 @@ public class WarnCommand implements CommandExecutor {
 	private String WarnMessage;
 	private String name;
 	private SeruBans plugin;
+	private String WarnPlayerMessage;
 
-	public WarnCommand(String WarnMessage, String name, SeruBans plugin) {
+	public WarnCommand(String WarnMessage, String WarnPlayerMessage, String name, SeruBans plugin) {
 		// TODO Auto-generated constructor stub
 		this.WarnMessage = WarnMessage;
+		this.WarnPlayerMessage = WarnPlayerMessage;
 		this.name = name;
 		this.plugin = plugin;
 	}
@@ -42,28 +44,41 @@ public class WarnCommand implements CommandExecutor {
 			else if(args.length == 1){
 				reason = "undefined";
 			}
+			else if(args.length < 1){
+				reason = ap.reasonArgs(args);
+			}
 			mod = player.getName();
-			String p = args[0];
 			//processes Warn message
-			WarnMessage = WarnMessage.replaceAll("%victim%", p);
-			WarnMessage = WarnMessage.replaceAll("%reason%", reason);
-			WarnMessage = WarnMessage.replaceAll("%kicker%", mod);
-
+			
+			WarnPlayerMessage = WarnPlayerMessage.replaceAll("%reason%", reason);
+			WarnPlayerMessage = WarnPlayerMessage.replaceAll("%kicker%", mod);
+			
+			String line = "";
 			//finds victim
 			victim = server.getPlayer(args[0]);
 			if(victim != null){
 				//Warns and broadcasts message
-				server.broadcastMessage(WarnMessage);
-				plugin.log.info("[" + name + "]:" + mod + " warned " + victim.toString() + " for " + reason);
+				GlobalMessage(WarnMessage, reason, mod, victim);
+				SeruBans.printServer(line);
+				SeruBans.printInfo(mod + " warned " + victim.getName() + " for " + reason);
+				SeruBans.printInfo(WarnPlayerMessage);
+				SeruBans.printInfo(WarnMessage);
+				victim.sendMessage(SeruBans.GetColor(WarnPlayerMessage));
+				victim.sendMessage(reason);
+				
 				//adds player to db
 				return true;
 			}else{
-				victim = offPlayer.getPlayer();
+				try{
+					victim = offPlayer.getPlayer();
+					} catch(NullPointerException NPE) {
+						victim = null;
+					}
 				if(victim !=null){
 					//broadcasts message
-					server.broadcastMessage(WarnMessage);
-					plugin.log.info("[" + name + "]:" + mod + " warned " + victim.toString() + " for " + reason);
-					
+					GlobalMessage(WarnMessage, reason, mod, victim);
+					SeruBans.printServer(line);
+					SeruBans.printInfo(mod + " warned " + victim.getName() + " for " + reason);;
 					return true;
 				}else{
 					player.sendMessage("This Player was not found!");
@@ -77,4 +92,11 @@ public class WarnCommand implements CommandExecutor {
 		return false;
 	}
 
+	public String GlobalMessage(String line, String reason, String mod, Player victim){
+		line = line.replaceAll("%victim%", victim.getName());
+		line = line.replaceAll("%reason%", reason);
+		line = line.replaceAll("%kicker%", mod);
+		return line;
+	}
+	
 }

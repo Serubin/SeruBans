@@ -46,36 +46,41 @@ public class BanCommand implements CommandExecutor {
 				reason = "undefined";
 			}
 			mod = player.getName();
-			p = args[0];
 			// processes kick message
-			BanMessage = BanMessage.replaceAll("%victim%", p);
-			BanMessage = BanMessage.replaceAll("%reason%", reason);
-			BanMessage = BanMessage.replaceAll("%kicker%", mod);
-			// processes global message
-			GlobalBanMessage = GlobalBanMessage.replaceAll("%victim%", p);
-			GlobalBanMessage = GlobalBanMessage.replaceAll("%reason%", reason);
-			GlobalBanMessage = GlobalBanMessage.replaceAll("%kicker%", mod);
-
 			// finds victim
 			victim = server.getPlayer(args[0]);
+			
+			BanMessage = BanMessage.replaceAll("%reason%", reason);
+			BanMessage = BanMessage.replaceAll("%kicker%", mod);
+			
+			// processes global message
+
+			String line = "";
 			if (victim != null) {
 				// kicks and broadcasts message
-				server.broadcastMessage(GlobalBanMessage);
+				GlobalMessage(GlobalBanMessage, reason, mod, victim);
+				SeruBans.printServer(line);
 
-				plugin.log.info("[" + name + "]:" + mod + " banned "
-						+ victim.toString() + " for " + reason);
+				SeruBans.printInfo(mod + " banned "
+						+ victim.getName() + " for " + reason);
 
-				victim.kickPlayer(BanMessage);
+				victim.kickPlayer(SeruBans.GetColor(BanMessage));
 				// adds player to db
 				return true;
 			} else {
+				try{
 				victim = offPlayer.getPlayer();
+				} catch(NullPointerException NPE) {
+					victim = null;
+				}
+				
 				if (victim != null) {
 					// broadcasts message
-					server.broadcastMessage(GlobalBanMessage);
+					GlobalMessage(GlobalBanMessage, reason, mod, victim);
+					SeruBans.printServer(line);
 
-					plugin.log.info("[" + name + "]:" + mod + " banned "
-							+ victim.toString() + " for " + reason);
+					SeruBans.printInfo(mod + " banned "
+							+ victim.getName() + " for " + reason);
 
 					return true;
 				} else {
@@ -86,6 +91,12 @@ public class BanCommand implements CommandExecutor {
 
 		}
 		return false;
+	}
+	public String GlobalMessage(String line, String reason, String mod, Player victim){
+		line = line.replaceAll("%victim%", victim.getName());
+		line = line.replaceAll("%reason%", reason);
+		line = line.replaceAll("%kicker%", mod);
+		return line;
 	}
 
 }

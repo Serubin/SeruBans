@@ -1,15 +1,16 @@
 package net.serubin.serubans.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class ArgProcessing {
 
-	String reasonArgs(Integer index, String[] args) {
+	public String reasonArgs(String[] args) {
         StringBuilder reason = new StringBuilder();
 
         // combine args into a string
-        for (int i = index; i < args.length; i++) {
-             reason.append(" " + args[i]);
+        for (String s: args) {
+             reason.append(" " + s);
         }
 
         // return string

@@ -4,6 +4,7 @@ import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -46,41 +47,36 @@ public class KickCommand implements CommandExecutor {
 			}
 			mod = player.getName();
 			p = args[0];
-			//processes kick message
-			KickMessage = KickMessage.replaceAll("%victim%", p);
-			KickMessage = KickMessage.replaceAll("%reason%", reason);
-			KickMessage = KickMessage.replaceAll("%kicker%", mod);
-			//processes global message
-			GlobalKickMessage = GlobalKickMessage.replaceAll("%victim%", p);
-			GlobalKickMessage = GlobalKickMessage.replaceAll("%reason%", reason);
-			GlobalKickMessage = GlobalKickMessage.replaceAll("%kicker%", mod);
 
 			//finds victim
 			victim = server.getPlayer(args[0]);
+			
+			//processes kick message
+			KickMessage = KickMessage.replaceAll("%reason%", reason);
+			KickMessage = KickMessage.replaceAll("%kicker%", mod);
+			String line = "";
 			if(victim != null){
 				//kicks and broadcasts message
-				server.broadcastMessage(GlobalKickMessage);
-				plugin.log.info("[" + name + "]:" + mod + " kicked " + victim.toString() + " for " + reason);
-				victim.kickPlayer(KickMessage);
+				GlobalMessage(GlobalKickMessage, reason, mod, victim);
+				SeruBans.printServer(line);
+				SeruBans.printInfo( mod + " kicked " + victim.getName() + " for " + reason);
+				victim.kickPlayer(SeruBans.GetColor(KickMessage));
 				//adds player to db
 				return true;
 			}else{
-				victim = offPlayer.getPlayer();
-				if(victim !=null){
-					//broadcasts message
-					server.broadcastMessage(GlobalKickMessage);
-					plugin.log.info("[" + name + "]:" + mod + " kicked " + victim.toString() + " for " + reason);
-					return true;
-				}else{
-					player.sendMessage("This Player was not found!");
+					player.sendMessage(ChatColor.RED + "This Player was not found!");
 					return true;
 				}
 			}
-			
-
-		}
 		
 		return false;
 	}
 
+	public String GlobalMessage(String line, String reason, String mod, Player victim){
+		line = line.replaceAll("%victim%", victim.getName());
+		line = line.replaceAll("%reason%", reason);
+		line = line.replaceAll("%kicker%", mod);
+		return line;
+	}
+	
 }
