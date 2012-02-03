@@ -1,20 +1,48 @@
 package net.serubin.serubans.util;
 
+import net.serubin.serubans.SeruBans;
+
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 public class ArgProcessing {
-
+	
+	static OfflinePlayer offPlayer;
+	
+	public static Player getVictim(String[] args){
+		Server server = Bukkit.getServer();
+		Player victim = server.getPlayer(args[0]);
+		
+		if(victim != null){
+			//if victim is on return victim
+			return victim;
+		}else{
+			//if not check offline players (try catch)
+			try{
+				victim = offPlayer.getPlayer();
+				} catch(NullPointerException NPE) {
+					//if not found victim is null
+					victim = null;
+					
+				}
+			return victim;
+		}
+	}
 	public static String reasonArgs(String[] args) {
-        StringBuilder reason = new StringBuilder();
-
+        StringBuilder reasonRaw = new StringBuilder();
+        String reason;
         // combine args into a string
         for (String s: args) {
-             reason.append(" " + s);
+             reasonRaw.append(" " + s);
         }
-       
+       reason = reasonRaw.toString().replaceFirst(" " + args[0], "");
+       if(reason.startsWith("-h")){
+    	   reason.replaceFirst("-h", "");
+       }
         // return string
-        return  reason.toString().replaceFirst(" " + args[0], "");
+        return  reason;
     }
 	
 	public static String GetColor(String line) {
@@ -37,4 +65,18 @@ public class ArgProcessing {
 		line = line.replace("&f", "§f");
 		return line;
 	}
+	
+	public static String GlobalMessage(String line, String reason, String mod, Player victim){
+		line = line.replaceAll("%victim%", victim.getName());
+		line = line.replaceAll("%reason%", reason);
+		line = line.replaceAll("%kicker%", mod);
+		return line;
+	}
+	public static String PlayerMessage(String line, String reason, String mod){
+		
+		line = line.replaceAll("%reason%", reason);
+		line = line.replaceAll("%kicker%", mod);
+		return line;
+	}
+	
 }

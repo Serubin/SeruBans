@@ -38,6 +38,7 @@ public class WarnCommand implements CommandExecutor {
 		
 		if (commandLabel.equalsIgnoreCase("Warn")) {
 			Player player = (Player) sender;
+			int hide = 0;
 			if(args.length == 0){
 				return false;
 			}
@@ -47,23 +48,22 @@ public class WarnCommand implements CommandExecutor {
 			else if(args.length > 1){
 				reason = ArgProcessing.reasonArgs(args);
 			}
+			if(args[1] == "-h"){
+				hide = 1;
+			}
 			mod = player.getName();
+			victim = server.getPlayer(args[0]);
 			//processes Warn message
 			
-			WarnPlayerMessage = WarnPlayerMessage.replaceAll("%reason%", reason);
-			WarnPlayerMessage = WarnPlayerMessage.replaceAll("%kicker%", mod);
-			
 			String line = "";
-			//finds victim
-			victim = server.getPlayer(args[0]);
 			if(victim != null){
 				//Warns and broadcasts message
-				GlobalMessage(WarnMessage, reason, mod, victim);
+				ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim);
 				SeruBans.printServer(line);
 				SeruBans.printInfo(mod + " warned " + victim.getName() + " for " + reason);
-				SeruBans.printInfo(WarnPlayerMessage);
+				SeruBans.printInfo(ArgProcessing.PlayerMessage(WarnPlayerMessage, reason, mod));
 				SeruBans.printInfo(WarnMessage);
-				victim.sendMessage(SeruBans.GetColor(WarnPlayerMessage));
+				victim.sendMessage(ArgProcessing.GetColor(WarnPlayerMessage));
 				victim.sendMessage(reason);
 				
 				//adds player to db
@@ -76,7 +76,7 @@ public class WarnCommand implements CommandExecutor {
 					}
 				if(victim !=null){
 					//broadcasts message
-					GlobalMessage(WarnMessage, reason, mod, victim);
+					ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim);
 					SeruBans.printServer(line);
 					SeruBans.printInfo(mod + " warned " + victim.getName() + " for " + reason);;
 					return true;
@@ -92,11 +92,4 @@ public class WarnCommand implements CommandExecutor {
 		return false;
 	}
 
-	public String GlobalMessage(String line, String reason, String mod, Player victim){
-		line = line.replaceAll("%victim%", victim.getName());
-		line = line.replaceAll("%reason%", reason);
-		line = line.replaceAll("%kicker%", mod);
-		return line;
-	}
-	
 }

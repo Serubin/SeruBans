@@ -115,5 +115,5 @@ public class SeruBans extends JavaPlugin {
 	public static void printWarning(String line) {
 		System.out.println("[warning] [SeruBans] " + line);
 	}
-
+	
 }

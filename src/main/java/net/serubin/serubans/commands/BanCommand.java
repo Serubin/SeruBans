@@ -40,50 +40,49 @@ public class BanCommand implements CommandExecutor {
 
 		if (commandLabel.equalsIgnoreCase("ban")) {
 			Player player = (Player) sender;
+			int hide = 0;
 			if (args.length == 0) {
 				return false;
 			} else if (args.length == 1) {
 				reason = "undefined";
-			}
-			else if(args.length > 1){
+			} else if (args.length > 1) {
 				reason = ArgProcessing.reasonArgs(args);
 			}
+			if(args[1] == "-h"){
+				hide = 1;
+			}
 			mod = player.getName();
-			// processes kick message
-			// finds victim
 			victim = server.getPlayer(args[0]);
-			
-			BanMessage = BanMessage.replaceAll("%reason%", reason);
-			BanMessage = BanMessage.replaceAll("%kicker%", mod);
-			
-			// processes global message
 
 			String line = "";
 			if (victim != null) {
 				// kicks and broadcasts message
-				GlobalMessage(GlobalBanMessage, reason, mod, victim);
+				ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
+						victim);
 				SeruBans.printServer(line);
 
-				SeruBans.printInfo(mod + " banned "
-						+ victim.getName() + " for " + reason);
+				SeruBans.printInfo(mod + " banned " + victim.getName()
+						+ " for " + reason);
 
-				victim.kickPlayer(SeruBans.GetColor(BanMessage));
+				victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
+						.PlayerMessage(BanMessage, reason, mod)));
 				// adds player to db
 				return true;
 			} else {
-				try{
-				victim = offPlayer.getPlayer();
-				} catch(NullPointerException NPE) {
+				try {
+					victim = offPlayer.getPlayer();
+				} catch (NullPointerException NPE) {
 					victim = null;
 				}
-				
+
 				if (victim != null) {
 					// broadcasts message
-					GlobalMessage(GlobalBanMessage, reason, mod, victim);
+					ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
+							victim);
 					SeruBans.printServer(line);
 
-					SeruBans.printInfo(mod + " banned "
-							+ victim.getName() + " for " + reason);
+					SeruBans.printInfo(mod + " banned " + victim.getName()
+							+ " for " + reason);
 
 					return true;
 				} else {
@@ -94,12 +93,6 @@ public class BanCommand implements CommandExecutor {
 
 		}
 		return false;
-	}
-	public String GlobalMessage(String line, String reason, String mod, Player victim){
-		line = line.replaceAll("%victim%", victim.getName());
-		line = line.replaceAll("%reason%", reason);
-		line = line.replaceAll("%kicker%", mod);
-		return line;
 	}
 
 }
