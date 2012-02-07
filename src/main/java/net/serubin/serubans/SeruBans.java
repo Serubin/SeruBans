@@ -1,5 +1,7 @@
 package net.serubin.serubans;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.serubin.serubans.commands.BanCommand;
@@ -7,6 +9,7 @@ import net.serubin.serubans.commands.KickCommand;
 import net.serubin.serubans.commands.TempBanCommand;
 import net.serubin.serubans.commands.WarnCommand;
 import net.serubin.serubans.util.ArgProcessing;
+import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
@@ -24,6 +27,8 @@ public class SeruBans extends JavaPlugin {
 	private String database;
 	private static String name;
 	private static String version;
+	public Map<Integer, String> PlayerList = new HashMap<Integer, String>();
+	public Map<Integer, String> BannedPlayers = new HashMap<Integer, String>();
 	// defines config variables
 	public static String BanMessage;
 	public static String GlobalBanMessage;
@@ -84,8 +89,9 @@ public class SeruBans extends JavaPlugin {
 		KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage,
 				name, plugin);
 		WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage, name, plugin);
-		MySqlDatabase sqldb = new MySqlDatabase(username, password, database,
+		MySqlDatabase sqldb = new MySqlDatabase(username, password, database, PlayerList, BannedPlayers,
 				plugin);
+		CheckPlayer CheckPlayer = new CheckPlayer(PlayerList); 
 
 		getCommand("ban").setExecutor(Ban);
 		getCommand("tempban").setExecutor(TempBan);

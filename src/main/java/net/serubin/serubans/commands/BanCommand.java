@@ -2,6 +2,8 @@ package net.serubin.serubans.commands;
 
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
+import net.serubin.serubans.util.CheckPlayer;
+import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -14,6 +16,7 @@ import org.bukkit.entity.Player;
 public class BanCommand implements CommandExecutor {
 
 	ArgProcessing ap;
+	MySqlDatabase db;
 	OfflinePlayer offPlayer;
 	Server server = Bukkit.getServer();
 	Player victim;
@@ -56,6 +59,8 @@ public class BanCommand implements CommandExecutor {
 
 			String line = "";
 			if (victim != null) {
+				// adds player to db
+				CheckPlayer.checkPlayer(victim, player);
 				// kicks and broadcasts message
 				ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
 						victim);
@@ -66,7 +71,6 @@ public class BanCommand implements CommandExecutor {
 
 				victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
 						.PlayerMessage(BanMessage, reason, mod)));
-				// adds player to db
 				return true;
 			} else {
 				try {
@@ -77,6 +81,7 @@ public class BanCommand implements CommandExecutor {
 
 				if (victim != null) {
 					// broadcasts message
+					CheckPlayer.checkPlayer(victim, player);
 					ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
 							victim);
 					SeruBans.printServer(line);

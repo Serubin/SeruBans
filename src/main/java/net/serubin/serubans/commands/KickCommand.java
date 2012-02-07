@@ -1,5 +1,8 @@
 package net.serubin.serubans.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 
