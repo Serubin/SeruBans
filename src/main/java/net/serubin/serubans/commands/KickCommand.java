@@ -5,6 +5,8 @@ import java.util.Map;
 
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
+import net.serubin.serubans.util.CheckPlayer;
+import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +20,8 @@ import org.bukkit.entity.Player;
 public class KickCommand implements CommandExecutor {
 
 	ArgProcessing ap;
+	MySqlDatabase db;
+	CheckPlayer cp;
 	OfflinePlayer offPlayer;
 	Server server = Bukkit.getServer();
 	String p;
@@ -59,6 +63,7 @@ public class KickCommand implements CommandExecutor {
 			String line = "";
 			if (victim != null) {
 				// kicks and broadcasts message
+				CheckPlayer.checkPlayer(victim, player);
 				ArgProcessing.GlobalMessage(GlobalKickMessage, reason, mod,
 						victim);
 				SeruBans.printServer(line);

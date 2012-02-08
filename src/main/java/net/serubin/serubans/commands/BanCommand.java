@@ -17,6 +17,7 @@ public class BanCommand implements CommandExecutor {
 
 	ArgProcessing ap;
 	MySqlDatabase db;
+	CheckPlayer cp;
 	OfflinePlayer offPlayer;
 	Server server = Bukkit.getServer();
 	Player victim;

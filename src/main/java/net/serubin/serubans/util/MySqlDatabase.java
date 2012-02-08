@@ -115,6 +115,23 @@ public class MySqlDatabase {
 		}
 	}
 
+	public void addBan(Player victim, int type, Player mod, String reason){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		//add player
+		try {
+			ps = conn.prepareStatement("INSERT INTO bans (player_id, type, date, mod ,reason) VALUES(?,?,?,?,?)");
+			ps.setString(1, bannedPlayers.get(victim.getName()));
+			ps.setInt(2, type);
+			ps.setDate(3, ArgProcessing.getDateTime());
+			ps.setString(4, mod.getName());
+			ps.setString(5, reason);
+			ps.executeQuery();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public boolean addPlayer(Player victim) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;

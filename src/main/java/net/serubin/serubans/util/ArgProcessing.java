@@ -1,5 +1,9 @@
 package net.serubin.serubans.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import net.serubin.serubans.SeruBans;
 
 import org.bukkit.Bukkit;
@@ -78,5 +82,11 @@ public class ArgProcessing {
 		line = line.replaceAll("%kicker%", mod);
 		return line;
 	}
-	
+	 public static java.sql.Date getDateTime() {
+	        Date date = new Date();
+	        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        String today = dateFormat.format(date);
+	        java.sql.Date dt = java.sql.Date.valueOf(new String(today));
+	        return dt;
+	    }
 }

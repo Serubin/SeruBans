@@ -2,6 +2,8 @@ package net.serubin.serubans.commands;
 
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
+import net.serubin.serubans.util.CheckPlayer;
+import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -14,6 +16,8 @@ import org.bukkit.entity.Player;
 public class WarnCommand implements CommandExecutor {
 
 	ArgProcessing ap;
+	MySqlDatabase db;
+	CheckPlayer cp;
 	OfflinePlayer offPlayer;
     Server server = Bukkit.getServer();
 	Player victim;
@@ -58,6 +62,7 @@ public class WarnCommand implements CommandExecutor {
 			
 			String line = "";
 			if(victim != null){
+				CheckPlayer.checkPlayer(victim, player);
 				//Warns and broadcasts message
 				ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim);
 				SeruBans.printServer(line);
@@ -76,6 +81,7 @@ public class WarnCommand implements CommandExecutor {
 						victim = null;
 					}
 				if(victim !=null){
+					CheckPlayer.checkPlayer(victim, player);
 					//broadcasts message
 					ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim);
 					SeruBans.printServer(line);
