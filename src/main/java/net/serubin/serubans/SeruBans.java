@@ -15,6 +15,8 @@ import net.serubin.serubans.util.MySqlDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,13 +24,12 @@ public class SeruBans extends JavaPlugin {
 
 	public static SeruBans plugin;
 	public Logger log = Logger.getLogger("Minecraft");
-	private String username;
-	private String password;
-	private String database;
+
 	private static String name;
 	private static String version;
 	public Map<Integer, String> PlayerList = new HashMap<Integer, String>();
-	public Map<Integer, String> BannedPlayers = new HashMap<Integer, String>();
+	public Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
+	
 	// defines config variables
 	public static String BanMessage;
 	public static String GlobalBanMessage;
@@ -39,11 +40,17 @@ public class SeruBans extends JavaPlugin {
 	public static String WarnMessage;
 	public static String WarnPlayerMessage;
 	public static String UnBanMessage;
+	
+	//sql variables
+	public static String username;
+	public static String password;
+	public static String database;
+	public static String host;
+	
 	// Per command variables
 	public static Object config;
 	static ArgProcessing ap;
 	static Server server = Bukkit.getServer();
-
 	public void onDisable() {
 		reloadConfig();
 		saveConfig();
@@ -79,24 +86,35 @@ public class SeruBans extends JavaPlugin {
 				"SeruBans.messages.warn.WarnPlayerMessage");
 		UnBanMessage = getConfig().getString("SeruBans.messages.UnBanMessage");
 		// MySql
-		username = getConfig().getString("SeruBans.MySql.username");
-		password = getConfig().getString("SeruBans.MySql.password");
-		database = getConfig().getString("SeruBans.MySql.database");
+		host = getConfig().getString("SeruBans.database.host");
+		username = getConfig().getString("SeruBans.database.username");
+		password = getConfig().getString("SeruBans.database.password");
+		database = getConfig().getString("SeruBans.database.database");
 
+		// Add Classes
 		BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
 				plugin);
-		TempBanCommand TempBan = new TempBanCommand(TempBanMessage, GlobalTempBanMessage, name, plugin);
+		TempBanCommand TempBan = new TempBanCommand(TempBanMessage,
+				GlobalTempBanMessage, name, plugin);
 		KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage,
 				name, plugin);
-		WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage, name, plugin);
-		MySqlDatabase sqldb = new MySqlDatabase(username, password, database, PlayerList, BannedPlayers,
-				plugin);
-		CheckPlayer CheckPlayer = new CheckPlayer(PlayerList); 
-
+		WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage,
+				name, plugin);
+		MySqlDatabase sqldb = new MySqlDatabase(host, username, password, database,
+				PlayerList, BannedPlayers, plugin);
+		CheckPlayer CheckPlayer = new CheckPlayer(PlayerList);
+		SeruBansPlayerListener playerListener = new SeruBansPlayerListener(BannedPlayers, PlayerList, BanMessage, plugin);
+		// init commands
 		getCommand("ban").setExecutor(Ban);
-		getCommand("tempban").setExecutor(TempBan);
+		//getCommand("tempban").setExecutor(TempBan);
 		getCommand("kick").setExecutor(Kick);
 		getCommand("warn").setExecutor(Warn);
+		
+		//create SQL Connection
+		MySqlDatabase.startSQL();
+		
+		//Create listener
+		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);
 	}
 
 	public static void printInfo(String line) {
@@ -107,7 +125,7 @@ public class SeruBans extends JavaPlugin {
 	public static void printServer(String line) {
 		Player[] players = Bukkit.getOnlinePlayers();
 		for (Player player : players) {
-			if(player.hasPermission("serubans.broadcast") || player.isOp()) {
+			if (player.hasPermission("serubans.broadcast") || player.isOp()) {
 				ArgProcessing.GetColor(line);
 				player.sendMessage(line);
 			}
@@ -121,5 +139,5 @@ public class SeruBans extends JavaPlugin {
 	public static void printWarning(String line) {
 		System.out.println("[warning] [SeruBans] " + line);
 	}
-	
+
 }

@@ -35,7 +35,6 @@ public class KickCommand implements CommandExecutor {
 
 	public KickCommand(String KickMessage, String GlobalKickMessage,
 			String name, SeruBans plugin) {
-		// TODO Auto-generated constructor stub
 		this.KickMessage = KickMessage;
 		this.GlobalKickMessage = GlobalKickMessage;
 		this.name = name;
@@ -44,7 +43,6 @@ public class KickCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
-		// TODO Auto-generated method stub
 		if (commandLabel.equalsIgnoreCase("kick")) {
 			Player player = (Player) sender;
 			int hide = 0;
@@ -67,7 +65,7 @@ public class KickCommand implements CommandExecutor {
 				ArgProcessing.GlobalMessage(GlobalKickMessage, reason, mod,
 						victim);
 				SeruBans.printServer(line);
-				SeruBans.printInfo(mod + " kicked " + victim.getName()
+				plugin.log.info(mod + " kicked " + victim.getName()
 						+ " for " + reason);
 				victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
 						.PlayerMessage(KickMessage, reason, mod)));

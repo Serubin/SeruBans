@@ -19,7 +19,7 @@ public class WarnCommand implements CommandExecutor {
 	MySqlDatabase db;
 	CheckPlayer cp;
 	OfflinePlayer offPlayer;
-    Server server = Bukkit.getServer();
+	Server server = Bukkit.getServer();
 	Player victim;
 	String mod;
 	String reason = "";
@@ -28,74 +28,73 @@ public class WarnCommand implements CommandExecutor {
 	private SeruBans plugin;
 	private String WarnPlayerMessage;
 
-	public WarnCommand(String WarnMessage, String WarnPlayerMessage, String name, SeruBans plugin) {
-		// TODO Auto-generated constructor stub
+	public WarnCommand(String WarnMessage, String WarnPlayerMessage,
+			String name, SeruBans plugin) {
 		this.WarnMessage = WarnMessage;
 		this.WarnPlayerMessage = WarnPlayerMessage;
 		this.name = name;
 		this.plugin = plugin;
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
-			String[] args) {
-		// TODO Auto-generated method stub
-		
+	public boolean onCommand(CommandSender sender, Command cmd,
+			String commandLabel, String[] args) {
+
 		if (commandLabel.equalsIgnoreCase("Warn")) {
 			Player player = (Player) sender;
 			int hide = 0;
-			if(args.length == 0){
+			if (args.length == 0) {
 				return false;
-			}
-			else if(args.length == 1){
+			} else if (args.length == 1) {
 				reason = "undefined";
-			}
-			else if(args.length > 1){
+			} else if (args.length > 1) {
 				reason = ArgProcessing.reasonArgs(args);
 			}
-			if(args[1] == "-h"){
+			if (args[1] == "-h") {
 				hide = 1;
 			}
 			mod = player.getName();
 			victim = server.getPlayer(args[0]);
-			//processes Warn message
-			
-			
+			// processes Warn message
+
 			String line = "";
-			if(victim != null){
+			if (victim != null) {
 				CheckPlayer.checkPlayer(victim, player);
-				//Warns and broadcasts message
+				// Warns and broadcasts message
 				ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim);
 				SeruBans.printServer(line);
-				SeruBans.printInfo(mod + " warned " + victim.getName() + " for " + reason);
-				SeruBans.printInfo(ArgProcessing.PlayerMessage(WarnPlayerMessage, reason, mod));
+				plugin.log.info(mod + " warned " + victim.getName() + " for "
+						+ reason);
 				SeruBans.printInfo(WarnMessage);
-				victim.sendMessage(ArgProcessing.GetColor(WarnPlayerMessage));
+				victim.sendMessage(ArgProcessing.GetColor(ArgProcessing
+						.PlayerMessage(WarnPlayerMessage, reason, mod)));
 				victim.sendMessage(reason);
-				
-				//adds player to db
+
+				// adds player to db
 				return true;
-			}else{
-				try{
+			} else {
+				try {
 					victim = offPlayer.getPlayer();
-					} catch(NullPointerException NPE) {
-						victim = null;
-					}
-				if(victim !=null){
+				} catch (NullPointerException NPE) {
+					victim = null;
+				}
+				if (victim != null) {
 					CheckPlayer.checkPlayer(victim, player);
-					//broadcasts message
-					ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim);
+					// broadcasts message
+					ArgProcessing.GlobalMessage(WarnMessage, reason, mod,
+							victim);
 					SeruBans.printServer(line);
-					SeruBans.printInfo(mod + " warned " + victim.getName() + " for " + reason);;
+					plugin.log.info(mod + " warned " + victim.getName()
+							+ " for " + reason);
+					;
 					return true;
-				}else{
+				} else {
 					player.sendMessage("This Player was not found!");
 					return true;
 				}
 			}
-			
 
 		}
-		
+
 		return false;
 	}
 

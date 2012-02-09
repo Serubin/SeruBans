@@ -10,7 +10,6 @@ public class CheckPlayer {
 	private static Map<Integer, String> playerList;
 
 	public CheckPlayer(Map<Integer, String> playerList) {
-		// TODO Auto-generated constructor stub
 		this.playerList = playerList;
 	}
 	public static boolean checkPlayer(Player victim, Player player){

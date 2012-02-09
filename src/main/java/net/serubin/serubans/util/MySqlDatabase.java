@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.bukkit.entity.Player;
 
@@ -13,36 +14,48 @@ import net.serubin.serubans.SeruBans;
 
 public class MySqlDatabase {
 
-	Connection conn;
-	private String host;
-	private String username;
-	private String password;
+	static Connection conn;
+	public static String host;
+	public static String username;
+	public static String password;
+	public static String database;
 	private Map<Integer, String> playerList;
-	private Map<Integer, String> bannedPlayers;
+	private Map<String, Integer> bannedPlayers;
+	private SeruBans plugin;
 
 	public MySqlDatabase(String host, String username, String password,
-			Map<Integer, String> playerList,
-			Map<Integer, String> bannedPlayers, SeruBans plugin) {
-		// TODO Auto-generated constructor stub
+			String database, Map<Integer, String> playerList,
+			Map<String, Integer> bannedPlayers, SeruBans plugin) {
+		this.plugin = plugin;
 		this.host = host;
 		this.username = username;
 		this.password = password;
+		this.database = database;
 		this.playerList = playerList;
 		this.bannedPlayers = bannedPlayers;
 	}
 
-	public void createConnection() {
-		try {
-
-			DriverManager.getConnection(host + "?autoReconnect=true&user="
-					+ username + "&password=" + password);
-		} catch (SQLException ex) {
-			SeruBans.printError("Unable to connect to database!");
-		}
-
+	public static void startSQL(){
+		createConnection();
+		createTable();
 	}
+	protected static void createConnection(){
+		System.out.println("H: " + host + " DB: " + database + " UN: " + username + " PW: " + password);
+		String sqlUrl = String.format("jdbc:mysql://%s/%s",
+				host, 
+				database);
 
-	public void createTable() {
+		Properties sqlStr = new Properties();
+		sqlStr.put("user",username);
+		sqlStr.put("password",password);
+		try {
+			conn = DriverManager.getConnection(sqlUrl,sqlStr);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected static void createTable() {
 		try {
 			SeruBans.printInfo("Searching for storage table");
 			ResultSet rs = conn.getMetaData().getTables(null, null, "bans",
@@ -74,7 +87,6 @@ public class MySqlDatabase {
 			rs.close();
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -91,7 +103,6 @@ public class MySqlDatabase {
 				playerList.put(pId, pName);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -107,10 +118,10 @@ public class MySqlDatabase {
 				Integer bId = rs.getInt("id");
 				Integer pId = rs.getInt("player_id");
 				String pName = playerList.get(pId);
-				bannedPlayers.put(bId, pName);
+				bannedPlayers.put(pName, bId);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
@@ -121,27 +132,28 @@ public class MySqlDatabase {
 		//add player
 		try {
 			ps = conn.prepareStatement("INSERT INTO bans (player_id, type, date, mod ,reason) VALUES(?,?,?,?,?)");
-			ps.setString(1, bannedPlayers.get(victim.getName()));
+			ps.setInt(1, bannedPlayers.get(victim.getName()));
 			ps.setInt(2, type);
 			ps.setDate(3, ArgProcessing.getDateTime());
 			ps.setString(4, mod.getName());
 			ps.setString(5, reason);
 			ps.executeQuery();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
+	
 	public boolean addPlayer(Player victim) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		plugin.log.info("Attempting to add player " + victim.getName() + " to database");
 		//add player
 		try {
 			ps = conn.prepareStatement("INSERT INTO users (name) VALUES(?)");
 			ps.setString(1, victim.getName());
 			ps.executeQuery();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
@@ -152,10 +164,44 @@ public class MySqlDatabase {
 			rs = ps.executeQuery();
 			int pId = rs.getInt("id");
 			playerList.put(pId, victim.getName());
+			plugin.log.info("Player Added: " + victim.getName() + " Id: " + pId);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 		return false;
+	}
+	
+	public static String getReason(int id){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String reason = "";
+		String mod = "";
+		try {
+			ps = conn.prepareStatement("SELECT id FROM bans WHERE (id = ?)");
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			reason = rs.getString("reason");
+			mod = rs.getString("mod");
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return reason;
+	}
+	public static String getMod(int id){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String mod = "";
+		try {
+			ps = conn.prepareStatement("SELECT id FROM bans WHERE (id = ?)");
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			mod = rs.getString("mod");
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return mod;
 	}
 }

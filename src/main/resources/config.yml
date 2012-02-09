@@ -13,7 +13,8 @@ SeruBans:
       GlobalTempBanMessage: ''
       TempBanMessage: ''
     UnBanMessage: ''
-  MySql:
-    database: ''
-    user: ''
-    password: ''
+  database:
+    host: "localhost"
+    username: "SeruBans"
+    password: "change"
+    database: "bans"

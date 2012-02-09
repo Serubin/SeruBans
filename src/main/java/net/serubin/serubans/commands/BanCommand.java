@@ -31,7 +31,6 @@ public class BanCommand implements CommandExecutor {
 
 	public BanCommand(String BanMessage, String GlobalBanMessage, String name,
 			SeruBans plugin) {
-		// TODO Auto-generated constructor stub
 		this.BanMessage = BanMessage;
 		this.GlobalBanMessage = GlobalBanMessage;
 		this.name = name;
@@ -40,7 +39,6 @@ public class BanCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
-		// TODO Auto-generated method stub
 
 		if (commandLabel.equalsIgnoreCase("ban")) {
 			Player player = (Player) sender;
@@ -52,7 +50,7 @@ public class BanCommand implements CommandExecutor {
 			} else if (args.length > 1) {
 				reason = ArgProcessing.reasonArgs(args);
 			}
-			if(args[1] == "-h"){
+			if (args[1] == "-h") {
 				hide = 1;
 			}
 			mod = player.getName();
@@ -66,10 +64,8 @@ public class BanCommand implements CommandExecutor {
 				ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
 						victim);
 				SeruBans.printServer(line);
-
-				SeruBans.printInfo(mod + " banned " + victim.getName()
-						+ " for " + reason);
-
+				plugin.log.info(mod + " banned " + victim.getName() + " for "
+						+ reason);
 				victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
 						.PlayerMessage(BanMessage, reason, mod)));
 				return true;
@@ -86,10 +82,8 @@ public class BanCommand implements CommandExecutor {
 					ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
 							victim);
 					SeruBans.printServer(line);
-
-					SeruBans.printInfo(mod + " banned " + victim.getName()
+					plugin.log.info(mod + " banned " + victim.getName()
 							+ " for " + reason);
-
 					return true;
 				} else {
 					player.sendMessage("This Player was not found!");
