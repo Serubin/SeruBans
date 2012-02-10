@@ -8,15 +8,15 @@ import net.serubin.serubans.SeruBans;
 
 public class TempBanCommand implements CommandExecutor {
 
-	public TempBanCommand(String tempBanMessage, String globalTempBanMessage,
-			String name, SeruBans plugin) {
-		// TODO Auto-generated constructor stub
-	}
+    public TempBanCommand(String tempBanMessage, String globalTempBanMessage,
+            String name, SeruBans plugin) {
+        // TODO Auto-generated constructor stub
+    }
 
-	public boolean onCommand(CommandSender sender, Command cmd,
-			String commandLabel, String[] args) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public boolean onCommand(CommandSender sender, Command cmd,
+            String commandLabel, String[] args) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
 }

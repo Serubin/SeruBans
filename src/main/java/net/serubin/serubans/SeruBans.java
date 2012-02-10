@@ -22,122 +22,125 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SeruBans extends JavaPlugin {
 
-	public static SeruBans plugin;
-	public Logger log = Logger.getLogger("Minecraft");
+    public static SeruBans plugin;
+    public Logger log = Logger.getLogger("Minecraft");
 
-	private static String name;
-	private static String version;
-	public Map<Integer, String> PlayerList = new HashMap<Integer, String>();
-	public Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
-	
-	// defines config variables
-	public static String BanMessage;
-	public static String GlobalBanMessage;
-	public static String TempBanMessage;
-	public static String GlobalTempBanMessage;
-	public static String KickMessage;
-	public static String GlobalKickMessage;
-	public static String WarnMessage;
-	public static String WarnPlayerMessage;
-	public static String UnBanMessage;
-	
-	//sql variables
-	public static String username;
-	public static String password;
-	public static String database;
-	public static String host;
-	
-	// Per command variables
-	public static Object config;
-	static ArgProcessing ap;
-	static Server server = Bukkit.getServer();
-	public void onDisable() {
-		reloadConfig();
-		saveConfig();
-		log.info(name + " has been disabled");
-	}
+    private static String name;
+    private static String version;
+    public Map<String, Integer> PlayerList = new HashMap<String, Integer>();
+    public Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
 
-	public void onEnable() {
+    // defines config variables
+    public static String BanMessage;
+    public static String GlobalBanMessage;
+    public static String TempBanMessage;
+    public static String GlobalTempBanMessage;
+    public static String KickMessage;
+    public static String GlobalKickMessage;
+    public static String WarnMessage;
+    public static String WarnPlayerMessage;
+    public static String UnBanMessage;
 
-		version = this.getDescription().getVersion();
-		name = this.getDescription().getName();
+    // sql variables
+    public static String username;
+    public static String password;
+    public static String database;
+    public static String host;
 
-		log.info(name + " version " + version + " has started...");
-		PluginManager pm = getServer().getPluginManager();
-		getConfig().options().copyDefaults(true);
-		saveConfig();
-		// Ban messages
-		BanMessage = getConfig().getString("SeruBans.messages.ban.BanMessage");
-		GlobalBanMessage = getConfig().getString(
-				"SeruBans.messages.ban.GlobalBanMessage");
-		TempBanMessage = getConfig().getString(
-				"SeruBans.messages.tempban.TempBanMessage");
-		GlobalTempBanMessage = getConfig().getString(
-				"SeruBans.messages.tempban.GlobalTempBanMessage");
-		// kick messages
-		KickMessage = getConfig().getString(
-				"SeruBans.messages.kick.KickMessage");
-		GlobalKickMessage = getConfig().getString(
-				"SeruBans.messages.kick.GlobalKickMessage");
-		// warn message
-		WarnMessage = getConfig().getString(
-				"SeruBans.messages.warn.WarnMessage");
-		WarnPlayerMessage = getConfig().getString(
-				"SeruBans.messages.warn.WarnPlayerMessage");
-		UnBanMessage = getConfig().getString("SeruBans.messages.UnBanMessage");
-		// MySql
-		host = getConfig().getString("SeruBans.database.host");
-		username = getConfig().getString("SeruBans.database.username");
-		password = getConfig().getString("SeruBans.database.password");
-		database = getConfig().getString("SeruBans.database.database");
+    // Per command variables
+    public static Object config;
+    static ArgProcessing ap;
+    static Server server = Bukkit.getServer();
 
-		// Add Classes
-		BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
-				plugin);
-		TempBanCommand TempBan = new TempBanCommand(TempBanMessage,
-				GlobalTempBanMessage, name, plugin);
-		KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage,
-				name, plugin);
-		WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage,
-				name, plugin);
-		MySqlDatabase sqldb = new MySqlDatabase(host, username, password, database,
-				PlayerList, BannedPlayers, plugin);
-		CheckPlayer CheckPlayer = new CheckPlayer(PlayerList);
-		SeruBansPlayerListener playerListener = new SeruBansPlayerListener(BannedPlayers, PlayerList, BanMessage, plugin);
-		// init commands
-		getCommand("ban").setExecutor(Ban);
-		//getCommand("tempban").setExecutor(TempBan);
-		getCommand("kick").setExecutor(Kick);
-		getCommand("warn").setExecutor(Warn);
-		
-		//create SQL Connection
-		MySqlDatabase.startSQL();
-		
-		//Create listener
-		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);
-	}
+    public void onDisable() {
+        reloadConfig();
+        saveConfig();
+        log.info(name + " has been disabled");
+    }
 
-	public static void printInfo(String line) {
-		ArgProcessing.GetColor(line);
-		System.out.println("[SeruBans] " + line);
-	}
+    public void onEnable() {
 
-	public static void printServer(String line) {
-		Player[] players = Bukkit.getOnlinePlayers();
-		for (Player player : players) {
-			if (player.hasPermission("serubans.broadcast") || player.isOp()) {
-				ArgProcessing.GetColor(line);
-				player.sendMessage(line);
-			}
-		}
-	}
+        version = this.getDescription().getVersion();
+        name = this.getDescription().getName();
 
-	public static void printError(String line) {
-		System.out.println("[ERROR] [SeruBans] " + line);
-	}
+        log.info(name + " version " + version + " has started...");
+        PluginManager pm = getServer().getPluginManager();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        // Ban messages
+        BanMessage = getConfig().getString("SeruBans.messages.ban.BanMessage");
+        GlobalBanMessage = getConfig().getString(
+                "SeruBans.messages.ban.GlobalBanMessage");
+        TempBanMessage = getConfig().getString(
+                "SeruBans.messages.tempban.TempBanMessage");
+        GlobalTempBanMessage = getConfig().getString(
+                "SeruBans.messages.tempban.GlobalTempBanMessage");
+        // kick messages
+        KickMessage = getConfig().getString(
+                "SeruBans.messages.kick.KickMessage");
+        GlobalKickMessage = getConfig().getString(
+                "SeruBans.messages.kick.GlobalKickMessage");
+        // warn message
+        WarnMessage = getConfig().getString(
+                "SeruBans.messages.warn.WarnMessage");
+        WarnPlayerMessage = getConfig().getString(
+                "SeruBans.messages.warn.WarnPlayerMessage");
+        UnBanMessage = getConfig().getString("SeruBans.messages.UnBanMessage");
+        // MySql
+        host = getConfig().getString("SeruBans.database.host");
+        username = getConfig().getString("SeruBans.database.username");
+        password = getConfig().getString("SeruBans.database.password");
+        database = getConfig().getString("SeruBans.database.database");
 
-	public static void printWarning(String line) {
-		System.out.println("[warning] [SeruBans] " + line);
-	}
+        // Add Classes
+        BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
+                plugin);
+        TempBanCommand TempBan = new TempBanCommand(TempBanMessage,
+                GlobalTempBanMessage, name, plugin);
+        KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage,
+                name, plugin);
+        WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage,
+                name, plugin);
+        MySqlDatabase sqldb = new MySqlDatabase(host, username, password,
+                database, PlayerList, BannedPlayers, plugin);
+        CheckPlayer CheckPlayer = new CheckPlayer(PlayerList);
+        SeruBansPlayerListener playerListener = new SeruBansPlayerListener(
+                BannedPlayers, PlayerList, BanMessage, plugin);
+        // init commands
+        getCommand("ban").setExecutor(Ban);
+        // getCommand("tempban").setExecutor(TempBan);
+        getCommand("kick").setExecutor(Kick);
+        getCommand("warn").setExecutor(Warn);
+
+        // create SQL Connection
+        MySqlDatabase.startSQL();
+
+        // Create listener
+        pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener,
+                Priority.Highest, this);
+    }
+
+    public static void printInfo(String line) {
+        ArgProcessing.GetColor(line);
+        System.out.println("[SeruBans] " + line);
+    }
+
+    public static void printServer(String line) {
+        Player[] players = Bukkit.getOnlinePlayers();
+        for (Player player : players) {
+            if (player.hasPermission("serubans.broadcast") || player.isOp()) {
+                ArgProcessing.GetColor(line);
+                player.sendMessage(line);
+            }
+        }
+    }
+
+    public static void printError(String line) {
+        System.out.println("[ERROR] [SeruBans] " + line);
+    }
+
+    public static void printWarning(String line) {
+        System.out.println("[warning] [SeruBans] " + line);
+    }
 
 }
