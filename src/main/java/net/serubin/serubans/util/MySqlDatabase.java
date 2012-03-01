@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 
@@ -19,20 +20,17 @@ public class MySqlDatabase {
     public static String username;
     public static String password;
     public static String database;
-    private static Map<String, Integer> playerList;
-    private static Map<String, Integer> bannedPlayers;
     private static SeruBans plugin;
+    private static String reason;
+    private static String mod;
 
     public MySqlDatabase(String host, String username, String password,
-            String database, Map<String, Integer> playerList,
-            Map<String, Integer> bannedPlayers, SeruBans plugin) {
+            String database, SeruBans plugin) {
         this.plugin = plugin;
         this.host = host;
         this.username = username;
         this.password = password;
         this.database = database;
-        this.playerList = playerList;
-        this.bannedPlayers = bannedPlayers;
     }
 
     public static void startSQL() {
@@ -63,7 +61,7 @@ public class MySqlDatabase {
             if (!rs.next()) {
                 SeruBans.printWarning("No 'bans' data table found, Attempting to create one...");
                 PreparedStatement ps = conn
-                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( `id` mediumint unsigned not null auto_increment, `player_id` mediumint unsigned not null, `type` tinyint(2) not null, `date` DATETIME not null, `mod` mediumint unsigned not null, `reason` varchar(255) not null,  primary key (`id`));");
+                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( `id` mediumint unsigned not null auto_increment, `player_id` mediumint unsigned not null, `type` tinyint(2) not null, `mod` varchar(16) not null, `reason` varchar(255) not null,  primary key (`id`));");
                 ps.executeUpdate();
                 ps.close();
                 SeruBans.printWarning("'bans' data table created!");
@@ -95,12 +93,12 @@ public class MySqlDatabase {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT * type FROM users;");
+            ps = conn.prepareStatement("SELECT * FROM users;");
             rs = ps.executeQuery();
             while (rs.next()) {
                 Integer pId = rs.getInt("id");
                 String pName = rs.getString("name");
-                playerList.put(pName, pId);
+                HashMaps.PlayerList.put(pName, pId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,13 +110,16 @@ public class MySqlDatabase {
         ResultSet rs = null;
         try {
             ps = conn
-                    .prepareStatement("SELECT player_id, type FROM bans WHERE (type = 1);");
+                    .prepareStatement("SELECT bans.player_id, users.name, users.id"
+                            + " FROM bans"
+                            + " INNER JOIN users"
+                            + "  ON bans.player_id=users.id"
+                            + " WHERE (type = 1) ");
             rs = ps.executeQuery();
             while (rs.next()) {
                 Integer bId = rs.getInt("id");
-                Integer pId = rs.getInt("player_id");
-                String pName = playerList.get(pId);
-                bannedPlayers.put(pName, bId);
+                String pName = rs.getString("name");
+                HashMaps.BannedPlayers.put(pName, bId);
             }
         } catch (SQLException e) {
 
@@ -132,57 +133,86 @@ public class MySqlDatabase {
         // add player
         try {
             ps = conn
-                    .prepareStatement("INSERT INTO bans (player_id, type, date, mod ,reason) VALUES(?,?,?,?,?);");
-            ps.setInt(1, playerList.get(victim.getName()));
+                    .prepareStatement(
+                            "INSERT INTO bans (`player_id`, `type`, `mod`, `reason`) VALUES(?,?,?,?);",
+                            Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, HashMaps.PlayerList.get(victim.getName().toLowerCase()));
             ps.setInt(2, type);
-            ps.setDate(3, ArgProcessing.getDateTime());
-            ps.setString(4, mod);
-            ps.setString(5, reason);
-            ps.executeQuery();
+            ps.setString(3, mod);
+            ps.setString(4, reason);
+            ps.executeUpdate();
+            rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                Integer bId = rs.getInt(1);
+                HashMaps.BannedPlayers.put(victim.getName().toLowerCase(), bId);
+            } else {
+                plugin.log.severe("Error adding ban!");
+            }
         } catch (SQLException e) {
 
             e.printStackTrace();
         }
     }
 
-    public static void addPlayer(Player victim) {
+    public static void updateBan(int type, int bId) {
         PreparedStatement ps = null;
         ResultSet rs = null;
-        SeruBans.printInfo("Attempting to add player " + victim.getName()
+        // add player
+        try {
+            ps = conn.prepareStatement("UPDATE bans SET type=? WHERE id=?;");
+            ps.setInt(1, type);
+            ps.setInt(2, bId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean addPlayer(String victim) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        SeruBans.printInfo("Attempting to add player " + victim
                 + " to database;");
         // add player
         try {
             ps = conn.prepareStatement("INSERT INTO users (name) VALUES(?);");
-            ps.setString(1, victim.getName());
-            ps.executeQuery();
+            ps.setString(1, victim);
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        // get id, add to list
+        return true;
+    }
+
+    public static boolean addPlayerHash(String victim) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT * FROM users WHERE (id = ?);");
-            ps.setString(1, victim.getName());
+            ps = conn.prepareStatement("SELECT * FROM users WHERE (name = ?);");
+            ps.setString(1, victim);
             rs = ps.executeQuery();
             int pId = rs.getInt("id");
-            playerList.put(pId, victim.getName());
+            HashMaps.PlayerList.put(victim, pId);
             plugin.log
-                    .info("Player Added: " + victim.getName() + " Id: " + pId);
+                    .info("Player Added: " + victim + " Id: " + pId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     public static String getReason(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String reason = "";
-        String mod = "";
+        reason = "";
         try {
-            ps = conn.prepareStatement("SELECT id FROM bans WHERE (id = ?);");
+            ps = conn.prepareStatement("SELECT id, reason FROM bans WHERE (id = ?);");
             ps.setInt(1, id);
             rs = ps.executeQuery();
+            if(rs.next()){
             reason = rs.getString("reason");
-            mod = rs.getString("mod");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
 
@@ -193,12 +223,15 @@ public class MySqlDatabase {
     public static String getMod(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String mod = "";
+        mod = "";
         try {
-            ps = conn.prepareStatement("SELECT id FROM bans WHERE (id = ?);");
+            ps = conn.prepareStatement("SELECT id, `mod` FROM bans WHERE (id = ?);");
+            SeruBans.printInfo(ps.toString());
             ps.setInt(1, id);
             rs = ps.executeQuery();
-            mod = rs.getString("mod");
+            if(rs.next()){
+           mod = rs.getString("mod");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
 

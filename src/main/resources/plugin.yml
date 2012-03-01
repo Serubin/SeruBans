@@ -10,5 +10,11 @@ commands:
       description: kicks player
       usage: /<command> <player> <reason> - kicks player
    warn:
-      description: wanrs player
+      description: warns player
       usage: /<command> <player> <reason> - warns player
+   unban:
+      description: unbans player
+      usage: /<command> <player> - unbans player
+   sbuser:
+      description: debug
+      usage: /<command> - lists users

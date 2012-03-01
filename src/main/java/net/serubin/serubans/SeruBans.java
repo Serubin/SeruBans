@@ -5,8 +5,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import net.serubin.serubans.commands.BanCommand;
+import net.serubin.serubans.commands.DebugCommand;
 import net.serubin.serubans.commands.KickCommand;
 import net.serubin.serubans.commands.TempBanCommand;
+import net.serubin.serubans.commands.UnbanCommand;
 import net.serubin.serubans.commands.WarnCommand;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
@@ -14,6 +16,8 @@ import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -24,11 +28,10 @@ public class SeruBans extends JavaPlugin {
 
     public static SeruBans plugin;
     public Logger log = Logger.getLogger("Minecraft");
+    private static boolean debug;
 
     private static String name;
     private static String version;
-    public Map<String, Integer> PlayerList = new HashMap<String, Integer>();
-    public Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
 
     // defines config variables
     public static String BanMessage;
@@ -91,6 +94,8 @@ public class SeruBans extends JavaPlugin {
         username = getConfig().getString("SeruBans.database.username");
         password = getConfig().getString("SeruBans.database.password");
         database = getConfig().getString("SeruBans.database.database");
+        // Other
+        debug = getConfig().getBoolean("SeruBans.debug");
 
         // Add Classes
         BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
@@ -101,23 +106,25 @@ public class SeruBans extends JavaPlugin {
                 name, plugin);
         WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage,
                 name, plugin);
+        UnbanCommand Unban = new UnbanCommand(plugin);
         MySqlDatabase sqldb = new MySqlDatabase(host, username, password,
-                database, PlayerList, BannedPlayers, plugin);
-        CheckPlayer CheckPlayer = new CheckPlayer(PlayerList);
-        SeruBansPlayerListener playerListener = new SeruBansPlayerListener(
-                BannedPlayers, PlayerList, BanMessage, plugin);
+                database, plugin);
+        CheckPlayer CheckPlayer = new CheckPlayer();
+        DebugCommand DebugC = new DebugCommand(plugin);
         // init commands
         getCommand("ban").setExecutor(Ban);
         // getCommand("tempban").setExecutor(TempBan);
         getCommand("kick").setExecutor(Kick);
         getCommand("warn").setExecutor(Warn);
+        getCommand("unban").setExecutor(Unban);
+        getCommand("sbuser").setExecutor(DebugC);
 
         // create SQL Connection
         MySqlDatabase.startSQL();
 
         // Create listener
-        pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener,
-                Priority.Highest, this);
+        getServer().getPluginManager().registerEvents(
+                new SeruBansPlayerListener(plugin, BanMessage), this);
     }
 
     public static void printInfo(String line) {
@@ -125,12 +132,18 @@ public class SeruBans extends JavaPlugin {
         System.out.println("[SeruBans] " + line);
     }
 
+    public static void printDebug(String line) {
+        if (debug) {
+            ArgProcessing.GetColor(line);
+            System.out.println("[SeruBans]DEBUG: " + line);
+        }
+    }
+
     public static void printServer(String line) {
         Player[] players = Bukkit.getOnlinePlayers();
         for (Player player : players) {
             if (player.hasPermission("serubans.broadcast") || player.isOp()) {
-                ArgProcessing.GetColor(line);
-                player.sendMessage(line);
+                player.sendMessage(ArgProcessing.GetColor(line));
             }
         }
     }

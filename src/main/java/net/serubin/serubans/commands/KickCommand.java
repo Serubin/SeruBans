@@ -45,23 +45,19 @@ public class KickCommand implements CommandExecutor {
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("kick")) {
             Player player = (Player) sender;
-            int hide = 0;
             if (args.length == 0) {
                 return false;
-            } else if (args.length == 1) {
-                reason = "undefined";
             } else if (args.length > 1) {
                 reason = ArgProcessing.reasonArgs(args);
-            }
-            mod = player.getName();
-            victim = server.getPlayer(args[0]);
-            if (args[1] == "-h") {
-                hide = 1;
+            } else {
+                reason = "undefined";
             }
             String line = "";
+            victim = server.getPlayer(args[0]);
             if (victim != null) {
                 // kicks and broadcasts message
                 CheckPlayer.checkPlayer(victim, player);
+                MySqlDatabase.addBan(victim, 4, mod, reason);
                 ArgProcessing.GlobalMessage(GlobalKickMessage, reason, mod,
                         victim);
                 SeruBans.printServer(line);

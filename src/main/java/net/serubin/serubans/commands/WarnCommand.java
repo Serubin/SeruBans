@@ -41,16 +41,12 @@ public class WarnCommand implements CommandExecutor {
 
         if (commandLabel.equalsIgnoreCase("Warn")) {
             Player player = (Player) sender;
-            int hide = 0;
             if (args.length == 0) {
                 return false;
-            } else if (args.length == 1) {
-                reason = "undefined";
             } else if (args.length > 1) {
                 reason = ArgProcessing.reasonArgs(args);
-            }
-            if (args[1] == "-h") {
-                hide = 1;
+            } else {
+                reason = "undefined";
             }
             mod = player.getName();
             victim = server.getPlayer(args[0]);
@@ -59,10 +55,10 @@ public class WarnCommand implements CommandExecutor {
             String line = "";
             if (victim != null) {
                 CheckPlayer.checkPlayer(victim, player);
+                MySqlDatabase.addBan(victim, 3, mod, reason);
                 // Warns and broadcasts message
-                ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim);
-                SeruBans.printServer(line);
-                plugin.log.info(mod + " warned " + victim.getName() + " for "
+                SeruBans.printServer(ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim));
+                SeruBans.printInfo(mod + " warned " + victim.getName() + " for "
                         + reason);
                 SeruBans.printInfo(WarnMessage);
                 victim.sendMessage(ArgProcessing.GetColor(ArgProcessing
@@ -79,6 +75,7 @@ public class WarnCommand implements CommandExecutor {
                 }
                 if (victim != null) {
                     CheckPlayer.checkPlayer(victim, player);
+                    MySqlDatabase.addBan(victim, 3, mod, reason);
                     // broadcasts message
                     ArgProcessing.GlobalMessage(WarnMessage, reason, mod,
                             victim);

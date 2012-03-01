@@ -3,9 +3,11 @@ package net.serubin.serubans.commands;
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
+import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -42,20 +44,12 @@ public class BanCommand implements CommandExecutor {
 
         if (commandLabel.equalsIgnoreCase("ban")) {
             Player player = (Player) sender;
-            int hide = 0;
             if (args.length == 0) {
                 return false;
-            } else if (args.length == 1) {
-                reason = "undefined";
             } else if (args.length > 1) {
                 reason = ArgProcessing.reasonArgs(args);
             } else {
                 reason = "undefined";
-            }
-            if (args[1] == "-h") {
-                hide = 1;
-            } else {
-                hide = 0;
             }
 
             mod = player.getName();
@@ -65,37 +59,31 @@ public class BanCommand implements CommandExecutor {
             if (victim != null) {
                 // adds player to db
                 CheckPlayer.checkPlayer(victim, player);
-                MySqlDatabase.addBan(victim, 1, mod, reason);
-                // kicks and broadcasts message
-                SeruBans.printServer(ArgProcessing.GlobalMessage(
-                        GlobalBanMessage, reason, mod, victim));
-                SeruBans.printInfo(mod + " banned " + victim.getName()
-                        + " for " + reason);
-                victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
-                        .PlayerMessage(BanMessage, reason, mod)));
-                return true;
-            } else {
-                try {
-                    victim = offPlayer.getPlayer();
-                } catch (NullPointerException NPE) {
-                    victim = null;
-                }
-
-                if (victim != null) {
-                    // broadcasts message
-                    CheckPlayer.checkPlayer(victim, player);
-                    ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
-                            victim);
-                    SeruBans.printServer(line);
-                    plugin.log.info(mod + " banned " + victim.getName()
+                if (!HashMaps.BannedPlayers.containsKey(victim.getName())) {
+                    MySqlDatabase.addBan(victim, 1, mod, reason);
+                    // kicks and broadcasts message
+                    SeruBans.printServer(ArgProcessing.GlobalMessage(
+                            GlobalBanMessage, reason, mod, victim));
+                    SeruBans.printInfo(mod + " banned " + victim.getName()
                             + " for " + reason);
+                    victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
+                            .PlayerMessage(BanMessage, reason, mod)));
                     return true;
                 } else {
-                    player.sendMessage("This Player was not found!");
-                    return true;
+                    player.sendMessage(ChatColor.GOLD + victim.getName()
+                            + ChatColor.RED + " is already banned!");
                 }
-            }
+            } else {
+                // broadcasts message
+                CheckPlayer.checkPlayerOffline(args[0], player);
+                ArgProcessing.GlobalMessage(GlobalBanMessage, reason, mod,
+                        victim);
+                SeruBans.printServer(line);
+                plugin.log.info(mod + " banned " + victim.getName() + " for "
+                        + reason);
+                return true;
 
+            }
         }
         return false;
     }
