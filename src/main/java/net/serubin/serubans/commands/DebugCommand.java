@@ -19,10 +19,12 @@ public class DebugCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (commandLabel.equalsIgnoreCase("sbuser")) {
-            sender.sendMessage(HashMaps.PlayerList.toString());
-            sender.sendMessage(HashMaps.BannedPlayers.toString());
-           //plugin.log.info(playerlist.toString());
+        if (commandLabel.equalsIgnoreCase("serubans")) {
+            if(args[0] == "hash"){
+            sender.sendMessage("Players: " + HashMaps.PlayerList.toString());
+            sender.sendMessage("Banned Players: " + HashMaps.BannedPlayers.toString());
+            sender.sendMessage("TempBan: " + HashMaps.TempBanned.toString());
+            }
             return true;
         }
         return false;

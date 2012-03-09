@@ -6,6 +6,9 @@ commands:
    ban:
       description: Bans player
       usage: /<command> <player> <reason> - bans player
+   tempban:
+      description: tempbans player
+      usage: /<command> <player> <amount> <unit> <reason> - tempbans player
    kick:
       description: kicks player
       usage: /<command> <player> <reason> - kicks player
@@ -15,6 +18,9 @@ commands:
    unban:
       description: unbans player
       usage: /<command> <player> - unbans player
+   checkban:
+      description: checks if a player is banned
+      usage: /<command> <player> - checks if a player is banned
    sbuser:
       description: debug
       usage: /<command> - lists users

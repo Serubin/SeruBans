@@ -43,6 +43,10 @@ public class KickCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
+        if (!(sender instanceof Player)) {
+            SeruBans.printInfo("Commands can only be issued in game!!");
+        }
+
         if (commandLabel.equalsIgnoreCase("kick")) {
             Player player = (Player) sender;
             if (args.length == 0) {
@@ -53,15 +57,15 @@ public class KickCommand implements CommandExecutor {
                 reason = "undefined";
             }
             String line = "";
+            mod = player.getName();
             victim = server.getPlayer(args[0]);
             if (victim != null) {
                 // kicks and broadcasts message
                 CheckPlayer.checkPlayer(victim, player);
-                MySqlDatabase.addBan(victim, 4, mod, reason);
-                ArgProcessing.GlobalMessage(GlobalKickMessage, reason, mod,
-                        victim);
-                SeruBans.printServer(line);
-                plugin.log.info(mod + " kicked " + victim.getName() + " for "
+                MySqlDatabase.addBan(victim.getName(), 4, 0, mod, reason);
+                SeruBans.printServer(ArgProcessing.GlobalMessage(GlobalKickMessage, reason, mod,
+                        victim.getName()));
+                SeruBans.printInfo(mod + " kicked " + victim.getName() + " for "
                         + reason);
                 victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                         .PlayerMessage(KickMessage, reason, mod)));

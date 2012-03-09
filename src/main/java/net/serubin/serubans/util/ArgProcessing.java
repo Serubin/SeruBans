@@ -1,5 +1,6 @@
 package net.serubin.serubans.util;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,9 +44,19 @@ public class ArgProcessing {
             reasonRaw.append(" " + s);
         }
         reason = reasonRaw.toString().replaceFirst(" " + args[0], "");
-        if (reason.startsWith("-h")) {
-            reason.replaceFirst("-h", "");
+        // return string
+        return reason;
+    }
+
+    public static String reasonArgsTB(String[] args) {
+        StringBuilder reasonRaw = new StringBuilder();
+        String reason;
+        // combine args into a string
+        for (String s : args) {
+            reasonRaw.append(" " + s);
         }
+        reason = reasonRaw.toString().replaceFirst(
+                " " + args[0] + " " + args[1] + " " + args[2], "");
         // return string
         return reason;
     }
@@ -72,8 +83,8 @@ public class ArgProcessing {
     }
 
     public static String GlobalMessage(String line, String reason, String mod,
-            Player victim) {
-        line = line.replaceAll("%victim%", victim.getName());
+            String victim) {
+        line = line.replaceAll("%victim%", victim);
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
         return line;
@@ -86,11 +97,53 @@ public class ArgProcessing {
         return line;
     }
 
-    public static java.sql.Date getDateTime() {
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String today = dateFormat.format(date);
-        java.sql.Date dt = java.sql.Date.valueOf(new String(today));
-        return dt;
+    public static long parseTimeSpec(String time, String unit) {
+        long sec;
+        try {
+            sec = Integer.parseInt(time) * 60;
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
+        if (unit.startsWith("hour"))
+            sec *= 60;
+        else if (unit.startsWith("hours"))
+            sec *= 60;
+        else if (unit.startsWith("day"))
+            sec *= (60 * 24);
+        else if (unit.startsWith("days"))
+            sec *= (60 * 24);
+        else if (unit.startsWith("week"))
+            sec *= (7 * 60 * 24);
+        else if (unit.startsWith("weeks"))
+            sec *= (7 * 60 * 24);
+        else if (unit.startsWith("month"))
+            sec *= (30 * 60 * 24);
+        else if (unit.startsWith("months"))
+            sec *= (30 * 60 * 24);
+        else if (unit.startsWith("min"))
+            sec *= 1;
+        else if (unit.startsWith("mins"))
+            sec *= 1;
+        else if (unit.startsWith("minute"))
+            sec *= 1;
+        else if (unit.startsWith("minutes"))
+            sec *= 1;
+        else if (unit.startsWith("sec"))
+            sec /= 60;
+        else if (unit.startsWith("secs"))
+            sec /= 60;
+        else if (unit.startsWith("second"))
+            sec /= 60;
+        else if (unit.startsWith("seconds"))
+            sec /= 60;
+        
+        return sec;
+    }
+
+    public static Timestamp getDateTime() {
+        java.sql.Timestamp date;
+        java.util.Date today = new java.util.Date();
+        date = new java.sql.Timestamp(today.getTime());
+        return date;
     }
 }

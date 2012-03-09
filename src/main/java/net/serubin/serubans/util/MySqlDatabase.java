@@ -38,6 +38,7 @@ public class MySqlDatabase {
         createTable();
         getPlayer();
         getBans();
+        getTempBans();
     }
 
     protected static void createConnection() {
@@ -61,7 +62,7 @@ public class MySqlDatabase {
             if (!rs.next()) {
                 SeruBans.printWarning("No 'bans' data table found, Attempting to create one...");
                 PreparedStatement ps = conn
-                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( `id` mediumint unsigned not null auto_increment, `player_id` mediumint unsigned not null, `type` tinyint(2) not null, `mod` varchar(16) not null, `reason` varchar(255) not null,  primary key (`id`));");
+                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( `id` mediumint unsigned not null auto_increment, `player_id` mediumint unsigned not null, `type` tinyint(2) not null, `length` bigint(20) not null,`mod` varchar(16) not null, `date` TIMESTAMP not null, `reason` varchar(255) not null,  primary key (`id`));");
                 ps.executeUpdate();
                 ps.close();
                 SeruBans.printWarning("'bans' data table created!");
@@ -89,6 +90,8 @@ public class MySqlDatabase {
         }
     }
 
+    //TODO create get tempbans
+    
     public static void getPlayer() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -110,14 +113,14 @@ public class MySqlDatabase {
         ResultSet rs = null;
         try {
             ps = conn
-                    .prepareStatement("SELECT bans.player_id, users.name, users.id"
+                    .prepareStatement("SELECT bans.player_id, bans.id, users.name, users.id"
                             + " FROM bans"
                             + " INNER JOIN users"
                             + "  ON bans.player_id=users.id"
                             + " WHERE (type = 1) ");
             rs = ps.executeQuery();
             while (rs.next()) {
-                Integer bId = rs.getInt("id");
+                Integer bId = rs.getInt("bans.id");
                 String pName = rs.getString("name");
                 HashMaps.BannedPlayers.put(pName, bId);
             }
@@ -126,27 +129,57 @@ public class MySqlDatabase {
             e.printStackTrace();
         }
     }
+    
+    public static void getTempBans(){
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn
+                    .prepareStatement("SELECT id, length"
+                            + " FROM bans"
+                            + " WHERE (type = 2) ");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Integer bId = rs.getInt("id");
+                Long length = rs.getLong("length");
+                HashMaps.TempBanned.put(bId, length);
+            }
+        } catch (SQLException e) {
 
-    public static void addBan(Player victim, int type, String mod, String reason) {
+            e.printStackTrace();
+        }
+        
+    }
+    
+
+    public static void addBan(String victim, int type, long length, String mod, String reason) {
         PreparedStatement ps = null;
         ResultSet rs = null;
         // add player
         try {
             ps = conn
                     .prepareStatement(
-                            "INSERT INTO bans (`player_id`, `type`, `mod`, `reason`) VALUES(?,?,?,?);",
+                            "INSERT INTO bans (`player_id`, `type`, `length`, `mod`, `date`, `reason`) VALUES(?,?,?,?,?,?);",
                             Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, HashMaps.PlayerList.get(victim.getName().toLowerCase()));
+            ps.setInt(1, HashMaps.PlayerList.get(victim.toLowerCase()));
             ps.setInt(2, type);
-            ps.setString(3, mod);
-            ps.setString(4, reason);
+            ps.setLong(3, length);
+            ps.setString(4, mod);
+            ps.setTimestamp(5, ArgProcessing.getDateTime());
+            ps.setString(6, reason);
             ps.executeUpdate();
             rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                Integer bId = rs.getInt(1);
-                HashMaps.BannedPlayers.put(victim.getName().toLowerCase(), bId);
-            } else {
-                plugin.log.severe("Error adding ban!");
+            if (type == 1 || type == 2) {
+                if (rs.next()) {
+                    Integer bId = rs.getInt(1);
+                    HashMaps.BannedPlayers.put(victim.toLowerCase(), bId);
+                    if(type == 2){
+                        HashMaps.TempBanned.put(bId, length);
+                    }
+                    SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
+                } else {
+                    SeruBans.printInfo("Error adding ban!");
+                }
             }
         } catch (SQLException e) {
 
@@ -169,37 +202,28 @@ public class MySqlDatabase {
         }
     }
 
-    public static boolean addPlayer(String victim) {
+    public static void addPlayer(String victim) {
         PreparedStatement ps = null;
         ResultSet rs = null;
         SeruBans.printInfo("Attempting to add player " + victim
                 + " to database;");
         // add player
         try {
-            ps = conn.prepareStatement("INSERT INTO users (name) VALUES(?);");
+            ps = conn.prepareStatement("INSERT INTO users (name) VALUES(?);",
+                    Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, victim);
             ps.executeUpdate();
+            rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                Integer pId = rs.getInt(1);
+                HashMaps.PlayerList.put(victim, pId);
+                SeruBans.printInfo("Player Added: " + victim + " Id: " + pId);
+            } else {
+                SeruBans.printInfo("Error adding user!");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
-    }
-
-    public static boolean addPlayerHash(String victim) {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = conn.prepareStatement("SELECT * FROM users WHERE (name = ?);");
-            ps.setString(1, victim);
-            rs = ps.executeQuery();
-            int pId = rs.getInt("id");
-            HashMaps.PlayerList.put(victim, pId);
-            plugin.log
-                    .info("Player Added: " + victim + " Id: " + pId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return true;
     }
 
     public static String getReason(int id) {
@@ -207,11 +231,12 @@ public class MySqlDatabase {
         ResultSet rs = null;
         reason = "";
         try {
-            ps = conn.prepareStatement("SELECT id, reason FROM bans WHERE (id = ?);");
+            ps = conn
+                    .prepareStatement("SELECT id, reason FROM bans WHERE (id = ?);");
             ps.setInt(1, id);
             rs = ps.executeQuery();
-            if(rs.next()){
-            reason = rs.getString("reason");
+            if (rs.next()) {
+                reason = rs.getString("reason");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -225,12 +250,13 @@ public class MySqlDatabase {
         ResultSet rs = null;
         mod = "";
         try {
-            ps = conn.prepareStatement("SELECT id, `mod` FROM bans WHERE (id = ?);");
+            ps = conn
+                    .prepareStatement("SELECT id, `mod` FROM bans WHERE (id = ?);");
             SeruBans.printInfo(ps.toString());
             ps.setInt(1, id);
             rs = ps.executeQuery();
-            if(rs.next()){
-           mod = rs.getString("mod");
+            if (rs.next()) {
+                mod = rs.getString("mod");
             }
         } catch (SQLException e) {
             e.printStackTrace();

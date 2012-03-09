@@ -10,9 +10,8 @@ SeruBans:
       WarnMessage: '&f%victim% has been warned by %kicker%, for %reason%'
       WarnPlayerMessage: '&fYou were warned by %kicker%, for %reason%'
     tempban:
-      GlobalTempBanMessage: ''
-      TempBanMessage: ''
-    UnBanMessage: ''
+      GlobalTempBanMessage: '&f%kicker% tempbanned %victim% for %reason%'
+      TempBanMessage: '&cYou have been tempbanned by &4%kicker%, &cfor &4%reason%'
   database:
     host: "localhost"
     username: "SeruBans"

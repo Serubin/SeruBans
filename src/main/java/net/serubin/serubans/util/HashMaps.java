@@ -7,5 +7,6 @@ public class HashMaps {
 
     public static Map<String, Integer> PlayerList = new HashMap<String, Integer>();
     public static Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
+    public static Map<Integer, Long> TempBanned = new HashMap<Integer, Long>();
     
 }

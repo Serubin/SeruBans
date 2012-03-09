@@ -38,7 +38,10 @@ public class WarnCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-
+        if (!(sender instanceof Player)) {
+            SeruBans.printInfo("Commands can only be issued in game!!");
+        }
+        
         if (commandLabel.equalsIgnoreCase("Warn")) {
             Player player = (Player) sender;
             if (args.length == 0) {
@@ -55,39 +58,27 @@ public class WarnCommand implements CommandExecutor {
             String line = "";
             if (victim != null) {
                 CheckPlayer.checkPlayer(victim, player);
-                MySqlDatabase.addBan(victim, 3, mod, reason);
+                MySqlDatabase.addBan(victim.getName(), 3, 0, mod, reason);
                 // Warns and broadcasts message
-                SeruBans.printServer(ArgProcessing.GlobalMessage(WarnMessage, reason, mod, victim));
-                SeruBans.printInfo(mod + " warned " + victim.getName() + " for "
-                        + reason);
+                SeruBans.printServer(ArgProcessing.GlobalMessage(WarnMessage,
+                        reason, mod, victim.getName()));
+                SeruBans.printInfo(mod + " warned " + victim.getName()
+                        + " for " + reason);
                 SeruBans.printInfo(WarnMessage);
                 victim.sendMessage(ArgProcessing.GetColor(ArgProcessing
                         .PlayerMessage(WarnPlayerMessage, reason, mod)));
-                victim.sendMessage(reason);
 
                 // adds player to db
                 return true;
             } else {
-                try {
-                    victim = offPlayer.getPlayer();
-                } catch (NullPointerException NPE) {
-                    victim = null;
-                }
-                if (victim != null) {
-                    CheckPlayer.checkPlayer(victim, player);
-                    MySqlDatabase.addBan(victim, 3, mod, reason);
-                    // broadcasts message
-                    ArgProcessing.GlobalMessage(WarnMessage, reason, mod,
-                            victim);
-                    SeruBans.printServer(line);
-                    plugin.log.info(mod + " warned " + victim.getName()
-                            + " for " + reason);
-                    ;
-                    return true;
-                } else {
-                    player.sendMessage("This Player was not found!");
-                    return true;
-                }
+                CheckPlayer.checkPlayerOffline(args[0], player);
+                MySqlDatabase.addBan(args[0], 3, 0, mod, reason);
+                // broadcasts message
+                SeruBans.printServer(ArgProcessing.GlobalMessage(WarnMessage, reason, mod,
+                        args[0]));
+               SeruBans.printInfo(mod + " warned " + args[0] + " for "
+                        + reason);
+                return true;
             }
 
         }

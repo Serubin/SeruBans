@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import net.serubin.serubans.commands.BanCommand;
+import net.serubin.serubans.commands.CheckBanCommand;
 import net.serubin.serubans.commands.DebugCommand;
 import net.serubin.serubans.commands.KickCommand;
 import net.serubin.serubans.commands.TempBanCommand;
@@ -20,7 +21,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -111,13 +111,15 @@ public class SeruBans extends JavaPlugin {
                 database, plugin);
         CheckPlayer CheckPlayer = new CheckPlayer();
         DebugCommand DebugC = new DebugCommand(plugin);
+        CheckBanCommand CheckBan = new CheckBanCommand(plugin);
         // init commands
         getCommand("ban").setExecutor(Ban);
-        // getCommand("tempban").setExecutor(TempBan);
+        getCommand("tempban").setExecutor(TempBan);
         getCommand("kick").setExecutor(Kick);
         getCommand("warn").setExecutor(Warn);
         getCommand("unban").setExecutor(Unban);
-        getCommand("sbuser").setExecutor(DebugC);
+        getCommand("checkban").setExecutor(CheckBan);
+        getCommand("serubans").setExecutor(DebugC);
 
         // create SQL Connection
         MySqlDatabase.startSQL();
