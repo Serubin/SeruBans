@@ -9,13 +9,13 @@ public class CheckPlayer {
     }
 
     public static void checkPlayer(Player victim, CommandSender player) {
-        if (!HashMaps.PlayerList.containsKey(victim.getName().toLowerCase())) {
+        if (!HashMaps.getPlayerList().containsKey(victim.getName().toLowerCase())) {
             MySqlDatabase.addPlayer(victim.getName().toLowerCase());
         }
     }
 
     public static void checkPlayerOffline(String victim, CommandSender player) {
-        if (!HashMaps.PlayerList.containsKey(victim.toLowerCase())) {
+        if (!HashMaps.getPlayerList().containsKey(victim.toLowerCase())) {
             MySqlDatabase.addPlayer(victim.toLowerCase());
         }
     }

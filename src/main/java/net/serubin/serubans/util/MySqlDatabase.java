@@ -6,10 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 import java.util.Properties;
-
-import org.bukkit.entity.Player;
 
 import net.serubin.serubans.SeruBans;
 
@@ -20,7 +17,7 @@ public class MySqlDatabase {
     public static String username;
     public static String password;
     public static String database;
-    private static SeruBans plugin;
+    private SeruBans plugin;
     private static String reason;
     private static String mod;
 
@@ -101,7 +98,7 @@ public class MySqlDatabase {
             while (rs.next()) {
                 Integer pId = rs.getInt("id");
                 String pName = rs.getString("name");
-                HashMaps.PlayerList.put(pName, pId);
+                HashMaps.getPlayerList().put(pName, pId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -122,7 +119,7 @@ public class MySqlDatabase {
             while (rs.next()) {
                 Integer bId = rs.getInt("bans.id");
                 String pName = rs.getString("name");
-                HashMaps.BannedPlayers.put(pName, bId);
+                HashMaps.getBannedPlayers().put(pName, bId);
             }
         } catch (SQLException e) {
 
@@ -142,7 +139,7 @@ public class MySqlDatabase {
             while (rs.next()) {
                 Integer bId = rs.getInt("id");
                 Long length = rs.getLong("length");
-                HashMaps.TempBanned.put(bId, length);
+                HashMaps.getTempBanned().put(bId, length);
             }
         } catch (SQLException e) {
 
@@ -161,7 +158,7 @@ public class MySqlDatabase {
                     .prepareStatement(
                             "INSERT INTO bans (`player_id`, `type`, `length`, `mod`, `date`, `reason`) VALUES(?,?,?,?,?,?);",
                             Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, HashMaps.PlayerList.get(victim.toLowerCase()));
+            ps.setInt(1, HashMaps.getPlayerList().get(victim.toLowerCase()));
             ps.setInt(2, type);
             ps.setLong(3, length);
             ps.setString(4, mod);
@@ -172,9 +169,9 @@ public class MySqlDatabase {
             if (type == 1 || type == 2) {
                 if (rs.next()) {
                     Integer bId = rs.getInt(1);
-                    HashMaps.BannedPlayers.put(victim.toLowerCase(), bId);
+                    HashMaps.getBannedPlayers().put(victim.toLowerCase(), bId);
                     if(type == 2){
-                        HashMaps.TempBanned.put(bId, length);
+                        HashMaps.getTempBanned().put(bId, length);
                     }
                     SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
                 } else {
@@ -216,7 +213,7 @@ public class MySqlDatabase {
             rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 Integer pId = rs.getInt(1);
-                HashMaps.PlayerList.put(victim, pId);
+                HashMaps.getPlayerList().put(victim, pId);
                 SeruBans.printInfo("Player Added: " + victim + " Id: " + pId);
             } else {
                 SeruBans.printInfo("Error adding user!");

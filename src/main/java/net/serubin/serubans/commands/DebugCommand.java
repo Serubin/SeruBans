@@ -1,7 +1,5 @@
 package net.serubin.serubans.commands;
 
-import java.util.Map;
-
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.HashMaps;
 
@@ -23,26 +21,26 @@ public class DebugCommand implements CommandExecutor {
             if (args[0].startsWith("-")) {
                 if (args[0].contains("a")) {
                     sender.sendMessage("Players: "
-                            + HashMaps.PlayerList.toString());
+                            + HashMaps.getPlayerList().toString());
                     sender.sendMessage("Banned Players: "
-                            + HashMaps.BannedPlayers.toString());
+                            + HashMaps.getBannedPlayers().toString());
                     sender.sendMessage("TempBan: "
-                            + HashMaps.TempBanned.toString());
+                            + HashMaps.getTempBanned().toString());
                     return true;
                 }
                 if (args[0].contains("p")) {
                     sender.sendMessage("Players: "
-                            + HashMaps.PlayerList.toString());
+                            + HashMaps.getPlayerList().toString());
                     return true;
                 }
                 if (args[0].contains("b")) {
                     sender.sendMessage("Banned Players: "
-                            + HashMaps.BannedPlayers.toString());
+                            + HashMaps.getBannedPlayers().toString());
                     return true;
                 }
                 if (args[0].contains("t")) {
                     sender.sendMessage("TempBan: "
-                            + HashMaps.TempBanned.toString());
+                            + HashMaps.getTempBanned().toString());
                     return true;
                 }
                 return false;

@@ -1,8 +1,6 @@
 package net.serubin.serubans.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -42,26 +40,26 @@ public class TempBanCommand implements CommandExecutor {
             String mod = sender.getName();
             Player victim = plugin.getServer().getPlayer(args[0]);
 
-            String line = "";
             if (victim != null) {
                 // adds player to db
                 CheckPlayer.checkPlayer(victim, sender);
-                if (!HashMaps.BannedPlayers.containsKey(victim.getName())) {
+                if (!HashMaps.getBannedPlayers().containsKey(victim.getName())) {
                     long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
                     plugin.printDebug(Long.toString(length));
                     if (length == 0)
                         return false;
                     length = System.currentTimeMillis() / 1000 + length;
-
                     MySqlDatabase.addBan(victim.getName(), 2, length, mod,
                             reason);
                     // kicks and broadcasts message
-                    SeruBans.printServer(ArgProcessing.GlobalMessage(
-                            globalTempBanMessage, reason, mod, victim.getName()));
+                    
+                    String date = ArgProcessing.getStringDate(length);
+                    SeruBans.printServer(ArgProcessing.GlobalTempBanMessage(
+                            globalTempBanMessage, reason, mod, victim.getName(), date));
                     plugin.log.info(mod + " banned " + victim.getName()
                             + " for " + reason);
                     victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
-                            .PlayerMessage(tempBanMessage, reason, mod)));
+                            .PlayerTempBanMessage(tempBanMessage, reason, mod, date)));
                     return true;
                 } else {
                     //TODO fix spelling
@@ -74,7 +72,7 @@ public class TempBanCommand implements CommandExecutor {
             } else {
                 // broadcasts message
                 CheckPlayer.checkPlayerOffline(args[0], sender);
-                if (!HashMaps.BannedPlayers.containsKey(args[0])) {
+                if (!HashMaps.getBannedPlayers().containsKey(args[0])) {
                     long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
                     if (length == 0)
                         return false;

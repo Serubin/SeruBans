@@ -30,9 +30,9 @@ public class UnbanCommand implements CommandExecutor {
             } else {
                 String BannedVictim = args[0];
                 plugin.log.info("Attempting to unban " + BannedVictim);
-                if (HashMaps.BannedPlayers.containsKey(BannedVictim.toLowerCase())) {
-                    int bId = HashMaps.BannedPlayers.get(BannedVictim.toLowerCase());
-                    if(HashMaps.TempBanned.containsKey(bId)){
+                if (HashMaps.getBannedPlayers().containsKey(BannedVictim.toLowerCase())) {
+                    int bId = HashMaps.getBannedPlayers().get(BannedVictim.toLowerCase());
+                    if(HashMaps.getTempBanned().containsKey(bId)){
                         
                         type = SeruBans.UNTEMPBAN;
                         
@@ -40,7 +40,7 @@ public class UnbanCommand implements CommandExecutor {
                         type = SeruBans.UNBAN;
                     }
                     MySqlDatabase.updateBan(type, bId);
-                    HashMaps.BannedPlayers.remove(BannedVictim.toLowerCase());
+                    HashMaps.getBannedPlayers().remove(BannedVictim.toLowerCase());
                     SeruBans.printServer(ChatColor.YELLOW + BannedVictim
                             + ChatColor.GOLD + " was unbanned!");
                     plugin.log.info(BannedVictim + " was unbanned by " + sender.getName());

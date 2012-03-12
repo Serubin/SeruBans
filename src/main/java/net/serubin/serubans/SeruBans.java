@@ -1,7 +1,5 @@
 package net.serubin.serubans;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import net.serubin.serubans.commands.BanCommand;
@@ -16,17 +14,13 @@ import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SeruBans extends JavaPlugin {
 
-    public static SeruBans plugin;
+    public SeruBans plugin;
     public Logger log = Logger.getLogger("Minecraft");
     private static boolean debug;
 
