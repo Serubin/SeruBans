@@ -49,11 +49,14 @@ public class SeruBans extends JavaPlugin {
     public static String password;
     public static String database;
     public static String host;
-
-    // Per command variables
-    public static Object config;
-    static ArgProcessing ap;
-    static Server server = Bukkit.getServer();
+    
+    //Ban types
+    public static final int BAN = 1;
+    public static final int TEMPBAN = 2;
+    public static final int KICK = 3;
+    public static final int WARN = 4;
+    public static final int UNBAN = 11;
+    public static final int UNTEMPBAN = 12;
 
     public void onDisable() {
         reloadConfig();
@@ -134,10 +137,9 @@ public class SeruBans extends JavaPlugin {
         System.out.println("[SeruBans] " + line);
     }
 
-    public static void printDebug(String line) {
+    public void printDebug(String line) {
         if (debug) {
-            ArgProcessing.GetColor(line);
-            System.out.println("[SeruBans]DEBUG: " + line);
+            log.info("DEBUG: " + line);
         }
     }
 

@@ -15,14 +15,6 @@ import org.bukkit.entity.Player;
 
 public class WarnCommand implements CommandExecutor {
 
-    ArgProcessing ap;
-    MySqlDatabase db;
-    CheckPlayer cp;
-    OfflinePlayer offPlayer;
-    Server server = Bukkit.getServer();
-    Player victim;
-    String mod;
-    String reason = "";
     private String WarnMessage;
     private String name;
     private SeruBans plugin;
@@ -38,12 +30,11 @@ public class WarnCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            SeruBans.printInfo("Commands can only be issued in game!!");
-        }
+        Player victim;
+        String mod;
+        String reason = "";
         
         if (commandLabel.equalsIgnoreCase("Warn")) {
-            Player player = (Player) sender;
             if (args.length == 0) {
                 return false;
             } else if (args.length > 1) {
@@ -51,32 +42,31 @@ public class WarnCommand implements CommandExecutor {
             } else {
                 reason = "undefined";
             }
-            mod = player.getName();
-            victim = server.getPlayer(args[0]);
+            mod = sender.getName();
+            victim = plugin.getServer().getPlayer(args[0]);
             // processes Warn message
 
             String line = "";
             if (victim != null) {
-                CheckPlayer.checkPlayer(victim, player);
-                MySqlDatabase.addBan(victim.getName(), 3, 0, mod, reason);
+                CheckPlayer.checkPlayer(victim, sender);
+                MySqlDatabase.addBan(victim.getName(), SeruBans.WARN, 0, mod, reason);
                 // Warns and broadcasts message
                 SeruBans.printServer(ArgProcessing.GlobalMessage(WarnMessage,
                         reason, mod, victim.getName()));
-                SeruBans.printInfo(mod + " warned " + victim.getName()
+                plugin.log.info(mod + " warned " + victim.getName()
                         + " for " + reason);
-                SeruBans.printInfo(WarnMessage);
                 victim.sendMessage(ArgProcessing.GetColor(ArgProcessing
                         .PlayerMessage(WarnPlayerMessage, reason, mod)));
 
                 // adds player to db
                 return true;
             } else {
-                CheckPlayer.checkPlayerOffline(args[0], player);
+                CheckPlayer.checkPlayerOffline(args[0], sender);
                 MySqlDatabase.addBan(args[0], 3, 0, mod, reason);
                 // broadcasts message
                 SeruBans.printServer(ArgProcessing.GlobalMessage(WarnMessage, reason, mod,
                         args[0]));
-               SeruBans.printInfo(mod + " warned " + args[0] + " for "
+               plugin.log.info(mod + " warned " + args[0] + " for "
                         + reason);
                 return true;
             }

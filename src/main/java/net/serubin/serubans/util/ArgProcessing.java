@@ -96,6 +96,20 @@ public class ArgProcessing {
         line = line.replaceAll("%kicker%", mod);
         return line;
     }
+    public static String GlobalTempBanMessage(String line, String reason, String mod,
+            String victim) {
+        line = line.replaceAll("%victim%", victim);
+        line = line.replaceAll("%reason%", reason);
+        line = line.replaceAll("%kicker%", mod);
+        return line;
+    }
+
+    public static String PlayerTempBanMessage(String line, String reason, String mod) {
+
+        line = line.replaceAll("%reason%", reason);
+        line = line.replaceAll("%kicker%", mod);
+        return line;
+    }
 
     public static long parseTimeSpec(String time, String unit) {
         long sec;

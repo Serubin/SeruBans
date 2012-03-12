@@ -16,10 +16,6 @@ import net.serubin.serubans.util.MySqlDatabase;
 
 public class TempBanCommand implements CommandExecutor {
 
-    Server server = Bukkit.getServer();
-    Player victim;
-    String mod;
-    String reason;
     private String tempBanMessage;
     private String globalTempBanMessage;
     private SeruBans plugin;
@@ -33,12 +29,8 @@ public class TempBanCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            SeruBans.printInfo("Commands can only be issued in game!!");
-        }
-
+        String reason;
         if (commandLabel.equalsIgnoreCase("tempban")) {
-            Player player = (Player) sender;
             if (args.length == 0) {
                 return false;
             } else if (args.length > 3) {
@@ -47,16 +39,16 @@ public class TempBanCommand implements CommandExecutor {
                 reason = "undefined";
             }
 
-            mod = player.getName();
-            victim = server.getPlayer(args[0]);
+            String mod = sender.getName();
+            Player victim = plugin.getServer().getPlayer(args[0]);
 
             String line = "";
             if (victim != null) {
                 // adds player to db
-                CheckPlayer.checkPlayer(victim, player);
+                CheckPlayer.checkPlayer(victim, sender);
                 if (!HashMaps.BannedPlayers.containsKey(victim.getName())) {
                     long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
-                    player.sendMessage(Long.toString(length));
+                    plugin.printDebug(Long.toString(length));
                     if (length == 0)
                         return false;
                     length = System.currentTimeMillis() / 1000 + length;
@@ -66,35 +58,37 @@ public class TempBanCommand implements CommandExecutor {
                     // kicks and broadcasts message
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             globalTempBanMessage, reason, mod, victim.getName()));
-                    SeruBans.printInfo(mod + " banned " + victim.getName()
+                    plugin.log.info(mod + " banned " + victim.getName()
                             + " for " + reason);
                     victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                             .PlayerMessage(tempBanMessage, reason, mod)));
                     return true;
                 } else {
-                    player.sendMessage(ChatColor.GOLD
+                    //TODO fix spelling
+                    sender.sendMessage(ChatColor.GOLD
                             + victim.getName()
                             + ChatColor.RED
-                            + " is already banned! Also, This player is banned and on your server... Might want to look into that.");
+                            + " This player is banned and on your server, Please inform your admin imidiatly!");
                     return true;
                 }
             } else {
                 // broadcasts message
-                CheckPlayer.checkPlayerOffline(args[0], player);
+                CheckPlayer.checkPlayerOffline(args[0], sender);
                 if (!HashMaps.BannedPlayers.containsKey(args[0])) {
                     long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
                     if (length == 0)
                         return false;
                     length = System.currentTimeMillis() / 1000 + length;
 
-                    MySqlDatabase.addBan(args[0], 2, length, mod, reason);
+                    MySqlDatabase.addBan(args[0], SeruBans.TEMPBAN, length,
+                            mod, reason);
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             globalTempBanMessage, reason, mod, args[0]));
-                    SeruBans.printInfo(mod + " banned " + args[0] + " for "
+                    plugin.log.info(mod + " banned " + args[0] + " for "
                             + reason);
                     return true;
                 } else {
-                    player.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
+                    sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
                             + " is already banned!");
                     return true;
                 }

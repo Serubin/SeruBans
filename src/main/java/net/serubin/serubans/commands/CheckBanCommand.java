@@ -19,10 +19,6 @@ public class CheckBanCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            SeruBans.printInfo("Commands can only be issued in game!!");
-        }
-
         Player player = (Player) sender;
         
         if (commandLabel.equalsIgnoreCase("checkban")) {
@@ -30,10 +26,10 @@ public class CheckBanCommand implements CommandExecutor {
 
             if (isBanned) {
                 int id = HashMaps.BannedPlayers.get(args[0]);
-                player.sendMessage(ChatColor.RED + args[0] + " is banned.");
-                player.sendMessage(ChatColor.RED + "Ban id: " + ChatColor.YELLOW + id);
+                sender.sendMessage(ChatColor.RED + args[0] + " is banned.");
+                sender.sendMessage(ChatColor.RED + "Ban id: " + ChatColor.YELLOW + id);
             } else {
-                player.sendMessage(ChatColor.GREEN + args[0] + " is not banned.");
+                sender.sendMessage(ChatColor.GREEN + args[0] + " is not banned.");
             }
         }
         return false;

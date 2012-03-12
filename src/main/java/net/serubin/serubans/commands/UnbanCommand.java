@@ -12,7 +12,7 @@ import net.serubin.serubans.util.MySqlDatabase;
 
 public class UnbanCommand implements CommandExecutor {
 
-    private static SeruBans plugin;
+    private SeruBans plugin;
 
     public UnbanCommand(SeruBans plugin) {
         this.plugin = plugin;
@@ -20,11 +20,7 @@ public class UnbanCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            SeruBans.printInfo("Commands can only be issued in game!!");
-        }
-
-        Player player = (Player) sender;
+        
         int type;
         if (commandLabel.equalsIgnoreCase("unban")) {
             if (args.length == 0) {
@@ -33,23 +29,23 @@ public class UnbanCommand implements CommandExecutor {
                 return false;
             } else {
                 String BannedVictim = args[0];
-               SeruBans.printInfo("Attempting to unban " + BannedVictim);
+                plugin.log.info("Attempting to unban " + BannedVictim);
                 if (HashMaps.BannedPlayers.containsKey(BannedVictim.toLowerCase())) {
                     int bId = HashMaps.BannedPlayers.get(BannedVictim.toLowerCase());
                     if(HashMaps.TempBanned.containsKey(bId)){
                         
-                        type = 12;
+                        type = SeruBans.UNTEMPBAN;
                         
                     } else {
-                        type = 11;
+                        type = SeruBans.UNBAN;
                     }
                     MySqlDatabase.updateBan(type, bId);
                     HashMaps.BannedPlayers.remove(BannedVictim.toLowerCase());
                     SeruBans.printServer(ChatColor.YELLOW + BannedVictim
                             + ChatColor.GOLD + " was unbanned!");
-                    SeruBans.printInfo(BannedVictim + " was unbanned");
+                    plugin.log.info(BannedVictim + " was unbanned by " + sender.getName());
                 } else {
-                   player.sendMessage(ChatColor.RED + "This player is not banned!");
+                    sender.sendMessage(ChatColor.RED + "This player is not banned!");
                 }
             }
         }

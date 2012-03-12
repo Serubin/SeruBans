@@ -21,6 +21,6 @@ commands:
    checkban:
       description: checks if a player is banned
       usage: /<command> <player> - checks if a player is banned
-   sbuser:
+   serubans:
       description: debug
       usage: /<command> - lists users

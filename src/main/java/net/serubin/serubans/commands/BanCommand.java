@@ -41,11 +41,8 @@ public class BanCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            SeruBans.printInfo("Commands can only be issued in game!!");
-        }
+        
         if (commandLabel.equalsIgnoreCase("ban")) {
-            Player player = (Player) sender;
             if (args.length == 0) {
                 return false;
             } else if (args.length > 1) {
@@ -54,26 +51,26 @@ public class BanCommand implements CommandExecutor {
                 reason = "undefined";
             }
 
-            mod = player.getName();
+            mod = sender.getName();
             victim = server.getPlayer(args[0]);
 
             String line = "";
             if (victim != null) {
                 // adds player to db
-                CheckPlayer.checkPlayer(victim, player);
+                CheckPlayer.checkPlayer(victim, sender);
                 if (!HashMaps.BannedPlayers.containsKey(victim.getName())) {
-                    MySqlDatabase.addBan(victim.getName(), 1, 0, mod,
+                    MySqlDatabase.addBan(victim.getName(), SeruBans.BAN, 0, mod,
                             reason);
                     // kicks and broadcasts message
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             GlobalBanMessage, reason, mod, victim.getName()));
-                    SeruBans.printInfo(mod + " banned " + victim.getName()
+                    plugin.log.info(mod + " banned " + victim.getName()
                             + " for " + reason);
                     victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                             .PlayerMessage(BanMessage, reason, mod)));
                     return true;
                 } else {
-                    player.sendMessage(ChatColor.GOLD
+                    sender.sendMessage(ChatColor.GOLD
                             + victim.getName()
                             + ChatColor.RED
                             + " is already banned! Also, This player is banned and on your server... Might want to look into that.");
@@ -81,16 +78,16 @@ public class BanCommand implements CommandExecutor {
                 }
             } else {
                 // broadcasts message
-                CheckPlayer.checkPlayerOffline(args[0], player);
+                CheckPlayer.checkPlayerOffline(args[0], sender);
                 if (!HashMaps.BannedPlayers.containsKey(args[0])) {
                     MySqlDatabase.addBan(args[0], 1, 0, mod, reason);
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             GlobalBanMessage, reason, mod, args[0]));
-                    SeruBans.printInfo(mod + " banned " + args[0] + " for "
+                    plugin.log.info(mod + " banned " + args[0] + " for "
                             + reason);
                     return true;
                 } else {
-                    player.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
+                    sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
                             + " is already banned!");
                     return true;
                 }
