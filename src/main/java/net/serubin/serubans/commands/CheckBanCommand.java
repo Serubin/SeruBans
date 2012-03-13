@@ -22,10 +22,10 @@ public class CheckBanCommand implements CommandExecutor {
         Player player = (Player) sender;
         
         if (commandLabel.equalsIgnoreCase("checkban")) {
-            boolean isBanned = HashMaps.getBannedPlayers().containsKey(args[0]);
+            boolean isBanned = HashMaps.keyIsInBannedPlayers(args[0]);
 
             if (isBanned) {
-                int id = HashMaps.getBannedPlayers().get(args[0]);
+                int id = HashMaps.getBannedPlayers(args[0]);
                 sender.sendMessage(ChatColor.RED + args[0] + " is banned.");
                 sender.sendMessage(ChatColor.RED + "Ban id: " + ChatColor.YELLOW + id);
             } else {

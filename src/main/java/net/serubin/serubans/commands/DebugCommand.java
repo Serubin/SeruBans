@@ -21,26 +21,26 @@ public class DebugCommand implements CommandExecutor {
             if (args[0].startsWith("-")) {
                 if (args[0].contains("a")) {
                     sender.sendMessage("Players: "
-                            + HashMaps.getPlayerList().toString());
+                            + HashMaps.getFullPlayerList());
                     sender.sendMessage("Banned Players: "
-                            + HashMaps.getBannedPlayers().toString());
+                            + HashMaps.getFullBannedPlayers());
                     sender.sendMessage("TempBan: "
-                            + HashMaps.getTempBanned().toString());
+                            + HashMaps.getFullTempBannedTime());
                     return true;
                 }
                 if (args[0].contains("p")) {
                     sender.sendMessage("Players: "
-                            + HashMaps.getPlayerList().toString());
+                            + HashMaps.getFullPlayerList());
                     return true;
                 }
                 if (args[0].contains("b")) {
                     sender.sendMessage("Banned Players: "
-                            + HashMaps.getBannedPlayers().toString());
+                            + HashMaps.getFullBannedPlayers());
                     return true;
                 }
                 if (args[0].contains("t")) {
                     sender.sendMessage("TempBan: "
-                            + HashMaps.getTempBanned().toString());
+                            + HashMaps.getFullTempBannedTime());
                     return true;
                 }
                 return false;

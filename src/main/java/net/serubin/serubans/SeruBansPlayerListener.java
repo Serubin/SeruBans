@@ -25,28 +25,30 @@ public class SeruBansPlayerListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
         plugin.log.info(player.getName() + " is attempting to login");
-        //checks if player is banned
-        if (HashMaps.getBannedPlayers().containsKey(player.getName().toLowerCase())) {
-            int bId = HashMaps.getBannedPlayers()
-                    .get(player.getName().toLowerCase());
-            if (HashMaps.getTempBanned().containsKey(bId)) {
-                if (HashMaps.getTempBanned().get(bId) < System.currentTimeMillis() / 1000){
-                    HashMaps.getBannedPlayers().remove(player.getName().toLowerCase());
-                    HashMaps.getTempBanned().remove(bId);
-                    MySqlDatabase.updateBan(12, bId);
+        // checks if player is banned
+        if (HashMaps.keyIsInBannedPlayers(player.getName().toLowerCase())) {
+            int bId = HashMaps.getBannedPlayers(player.getName().toLowerCase());
+            if (HashMaps.keyIsInTempBannedTime(bId)) {
+                if (HashMaps.getTempBannedTime(bId) < System
+                        .currentTimeMillis() / 1000) {
+                    HashMaps.removeBannedPlayerItem(player.getName()
+                            .toLowerCase());
+                    HashMaps.removeTempBannedTimeItem(bId);
+                    MySqlDatabase.updateBan(SeruBans.UNTEMPBAN, bId);
                     return;
                 } else {
-                    
+
                 }
             }
             plugin.log.warning(player.getName() + " LOGIN DENIED - BANNED");
-            int b_Id = HashMaps.getBannedPlayers().get(player.getName()
-                    .toLowerCase());
+            int b_Id = HashMaps.getBannedPlayers(
+                    player.getName().toLowerCase());
             String reason = MySqlDatabase.getReason(b_Id);
             String mod = MySqlDatabase.getMod(b_Id);
 
-            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ArgProcessing.GetColor(ArgProcessing
-                    .PlayerMessage(banMessage, reason, mod)));
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ArgProcessing
+                    .GetColor(ArgProcessing.PlayerMessage(banMessage, reason,
+                            mod)));
         }
     }
 }

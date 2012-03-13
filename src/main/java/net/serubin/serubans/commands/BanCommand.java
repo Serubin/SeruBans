@@ -58,7 +58,7 @@ public class BanCommand implements CommandExecutor {
             if (victim != null) {
                 // adds player to db
                 CheckPlayer.checkPlayer(victim, sender);
-                if (!HashMaps.getBannedPlayers().containsKey(victim.getName())) {
+                if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
                     MySqlDatabase.addBan(victim.getName(), SeruBans.BAN, 0, mod,
                             reason);
                     // kicks and broadcasts message
@@ -79,7 +79,7 @@ public class BanCommand implements CommandExecutor {
             } else {
                 // broadcasts message
                 CheckPlayer.checkPlayerOffline(args[0], sender);
-                if (!HashMaps.getBannedPlayers().containsKey(args[0])) {
+                if (!HashMaps.keyIsInBannedPlayers(args[0])) {
                     MySqlDatabase.addBan(args[0], 1, 0, mod, reason);
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             GlobalBanMessage, reason, mod, args[0]));

@@ -51,6 +51,9 @@ public class SeruBans extends JavaPlugin {
     public static final int WARN = 4;
     public static final int UNBAN = 11;
     public static final int UNTEMPBAN = 12;
+    
+    //Thread tid
+    int taskId;
 
     public void onDisable() {
         reloadConfig();
@@ -108,7 +111,8 @@ public class SeruBans extends JavaPlugin {
                 database, plugin);
         CheckPlayer CheckPlayer = new CheckPlayer();
         DebugCommand DebugC = new DebugCommand(plugin);
-        CheckBanCommand CheckBan = new CheckBanCommand(plugin);
+        CheckBanCommand CheckBan = new CheckBanCommand(this);
+        UnTempbanThread UnTempanThread = new UnTempbanThread(this);
         // init commands
         getCommand("ban").setExecutor(Ban);
         getCommand("tempban").setExecutor(TempBan);
@@ -123,7 +127,9 @@ public class SeruBans extends JavaPlugin {
 
         // Create listener
         getServer().getPluginManager().registerEvents(
-                new SeruBansPlayerListener(plugin, BanMessage), this);
+                new SeruBansPlayerListener(this, BanMessage), this);
+        //Create Thread
+        taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, UnTempanThread, 6000, 1200);
     }
 
     public static void printInfo(String line) {

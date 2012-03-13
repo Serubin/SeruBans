@@ -43,7 +43,7 @@ public class TempBanCommand implements CommandExecutor {
             if (victim != null) {
                 // adds player to db
                 CheckPlayer.checkPlayer(victim, sender);
-                if (!HashMaps.getBannedPlayers().containsKey(victim.getName())) {
+                if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
                     long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
                     plugin.printDebug(Long.toString(length));
                     if (length == 0)
@@ -72,7 +72,7 @@ public class TempBanCommand implements CommandExecutor {
             } else {
                 // broadcasts message
                 CheckPlayer.checkPlayerOffline(args[0], sender);
-                if (!HashMaps.getBannedPlayers().containsKey(args[0])) {
+                if (!HashMaps.keyIsInBannedPlayers(args[0])) {
                     long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
                     if (length == 0)
                         return false;

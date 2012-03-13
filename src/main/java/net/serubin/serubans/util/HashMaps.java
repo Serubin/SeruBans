@@ -1,31 +1,118 @@
 package net.serubin.serubans.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class HashMaps {
 
     private static Map<String, Integer> PlayerList = new HashMap<String, Integer>();
     private static Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
-    private static Map<Integer, Long> TempBanned = new HashMap<Integer, Long>();
-    
-    public static Map<String, Integer> getBannedPlayers() {
-        return BannedPlayers;
+    private static Map<Integer, Long> TempBannedTime = new HashMap<Integer, Long>();
+
+    // banned players
+    public static Integer getBannedPlayers(String name) {
+        return BannedPlayers.get(name);
     }
-    public static void setBannedPlayers(Map<String, Integer> bannedPlayers) {
-        BannedPlayers = bannedPlayers;
+
+    public static void setBannedPlayers(String key, int value) {
+        BannedPlayers.put(key, value);
     }
-    public static Map<Integer, Long> getTempBanned() {
-        return TempBanned;
+
+    public static boolean valueIsInBannedPlayers(int value) {
+        return BannedPlayers.containsValue(value);
     }
-    public static void setTempBanned(Map<Integer, Long> tempBanned) {
-        TempBanned = tempBanned;
+
+    public static boolean keyIsInBannedPlayers(String key) {
+        return BannedPlayers.containsKey(key);
     }
-    public static Map<String, Integer> getPlayerList() {
-        return PlayerList;
+
+    public static void removeBannedPlayerItem(String key) {
+        BannedPlayers.remove(key);
     }
-    public static void setPlayerList(Map<String, Integer> playerList) {
-        PlayerList = playerList;
+
+    public static String getFullBannedPlayers() {
+        return BannedPlayers.toString();
     }
-    
+
+    public static Set<Entry<String, Integer>> getBannedPlayersSet() {
+        return BannedPlayers.entrySet();
+    }
+
+    // temp banned time
+    public static Long getTempBannedTime(int key) {
+        return TempBannedTime.get(key);
+    }
+
+    public static void setTempBannedTime(int key, Long value) {
+        TempBannedTime.put(key, value);
+    }
+
+    public static boolean keyIsInTempBannedTime(int key) {
+        return TempBannedTime.containsKey(key);
+    }
+
+    public static boolean valueIsInTempBannedTime(Long value) {
+        return TempBannedTime.containsValue(value);
+    }
+
+    public static void removeTempBannedTimeItem(int key) {
+        TempBannedTime.remove(key);
+    }
+
+    public static String getFullTempBannedTime() {
+        return TempBannedTime.toString();
+    }
+
+    public static Set<Entry<Integer, Long>> getTempBannedTimeSet() {
+        return TempBannedTime.entrySet();
+    }
+
+    public static List<String> getTempBannedTimeUnbans() {
+        List<String> unban = new ArrayList<String>();
+        int P_Id;
+        for (Entry<String, Integer> entry : BannedPlayers.entrySet()) {
+            String key = entry.getKey();
+            P_Id = getPlayerList(key);
+            if (keyIsInTempBannedTime(P_Id)) {
+
+                if (TempBannedTime.get(P_Id) < System.currentTimeMillis() / 1000) {
+                    unban.add(key);
+                }
+            }
+        }
+        return unban;
+    }
+
+    // player list
+    public static Integer getPlayerList(String key) {
+        return PlayerList.get(key);
+    }
+
+    public static void setPlayerList(String key, int value) {
+        PlayerList.put(key, value);
+    }
+
+    public static boolean keyIsInPlayerList(String key) {
+        return PlayerList.containsKey(key);
+    }
+
+    public static boolean valueIsInPlayerList(int value) {
+        return PlayerList.containsValue(value);
+    }
+
+    public static void removePlayerListItem(String key) {
+        PlayerList.remove(key);
+    }
+
+    public static String getFullPlayerList() {
+        return PlayerList.toString();
+    }
+
+    public static Set<Entry<String, Integer>> getPlayerListSet() {
+        return PlayerList.entrySet();
+    }
 }
