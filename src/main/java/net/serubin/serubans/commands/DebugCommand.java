@@ -18,6 +18,9 @@ public class DebugCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("serubans")) {
+            if(args.length == 0){
+                return false;
+            }
             if (args[0].startsWith("-")) {
                 if (args[0].contains("a")) {
                     sender.sendMessage("Players: "
@@ -31,19 +34,16 @@ public class DebugCommand implements CommandExecutor {
                 if (args[0].contains("p")) {
                     sender.sendMessage("Players: "
                             + HashMaps.getFullPlayerList());
-                    return true;
                 }
                 if (args[0].contains("b")) {
                     sender.sendMessage("Banned Players: "
                             + HashMaps.getFullBannedPlayers());
-                    return true;
                 }
                 if (args[0].contains("t")) {
                     sender.sendMessage("TempBan: "
                             + HashMaps.getFullTempBannedTime());
-                    return true;
                 }
-                return false;
+                return true;
             }
             return false;
         }

@@ -45,8 +45,10 @@ public class UnbanCommand implements CommandExecutor {
                     SeruBans.printServer(ChatColor.YELLOW + BannedVictim
                             + ChatColor.GOLD + " was unbanned!");
                     plugin.log.info(BannedVictim + " was unbanned by " + sender.getName());
+                    return true;
                 } else {
                     sender.sendMessage(ChatColor.RED + "This player is not banned!");
+                    return true;
                 }
             }
         }

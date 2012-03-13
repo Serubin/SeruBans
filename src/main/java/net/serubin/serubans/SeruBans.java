@@ -58,7 +58,10 @@ public class SeruBans extends JavaPlugin {
     public void onDisable() {
         reloadConfig();
         saveConfig();
+        getServer().getScheduler().cancelTask(taskId);
         log.info(name + " has been disabled");
+        
+        
     }
 
     public void onEnable() {
@@ -99,18 +102,18 @@ public class SeruBans extends JavaPlugin {
 
         // Add Classes
         BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
-                plugin);
+                this);
         TempBanCommand TempBan = new TempBanCommand(TempBanMessage,
-                GlobalTempBanMessage, name, plugin);
+                GlobalTempBanMessage, name, this);
         KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage,
-                name, plugin);
+                name, this);
         WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage,
-                name, plugin);
-        UnbanCommand Unban = new UnbanCommand(plugin);
+                name, this);
+        UnbanCommand Unban = new UnbanCommand(this);
         MySqlDatabase sqldb = new MySqlDatabase(host, username, password,
-                database, plugin);
+                database, this);
         CheckPlayer CheckPlayer = new CheckPlayer();
-        DebugCommand DebugC = new DebugCommand(plugin);
+        DebugCommand DebugC = new DebugCommand(this);
         CheckBanCommand CheckBan = new CheckBanCommand(this);
         UnTempbanThread UnTempanThread = new UnTempbanThread(this);
         // init commands
@@ -129,7 +132,8 @@ public class SeruBans extends JavaPlugin {
         getServer().getPluginManager().registerEvents(
                 new SeruBansPlayerListener(this, BanMessage), this);
         //Create Thread
-        taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, UnTempanThread, 6000, 1200);
+        taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, UnTempanThread, 1200, 1200);
+        //taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, UnTempanThread, 6000, 1200);
     }
 
     public static void printInfo(String line) {

@@ -114,7 +114,7 @@ public class MySqlDatabase {
                             + " FROM bans"
                             + " INNER JOIN users"
                             + "  ON bans.player_id=users.id"
-                            + " WHERE (type = 1) ");
+                            + " WHERE (type = 1 OR type = 2) ");
             rs = ps.executeQuery();
             while (rs.next()) {
                 Integer bId = rs.getInt("bans.id");

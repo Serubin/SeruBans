@@ -15,15 +15,17 @@ public class UnTempbanThread implements Runnable {
 
     public void run() {
         plugin.printDebug("Check tempban thread has started.");
+        plugin.printDebug(Long.toString(System.currentTimeMillis()/1000));
         int b_Id;
         List<String> toUnban = HashMaps.getTempBannedTimeUnbans();
         Iterator<String> iterator = toUnban.iterator();
         while(iterator.hasNext()){
-           b_Id = HashMaps.getBannedPlayers(iterator.next());
-           HashMaps.removeBannedPlayerItem(iterator.next());
+           String player = iterator.next();
+           b_Id = HashMaps.getBannedPlayers(player);
+           HashMaps.removeBannedPlayerItem(player);
            HashMaps.removeTempBannedTimeItem(b_Id);
            MySqlDatabase.updateBan(SeruBans.UNTEMPBAN, b_Id);
-           plugin.printDebug(iterator.next() + "has been unbanned by per minute tempban checker");
+           plugin.printDebug(player + "has been unbanned by per minute tempban checker");
         }
         plugin.printDebug("Check tempban thread has stopped");
     }

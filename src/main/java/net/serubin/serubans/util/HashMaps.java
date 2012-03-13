@@ -73,13 +73,13 @@ public class HashMaps {
 
     public static List<String> getTempBannedTimeUnbans() {
         List<String> unban = new ArrayList<String>();
-        int P_Id;
+        int b_Id;
         for (Entry<String, Integer> entry : BannedPlayers.entrySet()) {
             String key = entry.getKey();
-            P_Id = getPlayerList(key);
-            if (keyIsInTempBannedTime(P_Id)) {
+            b_Id = getBannedPlayers(key);
+            if (keyIsInTempBannedTime(b_Id)) {
 
-                if (TempBannedTime.get(P_Id) < System.currentTimeMillis() / 1000) {
+                if (TempBannedTime.get(b_Id) < System.currentTimeMillis() / 1000) {
                     unban.add(key);
                 }
             }
