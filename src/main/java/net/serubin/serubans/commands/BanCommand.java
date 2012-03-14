@@ -41,58 +41,66 @@ public class BanCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        
+
         if (commandLabel.equalsIgnoreCase("ban")) {
-            if (args.length == 0) {
-                return false;
-            } else if (args.length > 1) {
-                reason = ArgProcessing.reasonArgs(args);
-            } else {
-                reason = "undefined";
-            }
-
-            mod = sender.getName();
-            victim = server.getPlayer(args[0]);
-
-            String line = "";
-            if (victim != null) {
-                // adds player to db
-                CheckPlayer.checkPlayer(victim, sender);
-                if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
-                    MySqlDatabase.addBan(victim.getName(), SeruBans.BAN, 0, mod,
-                            reason);
-                    // kicks and broadcasts message
-                    SeruBans.printServer(ArgProcessing.GlobalMessage(
-                            GlobalBanMessage, reason, mod, victim.getName()));
-                    plugin.log.info(mod + " banned " + victim.getName()
-                            + " for " + reason);
-                    victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
-                            .PlayerMessage(BanMessage, reason, mod)));
-                    return true;
+            if (sender.hasPermission(SeruBans.BANPERM) || sender.isOp()
+                    || (!(sender instanceof Player))) {
+                if (args.length == 0) {
+                    return false;
+                } else if (args.length > 1) {
+                    reason = ArgProcessing.reasonArgs(args);
                 } else {
-                    sender.sendMessage(ChatColor.GOLD
-                            + victim.getName()
-                            + ChatColor.RED
-                            + " is already banned! Also, This player is banned and on your server... Might want to look into that.");
-                    return true;
-                }
-            } else {
-                // broadcasts message
-                CheckPlayer.checkPlayerOffline(args[0], sender);
-                if (!HashMaps.keyIsInBannedPlayers(args[0])) {
-                    MySqlDatabase.addBan(args[0], 1, 0, mod, reason);
-                    SeruBans.printServer(ArgProcessing.GlobalMessage(
-                            GlobalBanMessage, reason, mod, args[0]));
-                    plugin.log.info(mod + " banned " + args[0] + " for "
-                            + reason);
-                    return true;
-                } else {
-                    sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
-                            + " is already banned!");
-                    return true;
+                    reason = "undefined";
                 }
 
+                mod = sender.getName();
+                victim = server.getPlayer(args[0]);
+
+                String line = "";
+                if (victim != null) {
+                    // adds player to db
+                    CheckPlayer.checkPlayer(victim, sender);
+                    if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
+                        MySqlDatabase.addBan(victim.getName(), SeruBans.BAN, 0,
+                                mod, reason);
+                        // kicks and broadcasts message
+                        SeruBans.printServer(ArgProcessing.GlobalMessage(
+                                GlobalBanMessage, reason, mod, victim.getName()));
+                        plugin.log.info(mod + " banned " + victim.getName()
+                                + " for " + reason);
+                        victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
+                                .PlayerMessage(BanMessage, reason, mod)));
+                        return true;
+                    } else {
+                        sender.sendMessage(ChatColor.GOLD
+                                + victim.getName()
+                                + ChatColor.RED
+                                + " is already banned! Also, This player is banned and on your server... Might want to look into that.");
+                        return true;
+                    }
+                } else {
+                    // broadcasts message
+                    CheckPlayer.checkPlayerOffline(args[0], sender);
+                    if (!HashMaps.keyIsInBannedPlayers(args[0])) {
+                        MySqlDatabase.addBan(args[0], 1, 0, mod, reason);
+                        SeruBans.printServer(ArgProcessing.GlobalMessage(
+                                GlobalBanMessage, reason, mod, args[0]));
+                        plugin.log.info(mod + " banned " + args[0] + " for "
+                                + reason);
+                        return true;
+                    } else {
+                        sender.sendMessage(ChatColor.GOLD + args[0]
+                                + ChatColor.RED + " is already banned!");
+                        return true;
+                    }
+
+                }
+            } else {
+                sender.sendMessage(ChatColor.RED
+                        + "You do not have permission!");
+                return true;
             }
+
         }
         return false;
     }

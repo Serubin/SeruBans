@@ -1,6 +1,6 @@
 name: SeruBans
 main: net.serubin.serubans.SeruBans
-version: 0.1
+version: 1.0.0
 
 commands:
    ban:
@@ -24,3 +24,16 @@ commands:
    serubans:
       description: debug
       usage: /<command> - lists users
+      
+permissions:
+  serubans.*:
+    description: gives full permission on Serubans.
+    children:
+      serubans.ban: true
+      serubans.tempban: true
+      serubans.kick: true
+      serubans.warn: true
+      serubans.unban: true
+      serubans.checkban: true
+      serubans.debug: true
+ 

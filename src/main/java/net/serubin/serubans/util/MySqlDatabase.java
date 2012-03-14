@@ -59,7 +59,7 @@ public class MySqlDatabase {
             if (!rs.next()) {
                 SeruBans.printWarning("No 'bans' data table found, Attempting to create one...");
                 PreparedStatement ps = conn
-                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( `id` mediumint unsigned not null auto_increment, `player_id` mediumint unsigned not null, `type` tinyint(2) not null, `length` bigint(20) not null,`mod` varchar(16) not null, `date` TIMESTAMP not null, `reason` varchar(255) not null,  primary key (`id`));");
+                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( `id` mediumint unsigned not null auto_increment, `player_id` mediumint unsigned not null, `type` tinyint(2) not null, `length` bigint(20) not null,`mod` varchar(16) not null, `date` TIMESTAMP not null, `reason` varchar(255) not null, `display` tinyint(1) not null, primary key (`id`));");
                 ps.executeUpdate();
                 ps.close();
                 SeruBans.printWarning("'bans' data table created!");
@@ -164,6 +164,7 @@ public class MySqlDatabase {
             ps.setString(4, mod);
             ps.setTimestamp(5, ArgProcessing.getDateTime());
             ps.setString(6, reason);
+            ps.setInt(6, SeruBans.SHOW);
             ps.executeUpdate();
             rs = ps.getGeneratedKeys();
             if (type == 1 || type == 2) {

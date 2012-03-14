@@ -43,7 +43,7 @@ public class ArgProcessing {
         for (String s : args) {
             reasonRaw.append(" " + s);
         }
-        reason = reasonRaw.toString().replaceFirst(" " + args[0], "");
+        reason = reasonRaw.toString().replaceFirst(" " + args[0] + " ", "");
         // return string
         return reason;
     }
@@ -56,7 +56,7 @@ public class ArgProcessing {
             reasonRaw.append(" " + s);
         }
         reason = reasonRaw.toString().replaceFirst(
-                " " + args[0] + " " + args[1] + " " + args[2], "");
+                " " + args[0] + " " + args[1] + " " + args[2] + " ", "");
         // return string
         return reason;
     }

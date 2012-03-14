@@ -43,16 +43,27 @@ public class SeruBans extends JavaPlugin {
     public static String password;
     public static String database;
     public static String host;
-    
-    //Ban types
+
+    // Ban types
     public static final int BAN = 1;
     public static final int TEMPBAN = 2;
     public static final int KICK = 3;
     public static final int WARN = 4;
     public static final int UNBAN = 11;
     public static final int UNTEMPBAN = 12;
-    
-    //Thread tid
+    // perms
+    public static final String BANPERM = "serubans.ban";
+    public static final String TEMPBANPERM = "serubans.tempban";
+    public static final String KICKPERM = "serubans.kick";
+    public static final String WARNPERM = "serubans.warn";
+    public static final String UNBANPERM = "serubans.unban";
+    public static final String CHECKBANPERM = "serubans.checkban";
+    public static final String DEBUGPERM = "serubans.debug";
+    // other, final
+    public static final int SHOW = 0;
+    public static final int HIDE = 1;
+
+    // Thread tid
     int taskId;
 
     public void onDisable() {
@@ -60,8 +71,7 @@ public class SeruBans extends JavaPlugin {
         saveConfig();
         getServer().getScheduler().cancelTask(taskId);
         log.info(name + " has been disabled");
-        
-        
+
     }
 
     public void onEnable() {
@@ -131,9 +141,11 @@ public class SeruBans extends JavaPlugin {
         // Create listener
         getServer().getPluginManager().registerEvents(
                 new SeruBansPlayerListener(this, BanMessage), this);
-        //Create Thread
-        taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, UnTempanThread, 1200, 1200);
-        //taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, UnTempanThread, 6000, 1200);
+        // Create Thread
+        taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
+                UnTempanThread, 1200, 1200);
+        // taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
+        // UnTempanThread, 6000, 1200);
     }
 
     public static void printInfo(String line) {
@@ -143,7 +155,7 @@ public class SeruBans extends JavaPlugin {
 
     public void printDebug(String line) {
         if (debug) {
-            log.info("DEBUG: " + line);
+            log.info("[SeruBans] DEBUG: " + line);
         }
     }
 

@@ -3,9 +3,11 @@ package net.serubin.serubans.commands;
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.HashMaps;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class DebugCommand implements CommandExecutor {
 
@@ -18,6 +20,8 @@ public class DebugCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("serubans")) {
+            if (sender.hasPermission(SeruBans.DEBUGPERM) || sender.isOp()
+                    || (!(sender instanceof Player))) {
             if(args.length == 0){
                 return false;
             }
@@ -46,6 +50,9 @@ public class DebugCommand implements CommandExecutor {
                 return true;
             }
             return false;
+            } else {
+                sender.sendMessage(ChatColor.RED + "You do not have permission!");
+            }
         }
         return false;
     }
