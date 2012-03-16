@@ -31,6 +31,7 @@ public class KickCommand implements CommandExecutor {
         Player victim;
         String mod;
         String reason;
+        int display = 0;
 
         if (commandLabel.equalsIgnoreCase("kick")) {
             if (sender.hasPermission(SeruBans.KICKPERM) || sender.isOp()
@@ -49,7 +50,7 @@ public class KickCommand implements CommandExecutor {
                     // kicks and broadcasts message
                     CheckPlayer.checkPlayer(victim, sender);
                     MySqlDatabase.addBan(victim.getName(), SeruBans.KICK, 0,
-                            mod, reason);
+                            mod, reason, display);
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             GlobalKickMessage, reason, mod, victim.getName()));
                     plugin.log.info(mod + " kicked " + victim.getName()
@@ -64,7 +65,8 @@ public class KickCommand implements CommandExecutor {
                     return true;
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission!");
+                sender.sendMessage(ChatColor.RED
+                        + "You do not have permission!");
             }
         }
 

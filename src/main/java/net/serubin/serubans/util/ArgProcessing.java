@@ -48,6 +48,18 @@ public class ArgProcessing {
         return reason;
     }
 
+    public static String reasonOptArgs(String[] args) {
+        StringBuilder reasonRaw = new StringBuilder();
+        String reason;
+        // combine args into a string
+        for (String s : args) {
+            reasonRaw.append(" " + s);
+        }
+        reason = reasonRaw.toString().replaceFirst(" " + args[0] + " " + args[1] + " ", "");
+        // return string
+        return reason;
+    }
+
     public static String reasonArgsTB(String[] args) {
         StringBuilder reasonRaw = new StringBuilder();
         String reason;
@@ -96,8 +108,9 @@ public class ArgProcessing {
         line = line.replaceAll("%kicker%", mod);
         return line;
     }
-    public static String GlobalTempBanMessage(String line, String reason, String mod,
-            String victim, String time) {
+
+    public static String GlobalTempBanMessage(String line, String reason,
+            String mod, String victim, String time) {
         line = line.replaceAll("%victim%", victim);
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
@@ -105,7 +118,8 @@ public class ArgProcessing {
         return line;
     }
 
-    public static String PlayerTempBanMessage(String line, String reason, String mod, String time) {
+    public static String PlayerTempBanMessage(String line, String reason,
+            String mod, String time) {
 
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
@@ -152,7 +166,7 @@ public class ArgProcessing {
             sec /= 60;
         else if (unit.startsWith("seconds"))
             sec /= 60;
-        
+
         return sec;
     }
 
@@ -162,12 +176,12 @@ public class ArgProcessing {
         date = new java.sql.Timestamp(today.getTime());
         return date;
     }
-    
-    public static String getStringDate(long length){
+
+    public static String getStringDate(long length) {
         Date date = new Date();
-        date.setTime(length*1000);
+        date.setTime(length * 1000);
         String dates = date.toString();
-        
+
         return dates;
     }
 }

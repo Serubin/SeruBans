@@ -34,6 +34,7 @@ public class WarnCommand implements CommandExecutor {
         Player victim;
         String mod;
         String reason = "";
+        int display = 0;
 
         if (commandLabel.equalsIgnoreCase("warn")) {
             if (sender.hasPermission(SeruBans.WARNPERM) || sender.isOp()
@@ -53,7 +54,7 @@ public class WarnCommand implements CommandExecutor {
                 if (victim != null) {
                     CheckPlayer.checkPlayer(victim, sender);
                     MySqlDatabase.addBan(victim.getName(), SeruBans.WARN, 0,
-                            mod, reason);
+                            mod, reason, display);
                     // Warns and broadcasts message
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             WarnMessage, reason, mod, victim.getName()));
@@ -66,7 +67,7 @@ public class WarnCommand implements CommandExecutor {
                     return true;
                 } else {
                     CheckPlayer.checkPlayerOffline(args[0], sender);
-                    MySqlDatabase.addBan(args[0], 3, 0, mod, reason);
+                    MySqlDatabase.addBan(args[0], 3, 0, mod, reason, display);
                     // broadcasts message
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             WarnMessage, reason, mod, args[0]));

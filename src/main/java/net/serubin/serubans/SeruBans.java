@@ -26,6 +26,7 @@ public class SeruBans extends JavaPlugin {
 
     private static String name;
     private static String version;
+    public static SeruBans self = null;
 
     // defines config variables
     public static String BanMessage;
@@ -78,7 +79,7 @@ public class SeruBans extends JavaPlugin {
 
         version = this.getDescription().getVersion();
         name = this.getDescription().getName();
-
+        self = this;
         log.info(name + " version " + version + " has started...");
         PluginManager pm = getServer().getPluginManager();
         getConfig().options().copyDefaults(true);
@@ -149,8 +150,7 @@ public class SeruBans extends JavaPlugin {
     }
 
     public static void printInfo(String line) {
-        ArgProcessing.GetColor(line);
-        System.out.println("[SeruBans] " + line);
+        self.log.info("[SeruBans] " + line);
     }
 
     public void printDebug(String line) {
@@ -169,11 +169,11 @@ public class SeruBans extends JavaPlugin {
     }
 
     public static void printError(String line) {
-        System.out.println("[ERROR] [SeruBans] " + line);
+        self.log.severe("[SeruBans] " + line);
     }
 
     public static void printWarning(String line) {
-        System.out.println("[warning] [SeruBans] " + line);
+        self.log.warning("[SeruBans] " + line);
     }
 
 }

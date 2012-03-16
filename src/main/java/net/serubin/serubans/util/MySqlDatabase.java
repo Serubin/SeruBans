@@ -59,7 +59,16 @@ public class MySqlDatabase {
             if (!rs.next()) {
                 SeruBans.printWarning("No 'bans' data table found, Attempting to create one...");
                 PreparedStatement ps = conn
-                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( `id` mediumint unsigned not null auto_increment, `player_id` mediumint unsigned not null, `type` tinyint(2) not null, `length` bigint(20) not null,`mod` varchar(16) not null, `date` TIMESTAMP not null, `reason` varchar(255) not null, `display` tinyint(1) not null, primary key (`id`));");
+                        .prepareStatement("CREATE TABLE IF NOT EXISTS `bans` ( "
+                                + "`id` mediumint unsigned not null auto_increment, "
+                                + "`player_id` mediumint unsigned not null, "
+                                + "`type` tinyint(2) not null, "
+                                + "`length` TIMESTAMP not null, "
+                                + "`mod` varchar(16) not null, "
+                                + "`date` DATETIME not null, "
+                                + "`reason` varchar(255) not null, "
+                                + "`display` tinyint(1) not null, "
+                                + "primary key (`id`));");
                 ps.executeUpdate();
                 ps.close();
                 SeruBans.printWarning("'bans' data table created!");
@@ -73,7 +82,10 @@ public class MySqlDatabase {
             if (!rs.next()) {
                 SeruBans.printWarning("No 'users' data table found, Attempting to create one...");
                 PreparedStatement ps = conn
-                        .prepareStatement("CREATE TABLE IF NOT EXISTS `users` ( `id` mediumint unsigned not null auto_increment, `name` varchar(16) not null, primary key (`id`), UNIQUE key `player` (`name`));");
+                        .prepareStatement("CREATE TABLE IF NOT EXISTS `users` ( "
+                                + "`id` mediumint unsigned not null auto_increment, "
+                                + "`name` varchar(16) not null, "
+                                + "primary key (`id`), UNIQUE key `player` (`name`));");
                 ps.executeUpdate();
                 ps.close();
                 SeruBans.printWarning("'user' data table created!");
@@ -87,8 +99,8 @@ public class MySqlDatabase {
         }
     }
 
-    //TODO create get tempbans
-    
+    // TODO create get tempbans
+
     public static void getPlayer() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -126,15 +138,13 @@ public class MySqlDatabase {
             e.printStackTrace();
         }
     }
-    
-    public static void getTempBans(){
+
+    public static void getTempBans() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn
-                    .prepareStatement("SELECT id, length"
-                            + " FROM bans"
-                            + " WHERE (type = 2) ");
+            ps = conn.prepareStatement("SELECT id, length" + " FROM bans"
+                    + " WHERE (type = 2) ");
             rs = ps.executeQuery();
             while (rs.next()) {
                 Integer bId = rs.getInt("id");
@@ -145,33 +155,33 @@ public class MySqlDatabase {
 
             e.printStackTrace();
         }
-        
-    }
-    
 
-    public static void addBan(String victim, int type, long length, String mod, String reason) {
+    }
+
+    public static void addBan(String victim, int type, long length, String mod,
+            String reason, int display) {
         PreparedStatement ps = null;
         ResultSet rs = null;
         // add player
         try {
             ps = conn
                     .prepareStatement(
-                            "INSERT INTO bans (`player_id`, `type`, `length`, `mod`, `date`, `reason`) VALUES(?,?,?,?,?,?);",
+                            "INSERT INTO bans (`player_id`, `type`, `length`, `mod`, `date`, `reason`, `display`) VALUES(?,?,?,?,?,?,?);",
                             Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, HashMaps.getPlayerList(victim.toLowerCase()));
             ps.setInt(2, type);
             ps.setLong(3, length);
             ps.setString(4, mod);
-            ps.setTimestamp(5, ArgProcessing.getDateTime());
+            ps.setObject(5, ArgProcessing.getDateTime());
             ps.setString(6, reason);
-            ps.setInt(6, SeruBans.SHOW);
+            ps.setInt(7, display);
             ps.executeUpdate();
             rs = ps.getGeneratedKeys();
             if (type == 1 || type == 2) {
                 if (rs.next()) {
                     Integer bId = rs.getInt(1);
                     HashMaps.setBannedPlayers(victim.toLowerCase(), bId);
-                    if(type == 2){
+                    if (type == 2) {
                         HashMaps.setTempBannedTime(bId, length);
                     }
                     SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);

@@ -28,6 +28,9 @@ public class TempBanCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         String reason;
+        Player victim;
+        String mod;
+        int display = 0;
         if (commandLabel.equalsIgnoreCase("tempban")) {
             if (sender.hasPermission(SeruBans.TEMPBANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
@@ -39,8 +42,8 @@ public class TempBanCommand implements CommandExecutor {
                     reason = "undefined";
                 }
 
-                String mod = sender.getName();
-                Player victim = plugin.getServer().getPlayer(args[0]);
+                mod = sender.getName();
+                victim = plugin.getServer().getPlayer(args[0]);
 
                 if (victim != null) {
                     // adds player to db
@@ -51,9 +54,9 @@ public class TempBanCommand implements CommandExecutor {
                         plugin.printDebug(Long.toString(length));
                         if (length == 0)
                             return false;
-                        length = System.currentTimeMillis() / 1000 + length;
+                        length = System.currentTimeMillis()/1000 + length;
                         MySqlDatabase.addBan(victim.getName(), 2, length, mod,
-                                reason);
+                                reason, display);
                         // kicks and broadcasts message
 
                         String date = ArgProcessing.getStringDate(length);
@@ -85,7 +88,7 @@ public class TempBanCommand implements CommandExecutor {
                         length = System.currentTimeMillis() / 1000 + length;
 
                         MySqlDatabase.addBan(args[0], SeruBans.TEMPBAN, length,
-                                mod, reason);
+                                mod, reason, display);
                         SeruBans.printServer(ArgProcessing.GlobalMessage(
                                 globalTempBanMessage, reason, mod, args[0]));
                         plugin.log.info(mod + " banned " + args[0] + " for "
@@ -99,7 +102,8 @@ public class TempBanCommand implements CommandExecutor {
 
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission!");
+                sender.sendMessage(ChatColor.RED
+                        + "You do not have permission!");
             }
         }
         return false;

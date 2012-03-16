@@ -17,15 +17,6 @@ import org.bukkit.entity.Player;
 
 public class BanCommand implements CommandExecutor {
 
-    ArgProcessing ap;
-    MySqlDatabase db;
-    CheckPlayer cp;
-    OfflinePlayer offPlayer;
-    Server server = Bukkit.getServer();
-    Player victim;
-    String p;
-    String mod;
-    String reason;
     private String BanMessage;
     private String GlobalBanMessage;
     private String name;
@@ -41,7 +32,10 @@ public class BanCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-
+        Player victim;
+        String mod;
+        String reason;
+        int display = 0;
         if (commandLabel.equalsIgnoreCase("ban")) {
             if (sender.hasPermission(SeruBans.BANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
@@ -54,7 +48,7 @@ public class BanCommand implements CommandExecutor {
                 }
 
                 mod = sender.getName();
-                victim = server.getPlayer(args[0]);
+                victim = plugin.getServer().getPlayer(args[0]);
 
                 String line = "";
                 if (victim != null) {
@@ -62,7 +56,7 @@ public class BanCommand implements CommandExecutor {
                     CheckPlayer.checkPlayer(victim, sender);
                     if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
                         MySqlDatabase.addBan(victim.getName(), SeruBans.BAN, 0,
-                                mod, reason);
+                                mod, reason, SeruBans.SHOW);
                         // kicks and broadcasts message
                         SeruBans.printServer(ArgProcessing.GlobalMessage(
                                 GlobalBanMessage, reason, mod, victim.getName()));
@@ -82,7 +76,7 @@ public class BanCommand implements CommandExecutor {
                     // broadcasts message
                     CheckPlayer.checkPlayerOffline(args[0], sender);
                     if (!HashMaps.keyIsInBannedPlayers(args[0])) {
-                        MySqlDatabase.addBan(args[0], 1, 0, mod, reason);
+                        MySqlDatabase.addBan(args[0], 1, 0, mod, reason, display);
                         SeruBans.printServer(ArgProcessing.GlobalMessage(
                                 GlobalBanMessage, reason, mod, args[0]));
                         plugin.log.info(mod + " banned " + args[0] + " for "
