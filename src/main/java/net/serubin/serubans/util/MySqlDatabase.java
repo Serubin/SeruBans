@@ -63,7 +63,7 @@ public class MySqlDatabase {
                                 + "`id` mediumint unsigned not null auto_increment, "
                                 + "`player_id` mediumint unsigned not null, "
                                 + "`type` tinyint(2) not null, "
-                                + "`length` TIMESTAMP not null, "
+                                + "`length` bigint(20) not null, "
                                 + "`mod` varchar(16) not null, "
                                 + "`date` DATETIME not null, "
                                 + "`reason` varchar(255) not null, "

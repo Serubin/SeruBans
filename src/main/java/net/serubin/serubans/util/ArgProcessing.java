@@ -2,6 +2,7 @@ package net.serubin.serubans.util;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -55,7 +56,8 @@ public class ArgProcessing {
         for (String s : args) {
             reasonRaw.append(" " + s);
         }
-        reason = reasonRaw.toString().replaceFirst(" " + args[0] + " " + args[1] + " ", "");
+        reason = reasonRaw.toString().replaceFirst(
+                " " + args[0] + " " + args[1] + " ", "");
         // return string
         return reason;
     }
@@ -183,5 +185,19 @@ public class ArgProcessing {
         String dates = date.toString();
 
         return dates;
+    }
+
+    public static long getUnixTimeStamp(Timestamp timestamp) {
+        long unixTS = 0;
+        try {
+            unixTS = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                    .parse(timestamp.toString()).getTime();
+        } catch (ParseException e) {
+            SeruBans.self.log
+                    .severe("Could not convert SQL Timestamp to unix timestamp, This means tempbans probably did not get loaded properly.");
+
+            e.printStackTrace();
+        }
+        return unixTS;
     }
 }
