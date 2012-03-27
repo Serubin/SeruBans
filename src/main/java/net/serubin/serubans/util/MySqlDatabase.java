@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Properties;
 
 import net.serubin.serubans.SeruBans;
@@ -64,7 +65,7 @@ public class MySqlDatabase {
                                 + "`player_id` mediumint unsigned not null, "
                                 + "`type` tinyint(2) not null, "
                                 + "`length` bigint(20) not null, "
-                                + "`mod` varchar(16) not null, "
+                                + "`mod` mediumint(8) unsigned not null, "
                                 + "`date` DATETIME not null, "
                                 + "`reason` varchar(255) not null, "
                                 + "`display` tinyint(1) not null, "
@@ -160,6 +161,7 @@ public class MySqlDatabase {
 
     public static void addBan(String victim, int type, long length, String mod,
             String reason, int display) {
+
         PreparedStatement ps = null;
         ResultSet rs = null;
         // add player
@@ -171,7 +173,7 @@ public class MySqlDatabase {
             ps.setInt(1, HashMaps.getPlayerList(victim.toLowerCase()));
             ps.setInt(2, type);
             ps.setLong(3, length);
-            ps.setString(4, mod);
+            ps.setInt(4, HashMaps.getPlayerList(mod.toLowerCase()));
             ps.setObject(5, ArgProcessing.getDateTime());
             ps.setString(6, reason);
             ps.setInt(7, display);
@@ -259,12 +261,11 @@ public class MySqlDatabase {
         mod = "";
         try {
             ps = conn
-                    .prepareStatement("SELECT id, `mod` FROM bans WHERE (id = ?);");
-            SeruBans.printInfo(ps.toString());
+                    .prepareStatement("SELECT bans.id, bans.mod, users.id, users.name FROM bans INNER JOIN users ON bans.mod = users.id WHERE (bans.id = ?);");
             ps.setInt(1, id);
             rs = ps.executeQuery();
             if (rs.next()) {
-                mod = rs.getString("mod");
+                mod = rs.getString("name");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -272,4 +273,23 @@ public class MySqlDatabase {
         }
         return mod;
     }
+    public static Long getLength(int id) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Long length = null;
+        try {
+            ps = conn
+                    .prepareStatement("SELECT id, length FROM bans WHERE (id = ?);");
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                length = rs.getLong("length");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return length;
+    }
+
 }

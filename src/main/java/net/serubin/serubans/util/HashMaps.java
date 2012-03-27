@@ -42,6 +42,15 @@ public class HashMaps {
         return BannedPlayers.entrySet();
     }
 
+    public static List<String> getBannedForFile() {
+        List<String> ban = new ArrayList<String>();
+        for (Entry<String, Integer> entry : BannedPlayers.entrySet()) {
+            String key = entry.getKey();
+            ban.add(key);
+        }
+        return ban;
+    }
+
     // temp banned time
     public static Long getTempBannedTime(int key) {
         return TempBannedTime.get(key);

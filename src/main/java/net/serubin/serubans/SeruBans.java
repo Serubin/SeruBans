@@ -27,6 +27,8 @@ public class SeruBans extends JavaPlugin {
     private static String name;
     private static String version;
     public static SeruBans self = null;
+    // Class Short Cuts
+    MySqlDatabase db;
 
     // defines config variables
     public static String BanMessage;
@@ -60,6 +62,7 @@ public class SeruBans extends JavaPlugin {
     public static final String UNBANPERM = "serubans.unban";
     public static final String CHECKBANPERM = "serubans.checkban";
     public static final String DEBUGPERM = "serubans.debug";
+    public static final String BROADCASTPERM = "serubans.broadcast";
     // other, final
     public static final int SHOW = 0;
     public static final int HIDE = 1;
@@ -141,7 +144,8 @@ public class SeruBans extends JavaPlugin {
 
         // Create listener
         getServer().getPluginManager().registerEvents(
-                new SeruBansPlayerListener(this, BanMessage), this);
+                new SeruBansPlayerListener(this, BanMessage, TempBanMessage),
+                this);
         // Create Thread
         taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 UnTempanThread, 1200, 1200);
@@ -162,7 +166,7 @@ public class SeruBans extends JavaPlugin {
     public static void printServer(String line) {
         Player[] players = Bukkit.getOnlinePlayers();
         for (Player player : players) {
-            if (player.hasPermission("serubans.broadcast") || player.isOp()) {
+            if (player.hasPermission(BROADCASTPERM) || player.isOp()) {
                 player.sendMessage(ArgProcessing.GetColor(line));
             }
         }
