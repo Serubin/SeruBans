@@ -23,10 +23,11 @@ public class CheckBanCommand implements CommandExecutor {
         if (commandLabel.equalsIgnoreCase("checkban")) {
             if (sender.hasPermission(SeruBans.CHECKBANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
-                boolean isBanned = HashMaps.keyIsInBannedPlayers(args[0]);
+                String player = args[0]toLowerCase();
+                boolean isBanned = HashMaps.keyIsInBannedPlayers(player);
 
                 if (isBanned) {
-                    int id = HashMaps.getBannedPlayers(args[0]);
+                    int id = HashMaps.getBannedPlayers(player);
                     sender.sendMessage(ChatColor.RED + args[0] + " is banned.");
                     sender.sendMessage(ChatColor.RED + "Ban id: "
                             + ChatColor.YELLOW + id);
