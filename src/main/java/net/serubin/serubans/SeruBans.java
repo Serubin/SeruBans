@@ -6,6 +6,7 @@ import net.serubin.serubans.commands.BanCommand;
 import net.serubin.serubans.commands.CheckBanCommand;
 import net.serubin.serubans.commands.DebugCommand;
 import net.serubin.serubans.commands.KickCommand;
+import net.serubin.serubans.commands.SearchCommand;
 import net.serubin.serubans.commands.TempBanCommand;
 import net.serubin.serubans.commands.UnbanCommand;
 import net.serubin.serubans.commands.WarnCommand;
@@ -130,6 +131,7 @@ public class SeruBans extends JavaPlugin {
         DebugCommand DebugC = new DebugCommand(this);
         CheckBanCommand CheckBan = new CheckBanCommand(this);
         UnTempbanThread UnTempanThread = new UnTempbanThread(this);
+        SearchCommand Search = new SearchCommand(this);
         // init commands
         getCommand("ban").setExecutor(Ban);
         getCommand("tempban").setExecutor(TempBan);
@@ -137,6 +139,7 @@ public class SeruBans extends JavaPlugin {
         getCommand("warn").setExecutor(Warn);
         getCommand("unban").setExecutor(Unban);
         getCommand("checkban").setExecutor(CheckBan);
+        getCommand("search").setExecutor(Search);
         getCommand("serubans").setExecutor(DebugC);
 
         // create SQL Connection

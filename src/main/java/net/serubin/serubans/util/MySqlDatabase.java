@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -273,6 +275,7 @@ public class MySqlDatabase {
         }
         return mod;
     }
+
     public static Long getLength(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -292,4 +295,78 @@ public class MySqlDatabase {
         return length;
     }
 
+    public static List<Integer> searchPlayer(int id) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Integer> type = new ArrayList<Integer>();
+        try {
+            ps = conn
+                    .prepareStatement("SELECT `player_id`, `type` FROM bans WHERE (player_id = ?);");
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                type.add(rs.getInt("type"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return type;
+    }
+
+    public static List<String> searchType(int id, int type) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Integer> typeList = new ArrayList<Integer>();
+        List<String> PlayerInfo = new ArrayList<String>();
+        try {
+            ps = conn
+                    .prepareStatement("SELECT `player_id`, `type`, `id` FROM bans WHERE (player_id = ?) AND (type = ?);");
+            ps.setInt(1, id);
+            ps.setInt(2, type);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                typeList.add(rs.getInt("id"));
+            }
+
+            Iterator<Integer> typeListItor = typeList.iterator();
+            while (typeListItor.hasNext()) {
+                PlayerInfo.add(getPlayerInfo(typeListItor.next()));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return PlayerInfo;
+    }
+
+    public static String getPlayerInfo(int id) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String line = null;
+        List<String> PlayerInfo = new ArrayList<String>();
+        try {
+            ps = conn
+                    .prepareStatement("SELECT bans.id, bans.mod, users.id, users.name, bans.type, bans.reason, bans.length, bans.date FROM bans INNER JOIN users ON bans.mod = users.id WHERE (bans.id = ?);");
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int bId = rs.getInt("bans.id");
+                int tId = rs.getInt("bans.type");
+                String mName = rs.getString("users.name");
+                String date = rs.getObject("bans.date").toString();
+                String reason = rs.getString("bans.reason");
+                Long length = null;
+                if (tId == 2) {
+                    length = rs.getLong("bans.length");
+                }
+                line = bId + " - " + ArgProcessing.getBanTypeString(tId)
+                        + " - " + mName + " - " + date + " - " + reason;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return line;
+    }
 }

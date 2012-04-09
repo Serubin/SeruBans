@@ -200,4 +200,12 @@ public class ArgProcessing {
         }
         return unixTS;
     }
+    public static String getBanTypeString(int Type){
+        String TypeString = "";
+        if(Type == SeruBans.BAN) TypeString = "Ban";
+        else if(Type == SeruBans.TEMPBAN) TypeString = "TempBan";
+        else if(Type == SeruBans.WARN) TypeString = "Warning";
+        else if(Type == SeruBans.KICK) TypeString = "Kick";
+        return TypeString;
+    }
 }
