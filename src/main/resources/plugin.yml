@@ -23,7 +23,7 @@ commands:
       usage: /<command> <player> - checks if a player is banned
    serubans:
       description: debug
-      usage: /<command> <-arg> - debug/export
+      usage: /<command> - lists users
       
 permissions:
   serubans.*:
@@ -36,5 +36,4 @@ permissions:
       serubans.unban: true
       serubans.checkban: true
       serubans.debug: true
-      serubans.broadcast: true
  

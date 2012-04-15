@@ -23,24 +23,19 @@ public class CheckBanCommand implements CommandExecutor {
         if (commandLabel.equalsIgnoreCase("checkban")) {
             if (sender.hasPermission(SeruBans.CHECKBANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
-                String player = args[0].toLowerCase();
-                boolean isBanned = HashMaps.keyIsInBannedPlayers(player);
+                boolean isBanned = HashMaps.keyIsInBannedPlayers(args[0]);
 
                 if (isBanned) {
-                    int id = HashMaps.getBannedPlayers(player);
+                    int id = HashMaps.getBannedPlayers(args[0]);
                     sender.sendMessage(ChatColor.RED + args[0] + " is banned.");
                     sender.sendMessage(ChatColor.RED + "Ban id: "
                             + ChatColor.YELLOW + id);
-                    return true;
                 } else {
                     sender.sendMessage(ChatColor.GREEN + args[0]
                             + " is not banned.");
-                    return true;
                 }
             } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
-                return true;
+                sender.sendMessage(ChatColor.RED + "You do not have permission!");
             }
         }
         return false;
