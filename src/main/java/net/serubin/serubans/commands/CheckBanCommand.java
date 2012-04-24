@@ -31,12 +31,15 @@ public class CheckBanCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + args[0] + " is banned.");
                     sender.sendMessage(ChatColor.RED + "Ban id: "
                             + ChatColor.YELLOW + id);
+                    return true;
                 } else {
                     sender.sendMessage(ChatColor.GREEN + args[0]
                             + " is not banned.");
+                    return true;
                 }
             } else {
                 sender.sendMessage(ChatColor.RED + "You do not have permission!");
+                return true;
             }
         }
         return false;

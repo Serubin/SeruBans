@@ -171,7 +171,7 @@ public class MySqlDatabase {
             ps.setInt(1, HashMaps.getPlayerList(victim.toLowerCase()));
             ps.setInt(2, type);
             ps.setLong(3, length);
-            ps.setString(4, mod);
+            ps.setInt(4, HashMaps.getPlayerList(mod.toLowerCase()));
             ps.setObject(5, ArgProcessing.getDateTime());
             ps.setString(6, reason);
             ps.setInt(7, display);
