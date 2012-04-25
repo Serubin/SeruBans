@@ -206,6 +206,8 @@ public class ArgProcessing {
         else if(Type == SeruBans.TEMPBAN) TypeString = "TempBan";
         else if(Type == SeruBans.WARN) TypeString = "Warning";
         else if(Type == SeruBans.KICK) TypeString = "Kick";
+        else if(Type == SeruBans.UNBAN) TypeString = "Unban";
+        else if(Type == SeruBans.UNTEMPBAN) TypeString = "Untempban";
         return TypeString;
     }
 }

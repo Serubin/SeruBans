@@ -3,6 +3,7 @@ package net.serubin.serubans.commands;
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.search.SearchMethods;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,7 +33,14 @@ public class SearchCommand implements CommandExecutor {
             }
             for (String s : args) {
                 if (s.startsWith("i:") || s.startsWith("id:")) {
-                    id = Integer.parseInt(s);
+                    String idString = s.replaceFirst("i:", "");
+                    try {
+                       id = Integer.parseInt(idString);
+                    } catch (NumberFormatException ex) {
+                        // Item was not an int, do nothing
+                        sender.sendMessage(ChatColor.RED + "Id must be a number!");
+                        return true;
+                    }
                     idB = true;
                     continue;
                 }
@@ -68,6 +76,7 @@ public class SearchCommand implements CommandExecutor {
                 SearchMethods.searchType(player, typeInt, sender);
                 return true;
             } else if (idB && !typeB && !playerB) {
+                SearchMethods.searchId(id, sender);
                 return true;
             } else {
                 return false;

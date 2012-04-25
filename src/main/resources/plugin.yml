@@ -1,6 +1,6 @@
 name: SeruBans
 main: net.serubin.serubans.SeruBans
-version: 1.0.1
+version: 2.0.1
 
 commands:
    ban:
@@ -23,7 +23,10 @@ commands:
       usage: /<command> <player> - checks if a player is banned
    search:
       description: search function
-      usage: /<command> p:<player> t:<type> i:<id>
+      usage: /<command> p:<player> t:<type> i:<id> - search function
+   update:
+      description: updates reason
+      usage: /<command> <id> <reason> - updates reason
    serubans:
       description: debug
       usage: /<command> <-arg> - debug/export
@@ -39,5 +42,6 @@ permissions:
       serubans.unban: true
       serubans.checkban: true
       serubans.debug: true
+      serubans.update: true
       serubans.broadcast: true
  

@@ -76,7 +76,7 @@ public class BanCommand implements CommandExecutor {
                     // broadcasts message
                     CheckPlayer.checkPlayerOffline(args[0], sender);
                     if (!HashMaps.keyIsInBannedPlayers(args[0])) {
-                        MySqlDatabase.addBan(args[0], 1, 0, mod, reason,
+                        MySqlDatabase.addBan(args[0], SeruBans.BAN, 0, mod, reason,
                                 display);
                         SeruBans.printServer(ArgProcessing.GlobalMessage(
                                 GlobalBanMessage, reason, mod, args[0]));

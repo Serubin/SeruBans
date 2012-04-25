@@ -32,7 +32,7 @@ public class DebugCommand implements CommandExecutor {
                     return false;
                 }
                 if (args[0].startsWith("-")) {
-                    if (args[0].contains("a")) {
+                    if (args[0].contains("a") && !args[0].contains("api")) {
                         sender.sendMessage("Players: "
                                 + HashMaps.getFullPlayerList());
                         sender.sendMessage("Banned Players: "
@@ -41,7 +41,7 @@ public class DebugCommand implements CommandExecutor {
                                 + HashMaps.getFullTempBannedTime());
                         return true;
                     }
-                    if (args[0].contains("p")) {
+                    if (args[0].contains("p") && !args[0].contains("api")) {
                         sender.sendMessage("Players: "
                                 + HashMaps.getFullPlayerList());
                     }
@@ -56,19 +56,30 @@ public class DebugCommand implements CommandExecutor {
                     if (args[0].contains("e")) {
                         List<String> ban = HashMaps.getBannedForFile();
                         Iterator<String> iterator = ban.iterator();
-                        try{
-                        BufferedWriter banlist = new BufferedWriter(
-                                new FileWriter("banned-players.txt", true));
+                        try {
+                            BufferedWriter banlist = new BufferedWriter(
+                                    new FileWriter("banned-players.txt", true));
 
-                        while (iterator.hasNext()) {
-                            String player = iterator.next();
-                            banlist.write(player);
-                            banlist.newLine();
-                        }
-                        banlist.close();
-                        }catch(IOException e){
+                            while (iterator.hasNext()) {
+                                String player = iterator.next();
+                                banlist.write(player);
+                                banlist.newLine();
+                            }
+                            banlist.close();
+                        } catch (IOException e) {
                             plugin.log.severe("File Could not be writen!");
                         }
+                    }
+                    if (args[0].contains("api")) {
+                        sender.sendMessage("-------------- API TEST--------------");
+                        sender.sendMessage("args[1] = " + args[1]);
+                        sender.sendMessage("--- API CheckBan---");
+                        sender.sendMessage(Boolean.toString(plugin.API
+                                .checkBan(args[1])));
+                        sender.sendMessage("--- API GetLength---");
+                        sender.sendMessage(Long.toString(plugin.API
+                                .getLength(args[1])));
+                        return true;
                     }
                     return true;
                 }

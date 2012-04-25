@@ -55,7 +55,7 @@ public class TempBanCommand implements CommandExecutor {
                         if (length == 0)
                             return false;
                         length = System.currentTimeMillis()/1000 + length;
-                        MySqlDatabase.addBan(victim.getName(), 2, length, mod,
+                        MySqlDatabase.addBan(victim.getName(), SeruBans.TEMPBAN, length, mod,
                                 reason, display);
                         // kicks and broadcasts message
 

@@ -7,8 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import net.serubin.serubans.SeruBans;
@@ -39,6 +41,8 @@ public class MySqlDatabase {
         getPlayer();
         getBans();
         getTempBans();
+        getBanIds();
+        
     }
 
     protected static void createConnection() {
@@ -142,6 +146,25 @@ public class MySqlDatabase {
         }
     }
 
+    public static void getBanIds() {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT bans.id" + " FROM bans"
+                    + " WHERE (type = " + SeruBans.BAN + " OR type = "
+                    + SeruBans.TEMPBAN + " OR type = " + SeruBans.UNBAN
+                    + " OR type = " + SeruBans.UNTEMPBAN + ") ");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Integer id = rs.getInt("bans.id");
+                HashMaps.setBannedIds(id);
+            }
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+    }
+
     public static void getTempBans() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -202,10 +225,23 @@ public class MySqlDatabase {
     public static void updateBan(int type, int bId) {
         PreparedStatement ps = null;
         ResultSet rs = null;
-        // add player
         try {
             ps = conn.prepareStatement("UPDATE bans SET type=? WHERE id=?;");
             ps.setInt(1, type);
+            ps.setInt(2, bId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateReason(int bId, String reason) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("UPDATE bans SET reason=? WHERE id=?;");
+            ps.setString(1, reason);
             ps.setInt(2, bId);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -320,13 +356,34 @@ public class MySqlDatabase {
         List<Integer> typeList = new ArrayList<Integer>();
         List<String> PlayerInfo = new ArrayList<String>();
         try {
-            ps = conn
-                    .prepareStatement("SELECT `player_id`, `type`, `id` FROM bans WHERE (player_id = ?) AND (type = ?);");
-            ps.setInt(1, id);
-            ps.setInt(2, type);
+            if ((type == 1) || (type == 2)) {
+                int type2 = 0;
+                if (type == 1) {
+                    type2 = 11;
+                } else if (type == 2) {
+                    type2 = 12;
+                }
+                ps = conn
+                        .prepareStatement("SELECT `player_id`, `type`, `id` FROM bans WHERE ((player_id = ?) AND (type = ?)) OR ((player_id = ?) AND (type = ?));");
+
+                ps.setInt(1, id);
+                ps.setInt(2, type);
+                ps.setInt(3, id);
+                ps.setInt(4, type2);
+            } else {
+                ps = conn
+                        .prepareStatement("SELECT `player_id`, `type`, `id` FROM bans WHERE (player_id = ?) AND (type = ?);");
+
+                ps.setInt(1, id);
+                ps.setInt(2, type);
+            }
             rs = ps.executeQuery();
             while (rs.next()) {
                 typeList.add(rs.getInt("id"));
+            }
+
+            if (typeList.isEmpty()) {
+                return PlayerInfo;
             }
 
             Iterator<Integer> typeListItor = typeList.iterator();
@@ -369,4 +426,52 @@ public class MySqlDatabase {
         }
         return line;
     }
+
+    public static Map<String, String> getBanIdInfo(int id) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<String, String> BanId = new HashMap<String, String>();
+        int pId = 0;
+        try {
+            ps = conn
+                    .prepareStatement("SELECT bans.player_id, bans.id, bans.mod, users.id, users.name, bans.type, bans.reason, bans.length, bans.date FROM bans INNER JOIN users ON bans.mod = users.id WHERE (bans.id = ?);");
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                pId = rs.getInt("bans.player_id");
+                int tId = rs.getInt("bans.type");
+                String mName = rs.getString("users.name");
+                String date = rs.getObject("bans.date").toString();
+                String reason = rs.getString("bans.reason");
+                Long length = null;
+                if (tId == 2) {
+                    length = rs.getLong("bans.length");
+                    BanId.put("length", Long.toString(length));
+                }
+                BanId.put("type", ArgProcessing.getBanTypeString(tId));
+                BanId.put("mod", mName);
+                BanId.put("date", date);
+                BanId.put("reason", reason);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ps = conn
+                    .prepareStatement("SELECT `name` FROM users WHERE (`id` = ?);");
+            ps.setInt(1, pId);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String name = rs.getString("name");
+                BanId.put("name", name);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return BanId;
+    }
+
 }

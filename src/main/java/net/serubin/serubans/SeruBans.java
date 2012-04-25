@@ -9,6 +9,7 @@ import net.serubin.serubans.commands.KickCommand;
 import net.serubin.serubans.commands.SearchCommand;
 import net.serubin.serubans.commands.TempBanCommand;
 import net.serubin.serubans.commands.UnbanCommand;
+import net.serubin.serubans.commands.UpdateCommand;
 import net.serubin.serubans.commands.WarnCommand;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
@@ -20,6 +21,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SeruBans extends JavaPlugin {
+    /*
+     * Base class of SeruBans
+     * 
+     * By Serubin323, Solomon Rubin
+     */
 
     public SeruBans plugin;
     public Logger log = Logger.getLogger("Minecraft");
@@ -28,10 +34,18 @@ public class SeruBans extends JavaPlugin {
     private static String name;
     private static String version;
     public static SeruBans self = null;
-    // Class Short Cuts
+    public SeruBansAPI API = null;
+    
+    /*
+     * Class Short Cuts
+     */
+    
     MySqlDatabase db;
 
-    // defines config variables
+    /*
+     * defines config variables
+     */
+    
     public static String BanMessage;
     public static String GlobalBanMessage;
     public static String TempBanMessage;
@@ -42,33 +56,47 @@ public class SeruBans extends JavaPlugin {
     public static String WarnPlayerMessage;
     public static String UnBanMessage;
 
-    // sql variables
+    /*
+     * sql variables
+     */
+    
     public static String username;
     public static String password;
     public static String database;
     public static String host;
 
-    // Ban types
+    /*
+     * Ban types
+     */
+    
     public static final int BAN = 1;
     public static final int TEMPBAN = 2;
     public static final int KICK = 3;
     public static final int WARN = 4;
     public static final int UNBAN = 11;
     public static final int UNTEMPBAN = 12;
-    // perms
+    
+    /*
+     * perms
+     */
+    
     public static final String BANPERM = "serubans.ban";
     public static final String TEMPBANPERM = "serubans.tempban";
     public static final String KICKPERM = "serubans.kick";
     public static final String WARNPERM = "serubans.warn";
     public static final String UNBANPERM = "serubans.unban";
     public static final String CHECKBANPERM = "serubans.checkban";
+    public static final String UPDATEPERM = "serubans.update";
     public static final String DEBUGPERM = "serubans.debug";
     public static final String BROADCASTPERM = "serubans.broadcast";
-    // other, final
+    
+    /*
+     * other, final
+     */
+    
     public static final int SHOW = 0;
     public static final int HIDE = 1;
 
-    // Thread tid
     int taskId;
 
     public void onDisable() {
@@ -88,7 +116,13 @@ public class SeruBans extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         getConfig().options().copyDefaults(true);
         saveConfig();
-        // Ban messages
+        
+        API = new SeruBansAPI(this);
+        
+        /*
+         * Ban messages
+         */
+        
         BanMessage = getConfig().getString("SeruBans.messages.ban.BanMessage");
         GlobalBanMessage = getConfig().getString(
                 "SeruBans.messages.ban.GlobalBanMessage");
@@ -96,26 +130,39 @@ public class SeruBans extends JavaPlugin {
                 "SeruBans.messages.tempban.TempBanMessage");
         GlobalTempBanMessage = getConfig().getString(
                 "SeruBans.messages.tempban.GlobalTempBanMessage");
-        // kick messages
+        /*
+         * kick messages
+         */
+        
         KickMessage = getConfig().getString(
                 "SeruBans.messages.kick.KickMessage");
         GlobalKickMessage = getConfig().getString(
                 "SeruBans.messages.kick.GlobalKickMessage");
-        // warn message
+        /*
+         * warn message
+         */
+        
         WarnMessage = getConfig().getString(
                 "SeruBans.messages.warn.WarnMessage");
         WarnPlayerMessage = getConfig().getString(
                 "SeruBans.messages.warn.WarnPlayerMessage");
         UnBanMessage = getConfig().getString("SeruBans.messages.UnBanMessage");
-        // MySql
+        
+        /*
+         * MySql
+         */
+        
         host = getConfig().getString("SeruBans.database.host");
         username = getConfig().getString("SeruBans.database.username");
         password = getConfig().getString("SeruBans.database.password");
         database = getConfig().getString("SeruBans.database.database");
-        // Other
+        
         debug = getConfig().getBoolean("SeruBans.debug");
 
-        // Add Classes
+        /*
+         * Add Classes
+         */
+        
         BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
                 this);
         TempBanCommand TempBan = new TempBanCommand(TempBanMessage,
@@ -132,7 +179,12 @@ public class SeruBans extends JavaPlugin {
         CheckBanCommand CheckBan = new CheckBanCommand(this);
         UnTempbanThread UnTempanThread = new UnTempbanThread(this);
         SearchCommand Search = new SearchCommand(this);
-        // init commands
+        UpdateCommand Update = new UpdateCommand(this);
+        
+        /*
+         * init commands
+         */
+        
         getCommand("ban").setExecutor(Ban);
         getCommand("tempban").setExecutor(TempBan);
         getCommand("kick").setExecutor(Kick);
@@ -140,20 +192,25 @@ public class SeruBans extends JavaPlugin {
         getCommand("unban").setExecutor(Unban);
         getCommand("checkban").setExecutor(CheckBan);
         getCommand("search").setExecutor(Search);
+        getCommand("update").setExecutor(Update);
         getCommand("serubans").setExecutor(DebugC);
 
-        // create SQL Connection
         MySqlDatabase.startSQL();
 
-        // Create listener
+        /*
+         * Create listener
+         */
+        
         getServer().getPluginManager().registerEvents(
                 new SeruBansPlayerListener(this, BanMessage, TempBanMessage),
                 this);
-        // Create Thread
+        /*
+         *  Create Thread
+         */
+        
         taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 UnTempanThread, 1200, 1200);
-        // taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
-        // UnTempanThread, 6000, 1200);
+
     }
 
     public static void printInfo(String line) {
@@ -183,4 +240,8 @@ public class SeruBans extends JavaPlugin {
         self.log.warning("[SeruBans] " + line);
     }
 
+    /*
+     * API GETTER / SETTER
+     */
+    
 }
