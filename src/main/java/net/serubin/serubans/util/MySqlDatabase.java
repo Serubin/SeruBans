@@ -42,7 +42,7 @@ public class MySqlDatabase {
         getBans();
         getTempBans();
         getBanIds();
-        
+
     }
 
     protected static void createConnection() {
@@ -150,14 +150,11 @@ public class MySqlDatabase {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT bans.id" + " FROM bans"
-                    + " WHERE (type = " + SeruBans.BAN + " OR type = "
-                    + SeruBans.TEMPBAN + " OR type = " + SeruBans.UNBAN
-                    + " OR type = " + SeruBans.UNTEMPBAN + ") ");
+            ps = conn.prepareStatement("SELECT bans.id FROM bans;");
             rs = ps.executeQuery();
             while (rs.next()) {
                 Integer id = rs.getInt("bans.id");
-                HashMaps.setBannedIds(id);
+                HashMaps.setIds(id);
             }
         } catch (SQLException e) {
 

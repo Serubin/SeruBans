@@ -11,17 +11,20 @@ public class HashMaps {
 
     private static Map<String, Integer> PlayerList = new HashMap<String, Integer>();
     private static Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
-    private static List< Integer> BannedIds = new ArrayList<Integer>();    
+    private static List< Integer> BanIds = new ArrayList<Integer>();    
     private static Map<Integer, Long> TempBannedTime = new HashMap<Integer, Long>();
 
     /*
      * id list
      */
-    public static boolean checkBannedId(int id){
-        return BannedIds.contains(id);
+    public static boolean checkId(int id){
+        return BanIds.contains(id);
     }
-    public static void setBannedIds(int id){
-        BannedIds.add(id);
+    public static void setIds(int id){
+        BanIds.add(id);
+    }
+    public static String getFullIds(){
+        return BanIds.toString();
     }
     
     /*

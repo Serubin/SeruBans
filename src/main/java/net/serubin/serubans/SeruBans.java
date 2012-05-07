@@ -11,9 +11,13 @@ import net.serubin.serubans.commands.TempBanCommand;
 import net.serubin.serubans.commands.UnbanCommand;
 import net.serubin.serubans.commands.UpdateCommand;
 import net.serubin.serubans.commands.WarnCommand;
+import net.serubin.serubans.search.DisplayManager;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;
+
+import de.hydrox.bukkit.DroxPerms.DroxPerms;
+import de.hydrox.bukkit.DroxPerms.DroxPermsAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -34,17 +38,19 @@ public class SeruBans extends JavaPlugin {
     private static String name;
     private static String version;
     public static SeruBans self = null;
-    
+
     /*
      * Class Short Cuts
      */
-    
+
     MySqlDatabase db;
+    DisplayManager dm = null;
+    private DroxPermsAPI perms = null;
 
     /*
      * defines config variables
      */
-    
+
     public static String BanMessage;
     public static String GlobalBanMessage;
     public static String TempBanMessage;
@@ -58,7 +64,7 @@ public class SeruBans extends JavaPlugin {
     /*
      * sql variables
      */
-    
+
     public static String username;
     public static String password;
     public static String database;
@@ -67,18 +73,18 @@ public class SeruBans extends JavaPlugin {
     /*
      * Ban types
      */
-    
+
     public static final int BAN = 1;
     public static final int TEMPBAN = 2;
     public static final int KICK = 3;
     public static final int WARN = 4;
     public static final int UNBAN = 11;
     public static final int UNTEMPBAN = 12;
-    
+
     /*
      * perms
      */
-    
+
     public static final String BANPERM = "serubans.ban";
     public static final String TEMPBANPERM = "serubans.tempban";
     public static final String KICKPERM = "serubans.kick";
@@ -88,15 +94,20 @@ public class SeruBans extends JavaPlugin {
     public static final String UPDATEPERM = "serubans.update";
     public static final String DEBUGPERM = "serubans.debug";
     public static final String BROADCASTPERM = "serubans.broadcast";
-    
+
     /*
      * other, final
      */
-    
+
     public static final int SHOW = 0;
     public static final int HIDE = 1;
 
     int taskId;
+    private DroxPermsAPI droxPermsAPI = null;
+    
+    public DroxPermsAPI getDroxPermsAPI() {
+        return droxPermsAPI;
+    }
 
     public void onDisable() {
         reloadConfig();
@@ -116,10 +127,20 @@ public class SeruBans extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         
+
+        /*
+         * DroxPerm api
+         */
+
+        DroxPerms droxPerms = ((DroxPerms) this.getServer().getPluginManager()
+                .getPlugin("DroxPerms"));
+        if (droxPerms != null) {
+            droxPermsAPI = droxPerms.getAPI();
+        }
         /*
          * Ban messages
          */
-        
+
         BanMessage = getConfig().getString("SeruBans.messages.ban.BanMessage");
         GlobalBanMessage = getConfig().getString(
                 "SeruBans.messages.ban.GlobalBanMessage");
@@ -130,7 +151,7 @@ public class SeruBans extends JavaPlugin {
         /*
          * kick messages
          */
-        
+
         KickMessage = getConfig().getString(
                 "SeruBans.messages.kick.KickMessage");
         GlobalKickMessage = getConfig().getString(
@@ -138,28 +159,28 @@ public class SeruBans extends JavaPlugin {
         /*
          * warn message
          */
-        
+
         WarnMessage = getConfig().getString(
                 "SeruBans.messages.warn.WarnMessage");
         WarnPlayerMessage = getConfig().getString(
                 "SeruBans.messages.warn.WarnPlayerMessage");
         UnBanMessage = getConfig().getString("SeruBans.messages.UnBanMessage");
-        
+
         /*
          * MySql
          */
-        
+
         host = getConfig().getString("SeruBans.database.host");
         username = getConfig().getString("SeruBans.database.username");
         password = getConfig().getString("SeruBans.database.password");
         database = getConfig().getString("SeruBans.database.database");
-        
+
         debug = getConfig().getBoolean("SeruBans.debug");
 
         /*
          * Add Classes
          */
-        
+
         BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
                 this);
         TempBanCommand TempBan = new TempBanCommand(TempBanMessage,
@@ -177,11 +198,11 @@ public class SeruBans extends JavaPlugin {
         UnTempbanThread UnTempanThread = new UnTempbanThread(this);
         SearchCommand Search = new SearchCommand(this);
         UpdateCommand Update = new UpdateCommand(this);
-        
+
         /*
          * init commands
          */
-        
+
         getCommand("ban").setExecutor(Ban);
         getCommand("tempban").setExecutor(TempBan);
         getCommand("kick").setExecutor(Kick);
@@ -197,14 +218,14 @@ public class SeruBans extends JavaPlugin {
         /*
          * Create listener
          */
-        
+
         getServer().getPluginManager().registerEvents(
                 new SeruBansPlayerListener(this, BanMessage, TempBanMessage),
                 this);
         /*
-         *  Create Thread
+         * Create Thread
          */
-        
+
         taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 UnTempanThread, 1200, 1200);
 
@@ -240,5 +261,5 @@ public class SeruBans extends JavaPlugin {
     /*
      * API GETTER / SETTER
      */
-    
+
 }

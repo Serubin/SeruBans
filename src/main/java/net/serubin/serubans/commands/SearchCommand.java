@@ -85,6 +85,7 @@ public class SearchCommand implements CommandExecutor {
                             + ", " + ChatColor.YELLOW + "warning"
                             + ChatColor.RED + ", or " + ChatColor.YELLOW
                             + "kicks");
+                    return true;
                 }
                 SearchMethods.searchType(player, typeInt, sender);
                 return true;

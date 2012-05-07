@@ -39,11 +39,17 @@ public class DebugCommand implements CommandExecutor {
                                 + HashMaps.getFullBannedPlayers());
                         sender.sendMessage("TempBan: "
                                 + HashMaps.getFullTempBannedTime());
+                        sender.sendMessage("Ids: "
+                                + HashMaps.getFullIds());
                         return true;
                     }
                     if (args[0].contains("p") && !args[0].contains("api")) {
                         sender.sendMessage("Players: "
                                 + HashMaps.getFullPlayerList());
+                    }
+                    if (args[0].contains("i") && !args[0].contains("api")) {
+                        sender.sendMessage("Ids: "
+                                + HashMaps.getFullIds());
                     }
                     if (args[0].contains("b")) {
                         sender.sendMessage("Banned Players: "
@@ -76,6 +82,7 @@ public class DebugCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED
                         + "You do not have permission!");
+                return true;
             }
         }
         return false;

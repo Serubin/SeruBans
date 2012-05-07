@@ -1,14 +1,21 @@
 package net.serubin.serubans.search;
 
+import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import de.hydrox.bukkit.DroxPerms.DroxPermsAPI;
 
 public class DisplayManager {
 
+    private DroxPermsAPI perms = null;
+
     public static String createTitle(String name) {
 
-        String line = "&8---------------------&6" + name + "&8";
+        String line = "&8---------------------&6" + getPlayerGroup(name) + "&8";
         StringBuilder newLine = new StringBuilder();
         newLine.append(line);
         while (newLine.length() < 56) {
@@ -31,4 +38,27 @@ public class DisplayManager {
         }
     }
 
+    public String static getPlayerGroup(String player) {
+
+        StringBuffer playerString = new StringBuffer();
+        
+        if (perms != null) {
+            String group = SeruBans.perms.getPlayerGroup(player);
+            String groupPrefix = perms.getGroupInfo(group, "prefix");
+            String playerPrefix = perms.getPlayerInfo(player,
+                    "prefix");
+            if (playerPrefix != null) {
+                playerPrefix = playerPrefix.replace("&", "\247");
+            } else if (groupPrefix != null) {
+                groupPrefix = groupPrefix.replace("&", "\247");
+                playerString.append(groupPrefix);
+            } else {
+                playerString.append(ChatColor.WHITE);
+            }
+        }else{
+            playerString.append(ChatColor.WHITE);
+        }
+        playerString.append(player);
+        return playerString.toString();
+    }
 }

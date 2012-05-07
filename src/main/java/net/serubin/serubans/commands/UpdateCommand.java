@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
 
@@ -21,10 +22,12 @@ public class UpdateCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("update")) {
-            if (sender.hasPermission(SeruBans.CHECKBANPERM) || sender.isOp()
+            if (sender.hasPermission(SeruBans.UPDATEPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
-                if(args.length <= 2){
+                if (args.length == 0) {
                     return false;
+                } else if (args.length > 2) {
+
                 }
                 int bId;
                 try {
@@ -34,7 +37,7 @@ public class UpdateCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Id must be a number!");
                     return true;
                 }
-                if (!HashMaps.checkBannedId(bId)) {
+                if (!HashMaps.checkId(bId)) {
                     sender.sendMessage(ChatColor.RED + Integer.toString(bId)
                             + " is not a valid ban id.");
                     return false;
@@ -48,11 +51,15 @@ public class UpdateCommand implements CommandExecutor {
                 reason = reasonRaw.toString().replace(args[0], "");
 
                 MySqlDatabase.updateReason(bId, reason);
+                sender.sendMessage(ChatColor.GREEN + "Reason for Id " + bId
+                        + " changed to '" + reason + "'");
                 plugin.printInfo(sender.getName()
-                        + "updated reason of ban number "
+                        + " updated reason of ban number "
                         + Integer.toString(bId) + " to " + reason);
                 return true;
             }
+            sender.sendMessage(ChatColor.RED + "You do not have permission!");
+            return true;
         }
         return false;
     }
