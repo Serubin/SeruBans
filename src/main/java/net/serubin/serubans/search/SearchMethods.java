@@ -51,11 +51,11 @@ public class SearchMethods {
         if (HashMaps.keyIsInBannedPlayers(player))
             Banned = "banned";
         DisplayManager.sendLine(sender, DisplayManager.createTitle(player));
-        DisplayManager.sendLine(sender, " Bans: " + Bans);
-        DisplayManager.sendLine(sender, " TempBans: " + TempBans);
-        DisplayManager.sendLine(sender, " Kicks: " + Kicks);
-        DisplayManager.sendLine(sender, " Warns: " + Warns);
-        DisplayManager.sendLine(sender, " Is " + Banned);
+        DisplayManager.sendLine(sender, " Bans: " + ChatColor.GOLD + Bans);
+        DisplayManager.sendLine(sender, " TempBans: " + ChatColor.GOLD + TempBans);
+        DisplayManager.sendLine(sender, " Kicks: " + ChatColor.GOLD + Kicks);
+        DisplayManager.sendLine(sender, " Warns: " + ChatColor.GOLD + Warns);
+        DisplayManager.sendLine(sender, " Is " + ChatColor.GOLD + Banned);
 
         return true;
     }
@@ -107,15 +107,15 @@ public class SearchMethods {
             return true;
         }
         DisplayManager.sendLine(sender, DisplayManager.createTitle("Id:" + id));
-        DisplayManager.sendLine(sender, "Player: " + BanId.get("name"));
-        DisplayManager.sendLine(sender, "Mod: " + BanId.get("mod"));
-        DisplayManager.sendLine(sender, "Type: " + BanId.get("type"));
-        DisplayManager.sendLine(sender, "Date: " + BanId.get("date"));
+        DisplayManager.sendLine(sender, "Player: " + ChatColor.GOLD + BanId.get("name"));
+        DisplayManager.sendLine(sender, "Mod: " + ChatColor.GOLD + BanId.get("mod"));
+        DisplayManager.sendLine(sender, "Type: " + ChatColor.GOLD + BanId.get("type"));
+        DisplayManager.sendLine(sender, "Date: " + ChatColor.GOLD + BanId.get("date"));
         if(BanId.containsKey("length")){
-            DisplayManager.sendLine(sender, "Length: " + BanId.get("length"));
+            DisplayManager.sendLine(sender, "Length: " + ChatColor.GOLD + BanId.get("length"));
         }
-        DisplayManager.sendLine(sender, "Reason: " + BanId.get("reason"));
-        DisplayManager.sendLine(sender, "Is Banned? " + HashMaps.keyIsInBannedPlayers(BanId.get("name")));
+        DisplayManager.sendLine(sender, "Reason: " + ChatColor.GOLD + BanId.get("reason"));
+        DisplayManager.sendLine(sender, "Is Banned? " + ChatColor.GOLD + HashMaps.keyIsInBannedPlayers(BanId.get("name")));
         return true;
     }
 }

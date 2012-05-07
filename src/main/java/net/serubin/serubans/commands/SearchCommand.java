@@ -35,10 +35,11 @@ public class SearchCommand implements CommandExecutor {
                 if (s.startsWith("i:") || s.startsWith("id:")) {
                     String idString = s.replaceFirst("i:", "");
                     try {
-                       id = Integer.parseInt(idString);
+                        id = Integer.parseInt(idString);
                     } catch (NumberFormatException ex) {
                         // Item was not an int, do nothing
-                        sender.sendMessage(ChatColor.RED + "Id must be a number!");
+                        sender.sendMessage(ChatColor.RED
+                                + "Id must be a number!");
                         return true;
                     }
                     idB = true;
@@ -73,6 +74,18 @@ public class SearchCommand implements CommandExecutor {
                 if (type.equalsIgnoreCase("warn")
                         || type.equalsIgnoreCase("warning"))
                     typeInt = SeruBans.WARN;
+                if (type.equalsIgnoreCase("kick")
+                        || type.equalsIgnoreCase("kicks"))
+                    typeInt = SeruBans.KICK;
+                else {
+                    sender.sendMessage(ChatColor.RED + "Type not recognized!");
+                    sender.sendMessage(ChatColor.RED + "Try: "
+                            + ChatColor.YELLOW + "tempban" + ChatColor.RED
+                            + ", " + ChatColor.YELLOW + "ban" + ChatColor.RED
+                            + ", " + ChatColor.YELLOW + "warning"
+                            + ChatColor.RED + ", or " + ChatColor.YELLOW
+                            + "kicks");
+                }
                 SearchMethods.searchType(player, typeInt, sender);
                 return true;
             } else if (idB && !typeB && !playerB) {

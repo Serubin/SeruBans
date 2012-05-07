@@ -70,17 +70,6 @@ public class DebugCommand implements CommandExecutor {
                             plugin.log.severe("File Could not be writen!");
                         }
                     }
-                    if (args[0].contains("api")) {
-                        sender.sendMessage("-------------- API TEST--------------");
-                        sender.sendMessage("args[1] = " + args[1]);
-                        sender.sendMessage("--- API CheckBan---");
-                        sender.sendMessage(Boolean.toString(plugin.API
-                                .checkBan(args[1])));
-                        sender.sendMessage("--- API GetLength---");
-                        sender.sendMessage(Long.toString(plugin.API
-                                .getLength(args[1])));
-                        return true;
-                    }
                     return true;
                 }
                 return false;

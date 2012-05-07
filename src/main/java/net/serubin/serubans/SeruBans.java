@@ -34,7 +34,6 @@ public class SeruBans extends JavaPlugin {
     private static String name;
     private static String version;
     public static SeruBans self = null;
-    public SeruBansAPI API = null;
     
     /*
      * Class Short Cuts
@@ -116,8 +115,6 @@ public class SeruBans extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         getConfig().options().copyDefaults(true);
         saveConfig();
-        
-        API = new SeruBansAPI(this);
         
         /*
          * Ban messages
