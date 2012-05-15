@@ -13,7 +13,7 @@ public class DisplayManager {
 
     private DroxPermsAPI perms = null;
 
-    public static String createTitle(String name) {
+    public String createTitle(String name) {
 
         String line = "&8---------------------&6" + getPlayerGroup(name) + "&8";
         StringBuilder newLine = new StringBuilder();
@@ -25,7 +25,7 @@ public class DisplayManager {
         return ArgProcessing.GetColor(newLine.toString());
     }
 
-    public static void sendLine(CommandSender sender, String line) {
+    public void sendLine(CommandSender sender, String line) {
         int len = 56;
         if (line.length() < len)
             sender.sendMessage(ArgProcessing.GetColor("&8|&7" + line));
@@ -38,12 +38,12 @@ public class DisplayManager {
         }
     }
 
-    public String static getPlayerGroup(String player) {
+    public String getPlayerGroup(String player) {
 
         StringBuffer playerString = new StringBuffer();
         
         if (perms != null) {
-            String group = SeruBans.perms.getPlayerGroup(player);
+            String group = perms.getPlayerGroup(player);
             String groupPrefix = perms.getGroupInfo(group, "prefix");
             String playerPrefix = perms.getPlayerInfo(player,
                     "prefix");

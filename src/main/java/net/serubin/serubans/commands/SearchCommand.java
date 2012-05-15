@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 public class SearchCommand implements CommandExecutor {
 
     private SeruBans plugin;
+    private SearchMethods search = new SearchMethods();
 
     public SearchCommand(SeruBans plugin) {
         this.plugin = plugin;
@@ -59,7 +60,7 @@ public class SearchCommand implements CommandExecutor {
             if (playerB && !typeB && !idB) {
                 plugin.printDebug(sender.getName() + "is searching player "
                         + player);
-                SearchMethods.searchPlayer(player, sender);
+                search.searchPlayer(player, sender);
                 return true;
             } else if (playerB && typeB && !idB) {
                 plugin.printDebug(sender.getName() + " is searching " + type
@@ -87,10 +88,10 @@ public class SearchCommand implements CommandExecutor {
                             + "kicks");
                     return true;
                 }
-                SearchMethods.searchType(player, typeInt, sender);
+                search.searchType(player, typeInt, sender);
                 return true;
             } else if (idB && !typeB && !playerB) {
-                SearchMethods.searchId(id, sender);
+                search.searchId(id, sender);
                 return true;
             } else {
                 return false;

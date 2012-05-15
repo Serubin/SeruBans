@@ -205,6 +205,7 @@ public class MySqlDatabase {
                 if (rs.next()) {
                     Integer bId = rs.getInt(1);
                     HashMaps.setBannedPlayers(victim.toLowerCase(), bId);
+                    HashMaps.setIds(bId);
                     if (type == 2) {
                         HashMaps.setTempBannedTime(bId, length);
                     }

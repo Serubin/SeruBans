@@ -12,6 +12,7 @@ import net.serubin.serubans.commands.UnbanCommand;
 import net.serubin.serubans.commands.UpdateCommand;
 import net.serubin.serubans.commands.WarnCommand;
 import net.serubin.serubans.search.DisplayManager;
+import net.serubin.serubans.search.SearchMethods;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;

@@ -15,10 +15,12 @@ import net.serubin.serubans.util.MySqlDatabase;
 
 public class SearchMethods {
 
+    private DisplayManager dm = new DisplayManager();
+
     /*
      * handels PLAYER searchs
      */
-    public static boolean searchPlayer(String player, CommandSender sender) {
+    public boolean searchPlayer(String player, CommandSender sender) {
         List<Integer> BanTypes = null;
         try {
             BanTypes = MySqlDatabase.searchPlayer(HashMaps
@@ -50,12 +52,12 @@ public class SearchMethods {
         String Banned = "not banned";
         if (HashMaps.keyIsInBannedPlayers(player))
             Banned = "banned";
-        DisplayManager.sendLine(sender, DisplayManager.createTitle(player));
-        DisplayManager.sendLine(sender, " Bans: " + ChatColor.GOLD + Bans);
-        DisplayManager.sendLine(sender, " TempBans: " + ChatColor.GOLD + TempBans);
-        DisplayManager.sendLine(sender, " Kicks: " + ChatColor.GOLD + Kicks);
-        DisplayManager.sendLine(sender, " Warns: " + ChatColor.GOLD + Warns);
-        DisplayManager.sendLine(sender, " Is " + ChatColor.GOLD + Banned);
+        dm.sendLine(sender, dm.createTitle(player));
+        dm.sendLine(sender, " Bans: " + ChatColor.GOLD + Bans);
+        dm.sendLine(sender, " TempBans: " + ChatColor.GOLD + TempBans);
+        dm.sendLine(sender, " Kicks: " + ChatColor.GOLD + Kicks);
+        dm.sendLine(sender, " Warns: " + ChatColor.GOLD + Warns);
+        dm.sendLine(sender, " Is " + ChatColor.GOLD + Banned);
 
         return true;
     }
@@ -63,7 +65,7 @@ public class SearchMethods {
     /*
      * Handles out put for TYPE searches
      */
-    public static boolean searchType(String player, int type,
+    public boolean searchType(String player, int type,
             CommandSender sender) {
         List<String> PlayerInfo = null;
         try {
@@ -80,12 +82,12 @@ public class SearchMethods {
         }
 
         Iterator<String> playerInfoIterator = PlayerInfo.iterator();
-        DisplayManager.sendLine(
+        dm.sendLine(
                 sender,
-                DisplayManager.createTitle(player + " Type:"
+                dm.createTitle(player + " Type:"
                         + ArgProcessing.getBanTypeString(type)));
         while (playerInfoIterator.hasNext()) {
-            DisplayManager.sendLine(sender, playerInfoIterator.next());
+            dm.sendLine(sender, playerInfoIterator.next());
         }
         return true;
     }
@@ -93,7 +95,7 @@ public class SearchMethods {
     /*
      * Handles ID search output
      */
-    public static boolean searchId(int id, CommandSender sender) {
+    public boolean searchId(int id, CommandSender sender) {
         Map<String, String> BanId = new HashMap<String, String>();
         try {
             BanId = MySqlDatabase.getBanIdInfo(id);
@@ -106,16 +108,16 @@ public class SearchMethods {
             sender.sendMessage(ChatColor.RED + "No Results");
             return true;
         }
-        DisplayManager.sendLine(sender, DisplayManager.createTitle("Id:" + id));
-        DisplayManager.sendLine(sender, "Player: " + ChatColor.GOLD + BanId.get("name"));
-        DisplayManager.sendLine(sender, "Mod: " + ChatColor.GOLD + BanId.get("mod"));
-        DisplayManager.sendLine(sender, "Type: " + ChatColor.GOLD + BanId.get("type"));
-        DisplayManager.sendLine(sender, "Date: " + ChatColor.GOLD + BanId.get("date"));
+        dm.sendLine(sender, dm.createTitle("Id:" + id));
+        dm.sendLine(sender, "Player: " + ChatColor.GOLD + BanId.get("name"));
+        dm.sendLine(sender, "Mod: " + ChatColor.GOLD + BanId.get("mod"));
+        dm.sendLine(sender, "Type: " + ChatColor.GOLD + BanId.get("type"));
+        dm.sendLine(sender, "Date: " + ChatColor.GOLD + BanId.get("date"));
         if(BanId.containsKey("length")){
-            DisplayManager.sendLine(sender, "Length: " + ChatColor.GOLD + BanId.get("length"));
+            dm.sendLine(sender, "Length: " + ChatColor.GOLD + BanId.get("length"));
         }
-        DisplayManager.sendLine(sender, "Reason: " + ChatColor.GOLD + BanId.get("reason"));
-        DisplayManager.sendLine(sender, "Is Banned? " + ChatColor.GOLD + HashMaps.keyIsInBannedPlayers(BanId.get("name")));
+        dm.sendLine(sender, "Reason: " + ChatColor.GOLD + BanId.get("reason"));
+        dm.sendLine(sender, "Is Banned? " + ChatColor.GOLD + HashMaps.keyIsInBannedPlayers(BanId.get("name")));
         return true;
     }
 }
