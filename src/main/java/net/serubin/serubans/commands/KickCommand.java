@@ -67,6 +67,7 @@ public class KickCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED
                         + "You do not have permission!");
+                return true;
             }
         }
 

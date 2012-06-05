@@ -345,6 +345,9 @@ public class MySqlDatabase {
             e.printStackTrace();
 
         }
+        if(type.isEmpty()){
+            type = null;
+        }
         return type;
     }
 
@@ -381,7 +384,7 @@ public class MySqlDatabase {
             }
 
             if (typeList.isEmpty()) {
-                return PlayerInfo;
+                return PlayerInfo = null;
             }
 
             Iterator<Integer> typeListItor = typeList.iterator();

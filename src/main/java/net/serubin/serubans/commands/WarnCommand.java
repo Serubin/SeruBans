@@ -67,7 +67,7 @@ public class WarnCommand implements CommandExecutor {
                     return true;
                 } else {
                     CheckPlayer.checkPlayerOffline(args[0], sender);
-                    MySqlDatabase.addBan(args[0], 3, 0, mod, reason, display);
+                    MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod, reason, display);
                     // broadcasts message
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             WarnMessage, reason, mod, args[0]));

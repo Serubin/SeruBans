@@ -26,10 +26,9 @@ public class SearchMethods {
             BanTypes = MySqlDatabase.searchPlayer(HashMaps
                     .getPlayerList(player));
         } catch (NullPointerException NPE) {
-            sender.sendMessage(ChatColor.RED + "No Results");
             SeruBans.self.printDebug(NPE.toString());
         }
-        if(BanTypes.isEmpty()){
+        if (BanTypes == null || BanTypes.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "No Results");
             return true;
         }
@@ -48,6 +47,10 @@ public class SearchMethods {
                 TempBans++;
             if (Next == SeruBans.WARN)
                 Warns++;
+            if (Next == SeruBans.UNBAN)
+                Bans++;
+            if (Next == SeruBans.UNTEMPBAN)
+                TempBans++;
         }
         String Banned = "not banned";
         if (HashMaps.keyIsInBannedPlayers(player))
@@ -65,18 +68,16 @@ public class SearchMethods {
     /*
      * Handles out put for TYPE searches
      */
-    public boolean searchType(String player, int type,
-            CommandSender sender) {
+    public boolean searchType(String player, int type, CommandSender sender) {
         List<String> PlayerInfo = null;
         try {
             PlayerInfo = MySqlDatabase.searchType(
                     HashMaps.getPlayerList(player), type);
         } catch (NullPointerException NPE) {
-            sender.sendMessage(ChatColor.RED + "No Results");
             SeruBans.self.printDebug(NPE.toString());
             return true;
         }
-        if (PlayerInfo.isEmpty()) {
+        if (PlayerInfo == null || PlayerInfo.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "No Results");
             return true;
         }
@@ -100,11 +101,10 @@ public class SearchMethods {
         try {
             BanId = MySqlDatabase.getBanIdInfo(id);
         } catch (NullPointerException NPE) {
-            sender.sendMessage(ChatColor.RED + "No Results");
             SeruBans.self.printDebug(NPE.toString());
             return true;
         }
-        if (BanId.isEmpty()) {
+        if (BanId == null || BanId.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "No Results");
             return true;
         }
@@ -113,11 +113,15 @@ public class SearchMethods {
         dm.sendLine(sender, "Mod: " + ChatColor.GOLD + BanId.get("mod"));
         dm.sendLine(sender, "Type: " + ChatColor.GOLD + BanId.get("type"));
         dm.sendLine(sender, "Date: " + ChatColor.GOLD + BanId.get("date"));
-        if(BanId.containsKey("length")){
-            dm.sendLine(sender, "Length: " + ChatColor.GOLD + BanId.get("length"));
+        if (BanId.containsKey("length")) {
+            dm.sendLine(sender,
+                    "Length: " + ChatColor.GOLD + BanId.get("length"));
         }
         dm.sendLine(sender, "Reason: " + ChatColor.GOLD + BanId.get("reason"));
-        dm.sendLine(sender, "Is Banned? " + ChatColor.GOLD + HashMaps.keyIsInBannedPlayers(BanId.get("name")));
+        dm.sendLine(
+                sender,
+                "Is Banned? " + ChatColor.GOLD
+                        + HashMaps.keyIsInBannedPlayers(BanId.get("name")));
         return true;
     }
 }

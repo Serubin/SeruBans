@@ -57,9 +57,10 @@ public class UpdateCommand implements CommandExecutor {
                         + " updated reason of ban number "
                         + Integer.toString(bId) + " to " + reason);
                 return true;
-            }
+            } else {
             sender.sendMessage(ChatColor.RED + "You do not have permission!");
             return true;
+            }
         }
         return false;
     }

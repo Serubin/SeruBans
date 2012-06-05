@@ -93,6 +93,7 @@ public class SeruBans extends JavaPlugin {
     public static final String UNBANPERM = "serubans.unban";
     public static final String CHECKBANPERM = "serubans.checkban";
     public static final String UPDATEPERM = "serubans.update";
+    public static final String SEARCHPERM = "serubans.search";
     public static final String DEBUGPERM = "serubans.debug";
     public static final String BROADCASTPERM = "serubans.broadcast";
 
@@ -210,7 +211,7 @@ public class SeruBans extends JavaPlugin {
         getCommand("warn").setExecutor(Warn);
         getCommand("unban").setExecutor(Unban);
         getCommand("checkban").setExecutor(CheckBan);
-        getCommand("search").setExecutor(Search);
+        getCommand("bsearch").setExecutor(Search);
         getCommand("update").setExecutor(Update);
         getCommand("serubans").setExecutor(DebugC);
 
