@@ -201,18 +201,18 @@ public class MySqlDatabase {
             ps.setInt(7, display);
             ps.executeUpdate();
             rs = ps.getGeneratedKeys();
-            if (type == 1 || type == 2) {
-                if (rs.next()) {
-                    Integer bId = rs.getInt(1);
+            if (rs.next()) {
+                Integer bId = rs.getInt(1);
+                HashMaps.setIds(bId);
+                if (type == 1 || type == 2) {
                     HashMaps.setBannedPlayers(victim.toLowerCase(), bId);
-                    HashMaps.setIds(bId);
-                    if (type == 2) {
-                        HashMaps.setTempBannedTime(bId, length);
-                    }
-                    SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
-                } else {
-                    SeruBans.printInfo("Error adding ban!");
                 }
+                if (type == 2) {
+                    HashMaps.setTempBannedTime(bId, length);
+                }
+                SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
+            } else {
+                SeruBans.printInfo("Error adding ban!");
             }
         } catch (SQLException e) {
 
@@ -345,7 +345,7 @@ public class MySqlDatabase {
             e.printStackTrace();
 
         }
-        if(type.isEmpty()){
+        if (type.isEmpty()) {
             type = null;
         }
         return type;

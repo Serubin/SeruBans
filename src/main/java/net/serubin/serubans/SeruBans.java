@@ -17,8 +17,6 @@ import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;
 
-import de.hydrox.bukkit.DroxPerms.DroxPerms;
-import de.hydrox.bukkit.DroxPerms.DroxPermsAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -46,7 +44,6 @@ public class SeruBans extends JavaPlugin {
 
     MySqlDatabase db;
     DisplayManager dm = null;
-    private DroxPermsAPI perms = null;
 
     /*
      * defines config variables
@@ -105,11 +102,6 @@ public class SeruBans extends JavaPlugin {
     public static final int HIDE = 1;
 
     int taskId;
-    private DroxPermsAPI droxPermsAPI = null;
-    
-    public DroxPermsAPI getDroxPermsAPI() {
-        return droxPermsAPI;
-    }
 
     public void onDisable() {
         reloadConfig();
@@ -129,16 +121,6 @@ public class SeruBans extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         
-
-        /*
-         * DroxPerm api
-         */
-
-        DroxPerms droxPerms = ((DroxPerms) this.getServer().getPluginManager()
-                .getPlugin("DroxPerms"));
-        if (droxPerms != null) {
-            droxPermsAPI = droxPerms.getAPI();
-        }
         /*
          * Ban messages
          */
