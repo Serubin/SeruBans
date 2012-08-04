@@ -102,6 +102,7 @@ public class SeruBans extends JavaPlugin {
     public static final int HIDE = 1;
 
     int taskId;
+    int taskId_maintain;
 
     public void onDisable() {
         reloadConfig();
@@ -212,6 +213,8 @@ public class SeruBans extends JavaPlugin {
 
         taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 UnTempanThread, 1200, 1200);
+        taskId_maintain = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
+                sqldb, 5800, 5800);
 
     }
 

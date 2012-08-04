@@ -15,7 +15,7 @@ import java.util.Properties;
 
 import net.serubin.serubans.SeruBans;
 
-public class MySqlDatabase {
+public class MySqlDatabase implements Runnable {
 
     static Connection conn;
     public static String host;
@@ -43,6 +43,9 @@ public class MySqlDatabase {
         getTempBans();
         getBanIds();
 
+    }
+    public void run() {
+        maintainConnection();
     }
 
     protected static void createConnection() {
@@ -106,7 +109,18 @@ public class MySqlDatabase {
         }
     }
 
-    // TODO create get tempbans
+    public static void maintainConnection(){
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT count(*) FROM bans limit 1;");
+            rs = ps.executeQuery();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        SeruBans.self.log.info("SeruBans has checked in with database");
+    }
 
     public static void getPlayer() {
         PreparedStatement ps = null;
