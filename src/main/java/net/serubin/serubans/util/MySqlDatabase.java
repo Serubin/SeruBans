@@ -1,5 +1,6 @@
 package net.serubin.serubans.util;
 
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,11 +18,11 @@ import net.serubin.serubans.SeruBans;
 
 public class MySqlDatabase implements Runnable {
 
-    static Connection conn;
-    public static String host;
-    public static String username;
-    public static String password;
-    public static String database;
+    private static Connection conn;
+    private static String host;
+    private static String username;
+    private static String password;
+    private static String database;
     private SeruBans plugin;
     private static String reason;
     private static String mod;
@@ -225,6 +226,7 @@ public class MySqlDatabase implements Runnable {
                     HashMaps.setTempBannedTime(bId, length);
                 }
                 SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
+                SeruBans.self.getServer().getPlayer(mod).sendMessage(Color.ORANGE + "Ban Id for player " + Color.RED + victim + Color.ORANGE + ": " + bId  );
             } else {
                 SeruBans.printInfo("Error adding ban!");
             }
