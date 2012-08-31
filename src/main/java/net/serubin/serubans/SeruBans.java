@@ -195,7 +195,7 @@ public class SeruBans extends JavaPlugin {
         getCommand("unban").setExecutor(Unban);
         getCommand("checkban").setExecutor(CheckBan);
         getCommand("bsearch").setExecutor(Search);
-        getCommand("update").setExecutor(Update);
+        getCommand("bupdate").setExecutor(Update);
         getCommand("serubans").setExecutor(DebugC);
 
         MySqlDatabase.startSQL();
