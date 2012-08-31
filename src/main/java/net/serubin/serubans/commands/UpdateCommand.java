@@ -21,7 +21,7 @@ public class UpdateCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
-        if (commandLabel.equalsIgnoreCase("update")) {
+        if (commandLabel.equalsIgnoreCase("bupdate")) {
             if (sender.hasPermission(SeruBans.UPDATEPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
                 if (args.length == 0) {

@@ -1,6 +1,6 @@
 name: SeruBans
 main: net.serubin.serubans.SeruBans
-version: 2.0.5
+version: 2.0.6
 
 commands:
   ban:
@@ -24,7 +24,7 @@ commands:
   bsearch:
     description: search function
     usage: /<command> p:<player> t:<type> i:<id> - search function
-  update:
+  bupdate:
     description: updates reason
     usage: /<command> <id> <reason> - updates reason
   serubans:
@@ -74,7 +74,7 @@ permissions:
     default: op
   serubans.broadcast:
     description: gives permission to see ban broadcasts
-    default: true
+    default: op
     
   
  
