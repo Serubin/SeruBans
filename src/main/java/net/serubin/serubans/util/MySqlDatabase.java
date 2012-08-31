@@ -45,6 +45,7 @@ public class MySqlDatabase implements Runnable {
         getBanIds();
 
     }
+
     public void run() {
         maintainConnection();
     }
@@ -110,7 +111,7 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
-    public static void maintainConnection(){
+    public static void maintainConnection() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -226,7 +227,15 @@ public class MySqlDatabase implements Runnable {
                     HashMaps.setTempBannedTime(bId, length);
                 }
                 SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
-                SeruBans.self.getServer().getPlayer(mod).sendMessage(Color.ORANGE + "Ban Id for player " + Color.RED + victim + Color.ORANGE + ": " + bId  );
+                if (mod != "console") {
+                    SeruBans.self
+                            .getServer()
+                            .getPlayer(mod)
+                            .sendMessage(
+                                    Color.ORANGE + "Ban Id for player "
+                                            + Color.RED + victim + Color.ORANGE
+                                            + ": " + bId);
+                }
             } else {
                 SeruBans.printInfo("Error adding ban!");
             }
