@@ -57,9 +57,8 @@ public class KickCommand implements CommandExecutor {
                             GlobalKickMessage, reason, mod, victim.getName()));
                     plugin.log.info(mod + " kicked " + victim.getName()
                             + " for " + reason);
-                    sender.sendMessage(Color.ORANGE
-                            + "Ban Id: "
-                            + Color.YELLOW
+                    sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                            + ChatColor.YELLOW
                             + Integer.toString(MySqlDatabase.getLastBanId()));
                     victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                             .PlayerMessage(KickMessage, reason, mod)));

@@ -64,7 +64,8 @@ public class WarnCommand implements CommandExecutor {
                             + " for " + reason);
                     victim.sendMessage(ArgProcessing.GetColor(ArgProcessing
                             .PlayerMessage(WarnPlayerMessage, reason, mod)));
-                    sender.sendMessage(Color.ORANGE + "Ban Id: " + Color.YELLOW
+                    sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                            + ChatColor.YELLOW
                             + Integer.toString(MySqlDatabase.getLastBanId()));
 
                     // adds player to db
@@ -78,7 +79,8 @@ public class WarnCommand implements CommandExecutor {
                             WarnMessage, reason, mod, args[0]));
                     plugin.log.info(mod + " warned " + args[0] + " for "
                             + reason);
-                    sender.sendMessage(Color.ORANGE + "Ban Id: " + Color.YELLOW
+                    sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                            + ChatColor.YELLOW
                             + Integer.toString(MySqlDatabase.getLastBanId()));
                     return true;
                 }

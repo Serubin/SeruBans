@@ -62,8 +62,10 @@ public class SearchMethods {
         dm.sendLine(sender, " Warns: " + ChatColor.GOLD + Warns);
         dm.sendLine(sender, " Is " + ChatColor.GOLD + Banned);
         if (Banned == "banned")
-            dm.sendLine(sender,
-                    "Current Ban Id:" + HashMaps.getBannedPlayers(player));
+            dm.sendLine(
+                    sender,
+                    " Current Ban Id: " + ChatColor.GOLD
+                            + HashMaps.getBannedPlayers(player));
 
         return true;
     }

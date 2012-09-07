@@ -64,9 +64,8 @@ public class BanCommand implements CommandExecutor {
                                 GlobalBanMessage, reason, mod, victim.getName()));
                         plugin.log.info(mod + " banned " + victim.getName()
                                 + " for " + reason);
-                        sender.sendMessage(Color.ORANGE
-                                + "Ban Id: "
-                                + Color.YELLOW
+                        sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                                + ChatColor.YELLOW
                                 + Integer.toString(MySqlDatabase.getLastBanId()));
                         victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                                 .PlayerMessage(BanMessage, reason, mod)));
@@ -88,9 +87,8 @@ public class BanCommand implements CommandExecutor {
                                 GlobalBanMessage, reason, mod, args[0]));
                         plugin.log.info(mod + " banned " + args[0] + " for "
                                 + reason);
-                        sender.sendMessage(Color.ORANGE
-                                + "Ban Id: "
-                                + Color.YELLOW
+                        sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                                + ChatColor.YELLOW
                                 + Integer.toString(MySqlDatabase.getLastBanId()));
                         return true;
                     } else {
