@@ -11,9 +11,26 @@ public class HashMaps {
 
     private static Map<String, Integer> PlayerList = new HashMap<String, Integer>();
     private static Map<String, Integer> BannedPlayers = new HashMap<String, Integer>();
+    private static List< Integer> BanIds = new ArrayList<Integer>();    
     private static Map<Integer, Long> TempBannedTime = new HashMap<Integer, Long>();
 
-    // banned players
+    /*
+     * id list
+     */
+    public static boolean checkId(int id){
+        return BanIds.contains(id);
+    }
+    public static void setIds(int id){
+        BanIds.add(id);
+    }
+    public static String getFullIds(){
+        return BanIds.toString();
+    }
+    
+    /*
+     * banned players
+     */
+    
     public static Integer getBannedPlayers(String name) {
         return BannedPlayers.get(name);
     }
@@ -40,6 +57,15 @@ public class HashMaps {
 
     public static Set<Entry<String, Integer>> getBannedPlayersSet() {
         return BannedPlayers.entrySet();
+    }
+
+    public static List<String> getBannedForFile() {
+        List<String> ban = new ArrayList<String>();
+        for (Entry<String, Integer> entry : BannedPlayers.entrySet()) {
+            String key = entry.getKey();
+            ban.add(key);
+        }
+        return ban;
     }
 
     // temp banned time

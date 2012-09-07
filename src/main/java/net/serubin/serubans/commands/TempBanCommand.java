@@ -1,5 +1,7 @@
 package net.serubin.serubans.commands;
 
+import java.awt.Color;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -54,9 +56,9 @@ public class TempBanCommand implements CommandExecutor {
                         plugin.printDebug(Long.toString(length));
                         if (length == 0)
                             return false;
-                        length = System.currentTimeMillis()/1000 + length;
-                        MySqlDatabase.addBan(victim.getName(), SeruBans.TEMPBAN, length, mod,
-                                reason, display);
+                        length = System.currentTimeMillis() / 1000 + length;
+                        MySqlDatabase.addBan(victim.getName(),
+                                SeruBans.TEMPBAN, length, mod, reason, display);
                         // kicks and broadcasts message
 
                         String date = ArgProcessing.getStringDate(length);
@@ -65,6 +67,10 @@ public class TempBanCommand implements CommandExecutor {
                                         reason, mod, victim.getName(), date));
                         plugin.log.info(mod + " banned " + victim.getName()
                                 + " for " + reason);
+                        sender.sendMessage(Color.ORANGE
+                                + "Ban Id: "
+                                + Color.YELLOW
+                                + Integer.toString(MySqlDatabase.getLastBanId()));
                         victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                                 .PlayerTempBanMessage(tempBanMessage, reason,
                                         mod, date)));
@@ -93,6 +99,10 @@ public class TempBanCommand implements CommandExecutor {
                                 globalTempBanMessage, reason, mod, args[0]));
                         plugin.log.info(mod + " banned " + args[0] + " for "
                                 + reason);
+                        sender.sendMessage(Color.ORANGE
+                                + "Ban Id: "
+                                + Color.YELLOW
+                                + Integer.toString(MySqlDatabase.getLastBanId()));
                         return true;
                     } else {
                         sender.sendMessage(ChatColor.GOLD + args[0]
@@ -104,6 +114,7 @@ public class TempBanCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED
                         + "You do not have permission!");
+                return true;
             }
         }
         return false;

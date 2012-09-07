@@ -1,5 +1,7 @@
 package net.serubin.serubans.commands;
 
+import java.awt.Color;
+
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
@@ -55,6 +57,10 @@ public class KickCommand implements CommandExecutor {
                             GlobalKickMessage, reason, mod, victim.getName()));
                     plugin.log.info(mod + " kicked " + victim.getName()
                             + " for " + reason);
+                    sender.sendMessage(Color.ORANGE
+                            + "Ban Id: "
+                            + Color.YELLOW
+                            + Integer.toString(MySqlDatabase.getLastBanId()));
                     victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                             .PlayerMessage(KickMessage, reason, mod)));
                     // adds player to db
@@ -67,6 +73,7 @@ public class KickCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED
                         + "You do not have permission!");
+                return true;
             }
         }
 

@@ -1,5 +1,7 @@
 package net.serubin.serubans.commands;
 
+import java.awt.Color;
+
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
@@ -62,6 +64,10 @@ public class BanCommand implements CommandExecutor {
                                 GlobalBanMessage, reason, mod, victim.getName()));
                         plugin.log.info(mod + " banned " + victim.getName()
                                 + " for " + reason);
+                        sender.sendMessage(Color.ORANGE
+                                + "Ban Id: "
+                                + Color.YELLOW
+                                + Integer.toString(MySqlDatabase.getLastBanId()));
                         victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                                 .PlayerMessage(BanMessage, reason, mod)));
                         return true;
@@ -76,11 +82,16 @@ public class BanCommand implements CommandExecutor {
                     // broadcasts message
                     CheckPlayer.checkPlayerOffline(args[0], sender);
                     if (!HashMaps.keyIsInBannedPlayers(args[0])) {
-                        MySqlDatabase.addBan(args[0], SeruBans.BAN, 0, mod, reason, display);
+                        MySqlDatabase.addBan(args[0], SeruBans.BAN, 0, mod,
+                                reason, display);
                         SeruBans.printServer(ArgProcessing.GlobalMessage(
                                 GlobalBanMessage, reason, mod, args[0]));
                         plugin.log.info(mod + " banned " + args[0] + " for "
                                 + reason);
+                        sender.sendMessage(Color.ORANGE
+                                + "Ban Id: "
+                                + Color.YELLOW
+                                + Integer.toString(MySqlDatabase.getLastBanId()));
                         return true;
                     } else {
                         sender.sendMessage(ChatColor.GOLD + args[0]
@@ -94,7 +105,6 @@ public class BanCommand implements CommandExecutor {
                         + "You do not have permission!");
                 return true;
             }
-
         }
         return false;
     }
