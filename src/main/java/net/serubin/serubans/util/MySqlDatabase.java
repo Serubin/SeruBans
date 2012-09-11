@@ -26,6 +26,7 @@ public class MySqlDatabase implements Runnable {
     private SeruBans plugin;
     private static String reason;
     private static String mod;
+    private static int lastBanId;
 
     public MySqlDatabase(String host, String username, String password,
             String database, SeruBans plugin) {
@@ -226,16 +227,8 @@ public class MySqlDatabase implements Runnable {
                 if (type == 2) {
                     HashMaps.setTempBannedTime(bId, length);
                 }
+                lastBanId = bId;
                 SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
-                if (mod != "console") {
-                    SeruBans.self
-                            .getServer()
-                            .getPlayer(mod)
-                            .sendMessage(
-                                    Color.ORANGE + "Ban Id for player "
-                                            + Color.RED + victim + Color.ORANGE
-                                            + ": " + bId);
-                }
             } else {
                 SeruBans.printInfo("Error adding ban!");
             }
@@ -452,7 +445,11 @@ public class MySqlDatabase implements Runnable {
         }
         return line;
     }
-
+/**
+ * Get ban id info
+ * @param id ban id
+ * @return 
+ */
     public static Map<String, String> getBanIdInfo(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -499,5 +496,11 @@ public class MySqlDatabase implements Runnable {
         }
         return BanId;
     }
-
+/**
+ * Gets last ban id.
+ * @return lastBanId
+ */
+    public static int getLastBanId() {
+        return lastBanId;
+    }
 }

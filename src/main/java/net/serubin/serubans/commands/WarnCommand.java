@@ -1,5 +1,7 @@
 package net.serubin.serubans.commands;
 
+import java.awt.Color;
+
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
@@ -62,21 +64,29 @@ public class WarnCommand implements CommandExecutor {
                             + " for " + reason);
                     victim.sendMessage(ArgProcessing.GetColor(ArgProcessing
                             .PlayerMessage(WarnPlayerMessage, reason, mod)));
+                    sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                            + ChatColor.YELLOW
+                            + Integer.toString(MySqlDatabase.getLastBanId()));
 
                     // adds player to db
                     return true;
                 } else {
                     CheckPlayer.checkPlayerOffline(args[0], sender);
-                    MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod, reason, display);
+                    MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod,
+                            reason, display);
                     // broadcasts message
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             WarnMessage, reason, mod, args[0]));
                     plugin.log.info(mod + " warned " + args[0] + " for "
                             + reason);
+                    sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                            + ChatColor.YELLOW
+                            + Integer.toString(MySqlDatabase.getLastBanId()));
                     return true;
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission!");
+                sender.sendMessage(ChatColor.RED
+                        + "You do not have permission!");
             }
         }
         return false;
