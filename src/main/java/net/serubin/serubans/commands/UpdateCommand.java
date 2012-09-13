@@ -48,7 +48,8 @@ public class UpdateCommand implements CommandExecutor {
                 for (String s : args) {
                     reasonRaw.append(" " + s);
                 }
-                reason = reasonRaw.toString().replace(args[0], "");
+                String repl = " " + args[0] + " ";
+                reason = reasonRaw.toString().replace(repl, "");
 
                 MySqlDatabase.updateReason(bId, reason);
                 sender.sendMessage(ChatColor.GREEN + "Reason for Id " + bId
