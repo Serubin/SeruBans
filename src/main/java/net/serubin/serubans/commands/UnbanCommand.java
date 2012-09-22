@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
 
@@ -22,9 +23,15 @@ public class UnbanCommand implements CommandExecutor {
             String commandLabel, String[] args) {
 
         int type;
+        boolean silent = false;
         if (commandLabel.equalsIgnoreCase("unban")) {
             if (sender.hasPermission(SeruBans.UNBANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
+                silent = false;
+                if (args[0].equalsIgnoreCase("-s")) {
+                    silent = true;
+                    args = ArgProcessing.stripFirstArg(args);
+                }
                 if (args.length == 0) {
                     return false;
                 } else if (args.length > 1) {
@@ -48,7 +55,7 @@ public class UnbanCommand implements CommandExecutor {
                         HashMaps.removeBannedPlayerItem(BannedVictim
                                 .toLowerCase());
                         SeruBans.printServer(ChatColor.YELLOW + BannedVictim
-                                + ChatColor.GOLD + " was unbanned!");
+                                + ChatColor.GOLD + " was unbanned!", silent);
                         plugin.log.info(BannedVictim + " was unbanned by "
                                 + sender.getName());
                         return true;
@@ -59,7 +66,8 @@ public class UnbanCommand implements CommandExecutor {
                     }
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission!");
+                sender.sendMessage(ChatColor.RED
+                        + "You do not have permission!");
                 return true;
             }
         }

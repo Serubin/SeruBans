@@ -36,11 +36,24 @@ public class WarnCommand implements CommandExecutor {
         Player victim;
         String mod;
         String reason = "";
-        int display = 0;
+        int display = SeruBans.SHOW;
+        boolean silent = false;
 
         if (commandLabel.equalsIgnoreCase("warn")) {
             if (sender.hasPermission(SeruBans.WARNPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
+                silent = false;
+                silent = false;
+                display = SeruBans.SHOW;
+                if (args[0].startsWith("-")) {
+                    if (args[0].contains("s")) {
+                        silent = true;
+                    }
+                    if (args[0].contains("h")) {
+                        display = SeruBans.HIDE;
+                    }
+                    args = ArgProcessing.stripFirstArg(args);
+                }
                 if (args.length == 0) {
                     return false;
                 } else if (args.length > 1) {
@@ -54,16 +67,21 @@ public class WarnCommand implements CommandExecutor {
 
                 String line = "";
                 if (victim != null) {
+                    // checks player for id in database
                     CheckPlayer.checkPlayer(victim, sender);
+                    // adds ban to database
                     MySqlDatabase.addBan(victim.getName(), SeruBans.WARN, 0,
                             mod, reason, display);
-                    // Warns and broadcasts message
+                    // prints to players on server with perms
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
-                            WarnMessage, reason, mod, victim.getName()));
+                            WarnMessage, reason, mod, victim.getName()), silent);
+                    // logs i t
                     plugin.log.info(mod + " warned " + victim.getName()
                             + " for " + reason);
+                    // tells victim
                     victim.sendMessage(ArgProcessing.GetColor(ArgProcessing
                             .PlayerMessage(WarnPlayerMessage, reason, mod)));
+                    // sends kicker ban id
                     sender.sendMessage(ChatColor.GOLD + "Ban Id: "
                             + ChatColor.YELLOW
                             + Integer.toString(MySqlDatabase.getLastBanId()));
@@ -71,14 +89,18 @@ public class WarnCommand implements CommandExecutor {
                     // adds player to db
                     return true;
                 } else {
+                    // checks player for id in database
                     CheckPlayer.checkPlayerOffline(args[0], sender);
+                    // adds ban to database
                     MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod,
                             reason, display);
-                    // broadcasts message
+                    // prints to players on server with perms
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
-                            WarnMessage, reason, mod, args[0]));
+                            WarnMessage, reason, mod, args[0]), silent);
+                    // logs it
                     plugin.log.info(mod + " warned " + args[0] + " for "
                             + reason);
+                    // sends kicker ban id
                     sender.sendMessage(ChatColor.GOLD + "Ban Id: "
                             + ChatColor.YELLOW
                             + Integer.toString(MySqlDatabase.getLastBanId()));

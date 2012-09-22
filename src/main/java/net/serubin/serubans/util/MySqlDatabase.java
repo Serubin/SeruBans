@@ -90,6 +90,26 @@ public class MySqlDatabase implements Runnable {
             }
             rs.close();
 
+            SeruBans.printInfo("Searching for log table");
+            rs = conn.getMetaData().getTables(null, null, "log", null);
+            if (!rs.next()) {
+                SeruBans.printWarning("No 'log' data table found, Attempting to create one...");
+                PreparedStatement ps = conn
+                        .prepareStatement("CREATE TABLE IF NOT EXISTS `log` ( "
+                                + "`id` int(8) unsigned NOT NULL AUTO_INCREMENT, "
+                                + "`action` enum('delete','unban','update') NOT NULL, "
+                                + "`banid` int(8) unsigned NOT NULL, "
+                                + "`ip` text NOT NULL, "
+                                + "`data` text NOT NULL, "
+                                + "primary key (`id`), key `id` (`id`));");
+                ps.executeUpdate();
+                ps.close();
+                SeruBans.printWarning("'log' data table created!");
+            } else {
+                SeruBans.printInfo("Table found");
+            }
+            rs.close();
+
             SeruBans.printInfo("Searching for users table");
             rs = conn.getMetaData().getTables(null, null, "users", null);
             if (!rs.next()) {
@@ -101,7 +121,7 @@ public class MySqlDatabase implements Runnable {
                                 + "primary key (`id`), UNIQUE key `player` (`name`));");
                 ps.executeUpdate();
                 ps.close();
-                SeruBans.printWarning("'user' data table created!");
+                SeruBans.printWarning("'users' data table created!");
             } else {
                 SeruBans.printInfo("Table found");
             }
@@ -254,9 +274,16 @@ public class MySqlDatabase implements Runnable {
 
     public static void updateReason(int bId, String reason) {
         PreparedStatement ps = null;
+        PreparedStatement ps2 = null;
         ResultSet rs = null;
         try {
             ps = conn.prepareStatement("UPDATE bans SET reason=? WHERE id=?;");
+            ps2 = conn
+                    .prepareStatement("INSERT INTO `log`(`action`, `banid`, `ip`, `data`) VALUES ('update',?,'In-Game',?)");
+            String data = "UPDATE:Id=" + bId + "Reason=" + reason;
+            ps2.setInt(1, bId);
+            ps2.setString(2, data);
+            ps2.executeUpdate();
             ps.setString(1, reason);
             ps.setInt(2, bId);
             ps.executeUpdate();
@@ -445,11 +472,14 @@ public class MySqlDatabase implements Runnable {
         }
         return line;
     }
-/**
- * Get ban id info
- * @param id ban id
- * @return 
- */
+
+    /**
+     * Get ban id info
+     * 
+     * @param id
+     *            ban id
+     * @return
+     */
     public static Map<String, String> getBanIdInfo(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -496,10 +526,12 @@ public class MySqlDatabase implements Runnable {
         }
         return BanId;
     }
-/**
- * Gets last ban id.
- * @return lastBanId
- */
+
+    /**
+     * Gets last ban id.
+     * 
+     * @return lastBanId
+     */
     public static int getLastBanId() {
         return lastBanId;
     }

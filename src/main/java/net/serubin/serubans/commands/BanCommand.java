@@ -37,10 +37,25 @@ public class BanCommand implements CommandExecutor {
         Player victim;
         String mod;
         String reason;
-        int display = 0;
+        boolean silent = false;
+        int display = SeruBans.SHOW;
         if (commandLabel.equalsIgnoreCase("ban")) {
             if (sender.hasPermission(SeruBans.BANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
+                
+                // checks for options
+                silent = false;
+                display = SeruBans.SHOW;
+                if (args[0].startsWith("-")) {
+                    if(args[0].contains("s")){
+                        silent = true;   
+                    }
+                    if(args[0].contains("h")){
+                        display = SeruBans.HIDE;
+                    }
+                    args = ArgProcessing.stripFirstArg(args);
+                }
+
                 if (args.length == 0) {
                     return false;
                 } else if (args.length > 1) {
@@ -54,19 +69,27 @@ public class BanCommand implements CommandExecutor {
 
                 String line = "";
                 if (victim != null) {
-                    // adds player to db
+                 // checks players for id in database
                     CheckPlayer.checkPlayer(victim, sender);
+                    //checks if banned
                     if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
+                        // adds ban to database
                         MySqlDatabase.addBan(victim.getName(), SeruBans.BAN, 0,
-                                mod, reason, SeruBans.SHOW);
-                        // kicks and broadcasts message
-                        SeruBans.printServer(ArgProcessing.GlobalMessage(
-                                GlobalBanMessage, reason, mod, victim.getName()));
+                                mod, reason, display);
+                        
+                        // prints to players on server with perms
+                        SeruBans.printServer(
+                                ArgProcessing.GlobalMessage(GlobalBanMessage,
+                                        reason, mod, victim.getName()), silent);
+                        // logs it
                         plugin.log.info(mod + " banned " + victim.getName()
                                 + " for " + reason);
-                        sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                        // sends kicker ban id
+                        sender.sendMessage(ChatColor.GOLD
+                                + "Ban Id: "
                                 + ChatColor.YELLOW
                                 + Integer.toString(MySqlDatabase.getLastBanId()));
+                        //kicks player
                         victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                                 .PlayerMessage(BanMessage, reason, mod)));
                         return true;
@@ -78,16 +101,22 @@ public class BanCommand implements CommandExecutor {
                         return true;
                     }
                 } else {
-                    // broadcasts message
+                    // checks player for id in database
                     CheckPlayer.checkPlayerOffline(args[0], sender);
+                    // checks if banned
                     if (!HashMaps.keyIsInBannedPlayers(args[0])) {
+                        // adds ban to database
                         MySqlDatabase.addBan(args[0], SeruBans.BAN, 0, mod,
                                 reason, display);
+                        // prints to players on server with perms
                         SeruBans.printServer(ArgProcessing.GlobalMessage(
-                                GlobalBanMessage, reason, mod, args[0]));
+                                GlobalBanMessage, reason, mod, args[0]), silent);
+                        // logs it
                         plugin.log.info(mod + " banned " + args[0] + " for "
                                 + reason);
-                        sender.sendMessage(ChatColor.GOLD + "Ban Id: "
+                        // sends kicker ban id
+                        sender.sendMessage(ChatColor.GOLD
+                                + "Ban Id: "
                                 + ChatColor.YELLOW
                                 + Integer.toString(MySqlDatabase.getLastBanId()));
                         return true;

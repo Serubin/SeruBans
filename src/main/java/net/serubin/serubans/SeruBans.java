@@ -17,8 +17,8 @@ import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;
 
-
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -92,7 +92,8 @@ public class SeruBans extends JavaPlugin {
     public static final String UPDATEPERM = "serubans.update";
     public static final String SEARCHPERM = "serubans.search";
     public static final String DEBUGPERM = "serubans.debug";
-    public static final String BROADCASTPERM = "serubans.broadcast";
+    public static final String BROADCASTPERM = "serubans.broadcast.normal";
+    public static final String BROADCASTPERMSILENT = "serubans.broadcast";
 
     /*
      * other, final
@@ -121,7 +122,7 @@ public class SeruBans extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         getConfig().options().copyDefaults(true);
         saveConfig();
-        
+
         /*
          * Ban messages
          */
@@ -213,8 +214,8 @@ public class SeruBans extends JavaPlugin {
 
         taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
                 UnTempanThread, 1200, 1200);
-        taskId_maintain = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
-                sqldb, 5800, 5800);
+        taskId_maintain = getServer().getScheduler()
+                .scheduleAsyncRepeatingTask(this, sqldb, 5800, 5800);
 
     }
 
@@ -228,12 +229,21 @@ public class SeruBans extends JavaPlugin {
         }
     }
 
-    public static void printServer(String line) {
+    public static void printServer(String line, boolean silent) {
         Player[] players = Bukkit.getOnlinePlayers();
         for (Player player : players) {
-            if (player.hasPermission(BROADCASTPERM) || player.isOp()) {
+            if ((player.hasPermission(BROADCASTPERM)
+                    || player.hasPermission(BROADCASTPERMSILENT) || player
+                        .isOp()) && !silent) {
                 player.sendMessage(ArgProcessing.GetColor(line));
             }
+            if ((player.hasPermission(BROADCASTPERMSILENT) || player.isOp())
+                    && silent) {
+                player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA
+                        + "Silent" + ChatColor.DARK_AQUA + "] "
+                        + ChatColor.WHITE + ArgProcessing.GetColor(line));
+            }
+
         }
     }
 
