@@ -42,18 +42,24 @@ public class BanCommand implements CommandExecutor {
         if (commandLabel.equalsIgnoreCase("ban")) {
             if (sender.hasPermission(SeruBans.BANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
-                
+
                 // checks for options
-                silent = false;
-                display = SeruBans.SHOW;
-                if (args[0].startsWith("-")) {
-                    if(args[0].contains("s")){
-                        silent = true;   
+                //TODO Make this more efficient 
+                if (args.length == 0
+                        || (args.length == 1 && args[0].startsWith("-"))) {
+                    return false;
+                } else {
+                    silent = false;
+                    display = SeruBans.SHOW;
+                    if (args[0].startsWith("-")) {
+                        if (args[0].contains("s")) {
+                            silent = true;
+                        }
+                        if (args[0].contains("h")) {
+                            display = SeruBans.HIDE;
+                        }
+                        args = ArgProcessing.stripFirstArg(args);
                     }
-                    if(args[0].contains("h")){
-                        display = SeruBans.HIDE;
-                    }
-                    args = ArgProcessing.stripFirstArg(args);
                 }
 
                 if (args.length == 0) {
@@ -62,6 +68,7 @@ public class BanCommand implements CommandExecutor {
                     reason = ArgProcessing.reasonArgs(args);
                 } else {
                     reason = "undefined";
+
                 }
 
                 mod = sender.getName();
@@ -69,14 +76,14 @@ public class BanCommand implements CommandExecutor {
 
                 String line = "";
                 if (victim != null) {
-                 // checks players for id in database
+                    // checks players for id in database
                     CheckPlayer.checkPlayer(victim, sender);
-                    //checks if banned
+                    // checks if banned
                     if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
                         // adds ban to database
                         MySqlDatabase.addBan(victim.getName(), SeruBans.BAN, 0,
                                 mod, reason, display);
-                        
+
                         // prints to players on server with perms
                         SeruBans.printServer(
                                 ArgProcessing.GlobalMessage(GlobalBanMessage,
@@ -89,7 +96,7 @@ public class BanCommand implements CommandExecutor {
                                 + "Ban Id: "
                                 + ChatColor.YELLOW
                                 + Integer.toString(MySqlDatabase.getLastBanId()));
-                        //kicks player
+                        // kicks player
                         victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
                                 .PlayerMessage(BanMessage, reason, mod)));
                         return true;
@@ -135,5 +142,4 @@ public class BanCommand implements CommandExecutor {
         }
         return false;
     }
-
 }

@@ -59,8 +59,9 @@ public class UpdateCommand implements CommandExecutor {
                         + Integer.toString(bId) + " to " + reason);
                 return true;
             } else {
-            sender.sendMessage(ChatColor.RED + "You do not have permission!");
-            return true;
+                sender.sendMessage(ChatColor.RED
+                        + "You do not have permission!");
+                return true;
             }
         }
         return false;

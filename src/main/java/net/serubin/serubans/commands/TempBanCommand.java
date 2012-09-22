@@ -38,17 +38,26 @@ public class TempBanCommand implements CommandExecutor {
         if (commandLabel.equalsIgnoreCase("tempban")) {
             if (sender.hasPermission(SeruBans.TEMPBANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
-                silent = false;
-                display = SeruBans.SHOW;
-                if (args[0].startsWith("-")) {
-                    if (args[0].contains("s")) {
-                        silent = true;
+
+                // checks for options
+                // TODO Make this more efficient
+                if (args.length == 0
+                        || (args.length == 1 && args[0].startsWith("-"))) {
+                    return false;
+                } else {
+                    silent = false;
+                    display = SeruBans.SHOW;
+                    if (args[0].startsWith("-")) {
+                        if (args[0].contains("s")) {
+                            silent = true;
+                        }
+                        if (args[0].contains("h")) {
+                            display = SeruBans.HIDE;
+                        }
+                        args = ArgProcessing.stripFirstArg(args);
                     }
-                    if (args[0].contains("h")) {
-                        display = SeruBans.HIDE;
-                    }
-                    args = ArgProcessing.stripFirstArg(args);
                 }
+
                 if (args.length == 0) {
                     return false;
                 } else if (args.length > 3) {

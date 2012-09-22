@@ -27,16 +27,21 @@ public class UnbanCommand implements CommandExecutor {
         if (commandLabel.equalsIgnoreCase("unban")) {
             if (sender.hasPermission(SeruBans.UNBANPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
-                silent = false;
-                if (args[0].equalsIgnoreCase("-s")) {
-                    silent = true;
-                    args = ArgProcessing.stripFirstArg(args);
+                if (args.length != 0) {
+                    silent = false;
+                    if (args[0].startsWith("-")) {
+                        if (args[0].contains("s")) {
+                            silent = true;
+                        }
+                        args = ArgProcessing.stripFirstArg(args);
+                    }
                 }
                 if (args.length == 0) {
                     return false;
                 } else if (args.length > 1) {
                     return false;
                 } else {
+
                     String BannedVictim = args[0];
                     plugin.log.info("Attempting to unban " + BannedVictim);
                     if (HashMaps.keyIsInBannedPlayers(BannedVictim
