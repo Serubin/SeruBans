@@ -7,6 +7,10 @@
 	<packaging>jar</packaging>
 	<name>SeruBans</name>
 	<url></url>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<repositories>
 		<!-- Repository for Bukkit -->
@@ -27,8 +31,4 @@
 		</dependency>
 
 	</dependencies>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 </project>
