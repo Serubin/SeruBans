@@ -37,6 +37,12 @@ public class MySqlDatabase implements Runnable {
         this.database = database;
     }
 
+    /**
+     * Starts MySQL connection
+     * <p/>
+     * called from onEnable(). Calls createConnection(), CreateTable(),
+     * getPlayer(), getBans(), getTempBans(), getBanIds().
+     */
     public static void startSQL() {
         createConnection();
         createTable();
@@ -51,6 +57,11 @@ public class MySqlDatabase implements Runnable {
         maintainConnection();
     }
 
+    /**
+     * Creates initial MySQL database connection
+     * <p/>
+     * Called from startSQL()
+     */
     protected static void createConnection() {
         String sqlUrl = String.format("jdbc:mysql://%s/%s", host, database);
 
@@ -64,8 +75,16 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Creates tables if not exists.
+     * <p/>
+     * Creates 'bans' table, 'user' table, and 'log' table
+     * <p/>
+     * Called from startSQL()
+     */
     protected static void createTable() {
         try {
+            // bans table
             SeruBans.printInfo("Searching for storage table");
             ResultSet rs = conn.getMetaData().getTables(null, null, "bans",
                     null);
@@ -89,7 +108,7 @@ public class MySqlDatabase implements Runnable {
                 SeruBans.printInfo("Table found");
             }
             rs.close();
-
+            // Log table
             SeruBans.printInfo("Searching for log table");
             rs = conn.getMetaData().getTables(null, null, "log", null);
             if (!rs.next()) {
@@ -109,7 +128,7 @@ public class MySqlDatabase implements Runnable {
                 SeruBans.printInfo("Table found");
             }
             rs.close();
-
+            // User table
             SeruBans.printInfo("Searching for users table");
             rs = conn.getMetaData().getTables(null, null, "users", null);
             if (!rs.next()) {
@@ -132,6 +151,12 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Maintains database connection
+     * <p />
+     * Called by run().
+     */
+    // TODO move into run, why have a method for it?
     public static void maintainConnection() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -145,6 +170,12 @@ public class MySqlDatabase implements Runnable {
         SeruBans.self.log.info("SeruBans has checked in with database");
     }
 
+    /**
+     * Adds players to PlayerList
+     * <p/>
+     * Called from startSQL()
+     */
+    // TODO rename to getPlayers()
     public static void getPlayer() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -161,6 +192,11 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Gets bans from database and adds them to BannedPlayers
+     * <p/>
+     * Called from startSQL()
+     */
     public static void getBans() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -183,6 +219,11 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Gets ban ids from database
+     * <p/>
+     * Called from startSQL()
+     */
     public static void getBanIds() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -199,6 +240,11 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Gets tempbans from database.
+     * <p/>
+     * Called from startSQL()
+     */
     public static void getTempBans() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -218,6 +264,23 @@ public class MySqlDatabase implements Runnable {
 
     }
 
+    /**
+     * Adds ban to database and HashMaps.
+     * 
+     * @param victim
+     *            player being banned
+     * @param type
+     *            type of ban
+     * @param length
+     *            length of ban
+     * @param mod
+     *            moderator who banned victim
+     * @param reason
+     *            reason for banning
+     * @param display
+     *            display id
+     */
+    // TODO add error responds (change to bool)
     public static void addBan(String victim, int type, long length, String mod,
             String reason, int display) {
 
@@ -258,6 +321,16 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Update ban type.
+     * <p/>
+     * Called by Tempban checker thread, or login checker
+     * 
+     * @param type
+     *            new type
+     * @param bId
+     *            ban id to be changed
+     */
     public static void updateBan(int type, int bId) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -272,6 +345,14 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Update ban reason
+     * 
+     * @param bId
+     *            ban id to change
+     * @param reason
+     *            new reason
+     */
     public static void updateReason(int bId, String reason) {
         PreparedStatement ps = null;
         PreparedStatement ps2 = null;
@@ -293,6 +374,12 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Add player to database
+     * 
+     * @param victim
+     *            player
+     */
     public static void addPlayer(String victim) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -317,6 +404,13 @@ public class MySqlDatabase implements Runnable {
         }
     }
 
+    /**
+     * Get ban reason
+     * 
+     * @param id
+     *            ban id
+     * @return String ban reason
+     */
     public static String getReason(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -336,6 +430,13 @@ public class MySqlDatabase implements Runnable {
         return reason;
     }
 
+    /**
+     * Get mod who banned
+     * 
+     * @param id
+     *            ban id
+     * @return String mod
+     */
     public static String getMod(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -355,6 +456,13 @@ public class MySqlDatabase implements Runnable {
         return mod;
     }
 
+    /**
+     * Get tempban length
+     * 
+     * @param id
+     *            ban id
+     * @return Long tempban
+     */
     public static Long getLength(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -374,6 +482,7 @@ public class MySqlDatabase implements Runnable {
         return length;
     }
 
+    // TODO rework all this
     public static List<Integer> searchPlayer(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
