@@ -39,8 +39,7 @@ public class DebugCommand implements CommandExecutor {
                                 + HashMaps.getFullBannedPlayers());
                         sender.sendMessage("TempBan: "
                                 + HashMaps.getFullTempBannedTime());
-                        sender.sendMessage("Ids: "
-                                + HashMaps.getFullIds());
+                        sender.sendMessage("Ids: " + HashMaps.getFullIds());
                         return true;
                     }
                     if (args[0].contains("p") && !args[0].contains("api")) {
@@ -48,8 +47,7 @@ public class DebugCommand implements CommandExecutor {
                                 + HashMaps.getFullPlayerList());
                     }
                     if (args[0].contains("i") && !args[0].contains("api")) {
-                        sender.sendMessage("Ids: "
-                                + HashMaps.getFullIds());
+                        sender.sendMessage("Ids: " + HashMaps.getFullIds());
                     }
                     if (args[0].contains("b")) {
                         sender.sendMessage("Banned Players: "
@@ -58,6 +56,10 @@ public class DebugCommand implements CommandExecutor {
                     if (args[0].contains("t")) {
                         sender.sendMessage("TempBan: "
                                 + HashMaps.getFullTempBannedTime());
+                    }
+                    if (args[0].contains("r")) {
+                        // TODO reload
+                        sender.sendMessage("Soon to be reload");
                     }
                     if (args[0].contains("e")) {
                         List<String> ban = HashMaps.getBannedForFile();

@@ -18,7 +18,7 @@ public class UpdateCommand implements CommandExecutor {
     public UpdateCommand(SeruBans plugin) {
         this.plugin = plugin;
     }
-
+//TODO Add update tempban time
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("bupdate")) {
