@@ -205,7 +205,7 @@ public class SeruBans extends JavaPlugin {
          * Create listener
          */
 
-        getServer().getPluginManager().registerEvents(
+        pm.registerEvents(
                 new SeruBansPlayerListener(this, BanMessage, TempBanMessage),
                 this);
         /*
