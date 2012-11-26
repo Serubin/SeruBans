@@ -1,6 +1,5 @@
 package net.serubin.serubans.util;
 
-import java.awt.Color;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -46,7 +45,7 @@ public class MySqlDatabase implements Runnable {
     public static void startSQL() {
         createConnection();
         createTable();
-        getPlayer();
+        getPlayers();
         getBans();
         getTempBans();
         getBanIds();
@@ -176,7 +175,7 @@ public class MySqlDatabase implements Runnable {
      * Called from startSQL()
      */
     // TODO rename to getPlayers()
-    public static void getPlayer() {
+    public static void getPlayers() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -480,6 +479,27 @@ public class MySqlDatabase implements Runnable {
 
         }
         return length;
+    }
+
+    // Search data rework =========>
+
+    public static String getPlayer(String player){
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String names = null;
+        try{
+            ps = conn.prepareStatement("SELECT `name` FROM users WHERE `name LIKE %?%;");
+            ps.setString(1, player) ;
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                names+= rs.getString("name") + ",";
+            }
+            return names;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // TODO rework all this

@@ -16,11 +16,14 @@ import net.serubin.serubans.util.MySqlDatabase;
 public class SearchMethods {
 
     private DisplayManager dm = new DisplayManager();
+    private DataManager data = new DataManager();
 
     /*
      * handels PLAYER searchs
      */
     public boolean searchPlayer(String player, CommandSender sender) {
+        if (!data.searchPlayer(player, sender))
+            return true;
         List<Integer> BanTypes = null;
         try {
             BanTypes = MySqlDatabase.searchPlayer(HashMaps

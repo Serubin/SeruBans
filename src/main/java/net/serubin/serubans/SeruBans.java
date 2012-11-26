@@ -23,6 +23,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.hydrox.bukkit.DroxPerms.DroxPerms;
+import de.hydrox.bukkit.DroxPerms.DroxPermsAPI;
+
 public class SeruBans extends JavaPlugin {
     /*
      * Base class of SeruBans
@@ -104,6 +107,7 @@ public class SeruBans extends JavaPlugin {
 
     int taskId;
     int taskId_maintain;
+    private DroxPermsAPI droxPermsAPI;
 
     public void onDisable() {
         reloadConfig();
@@ -122,6 +126,12 @@ public class SeruBans extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         getConfig().options().copyDefaults(true);
         saveConfig();
+        // Droxperms
+        DroxPerms droxPerms = ((DroxPerms) this.getServer().getPluginManager()
+                .getPlugin("DroxPerms"));
+        if (droxPerms != null) {
+            droxPermsAPI = droxPerms.getAPI();
+        }
 
         /*
          * Ban messages
@@ -217,6 +227,10 @@ public class SeruBans extends JavaPlugin {
         taskId_maintain = getServer().getScheduler()
                 .scheduleAsyncRepeatingTask(this, sqldb, 5800, 5800);
 
+    }
+
+    public DroxPermsAPI getDroxPermsAPI() {
+        return droxPermsAPI;
     }
 
     public static void printInfo(String line) {

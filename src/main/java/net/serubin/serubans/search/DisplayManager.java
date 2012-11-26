@@ -9,7 +9,15 @@ import org.bukkit.entity.Player;
 
 public class DisplayManager {
 
-
+    /**
+     * Creates a title to be sent to player
+     * <p/>
+     * Does not send title to player!
+     * 
+     * @param name
+     *            Line title
+     * @return full line
+     */
     public String createTitle(String name) {
 
         String line = "&8---------------------&6" + name + "&8";
@@ -22,6 +30,16 @@ public class DisplayManager {
         return ArgProcessing.GetColor(newLine.toString());
     }
 
+    /**
+     * Sends player line
+     * <p/>
+     * If line is to long, function will cut it to two lines
+     * 
+     * @param sender
+     *            CommandSender
+     * @param line
+     *            Line to be sent
+     */
     public void sendLine(CommandSender sender, String line) {
         int len = 56;
         if (line.length() < len)
