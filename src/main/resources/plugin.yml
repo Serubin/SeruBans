@@ -1,6 +1,6 @@
 name: SeruBans
 main: net.serubin.serubans.SeruBans
-version: 2.7.16
+version: 2.7.6
 
 commands:
   ban:

@@ -5,6 +5,7 @@ import java.awt.Color;
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
+import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
@@ -102,6 +103,9 @@ public class WarnCommand implements CommandExecutor {
                     // adds ban to database
                     MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod,
                             reason, display);
+                    // Adds warn
+                    MySqlDatabase.addWarn(HashMaps.getPlayerList(args[0]),
+                            MySqlDatabase.getLastBanId());
                     // prints to players on server with perms
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             WarnMessage, reason, mod, args[0]), silent);

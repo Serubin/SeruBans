@@ -27,6 +27,15 @@ public class MySqlDatabase implements Runnable {
     private static String mod;
     private static int lastBanId;
 
+    /**
+     * Initiates Mysql object
+     * 
+     * @param host of the mysql server
+     * @param username of the mysql account
+     * @param password of the mysql account
+     * @param database to be used
+     * @param plugin
+     */
     public MySqlDatabase(String host, String username, String password,
             String database, SeruBans plugin) {
         this.plugin = plugin;
@@ -36,6 +45,9 @@ public class MySqlDatabase implements Runnable {
         this.database = database;
     }
 
+    /**
+     * Start sql connections
+     */
     public static void startSQL() {
         createConnection();
         createTable();
@@ -43,6 +55,7 @@ public class MySqlDatabase implements Runnable {
         getBans();
         getTempBans();
         getBanIds();
+        getWarns();
 
     }
 
@@ -50,6 +63,9 @@ public class MySqlDatabase implements Runnable {
         maintainConnection();
     }
 
+    /**
+     * Create MySQL connection
+     */
     protected static void createConnection() {
         String sqlUrl = String.format("jdbc:mysql://%s/%s", host, database);
 
@@ -59,10 +75,14 @@ public class MySqlDatabase implements Runnable {
         try {
             conn = DriverManager.getConnection(sqlUrl, sqlStr);
         } catch (SQLException e) {
+            SeruBans.printError("A MySQL connection could not be made");
             e.printStackTrace();
         }
     }
 
+    /**
+     * Checks if tables are existing, then
+     */
     protected static void createTable() {
         try {
             SeruBans.printInfo("Searching for storage table");
@@ -95,15 +115,33 @@ public class MySqlDatabase implements Runnable {
                 SeruBans.printWarning("No 'log' data table found, Attempting to create one...");
                 PreparedStatement ps = conn
                         .prepareStatement("CREATE TABLE IF NOT EXISTS `log` ( "
-                                + "`id` int(8) unsigned NOT NULL AUTO_INCREMENT, "
+                                + "`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, "
                                 + "`action` enum('delete','unban','update') NOT NULL, "
-                                + "`banid` int(8) unsigned NOT NULL, "
+                                + "`banid` mediumint(8) unsigned NOT NULL, "
                                 + "`ip` text NOT NULL, "
                                 + "`data` text NOT NULL, "
                                 + "primary key (`id`), key `id` (`id`));");
                 ps.executeUpdate();
                 ps.close();
                 SeruBans.printWarning("'log' data table created!");
+            } else {
+                SeruBans.printInfo("Table found");
+            }
+            rs.close();
+
+            SeruBans.printInfo("Searching for warns table");
+            rs = conn.getMetaData().getTables(null, null, "warns", null);
+            if (!rs.next()) {
+                SeruBans.printWarning("No 'warns' data table found, Attempting to create one...");
+                PreparedStatement ps = conn
+                        .prepareStatement("CREATE TABLE IF NOT EXISTS `warns` ( "
+                                + "`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, "
+                                + "`player_id` mediumint(8) unsigned NOT NULL, "
+                                + "`ban_id` mediumint(8) unsigned NOT NULL, "
+                                + "primary key (`id`), key `id` (`id`));");
+                ps.executeUpdate();
+                ps.close();
+                SeruBans.printWarning("'warns' data table created!");
             } else {
                 SeruBans.printInfo("Table found");
             }
@@ -215,6 +253,31 @@ public class MySqlDatabase implements Runnable {
             e.printStackTrace();
         }
 
+    }
+
+    public static void getWarns() {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT player_id, ban_id FROM warns;");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Integer pId = rs.getInt("player_id");
+                Integer bId = rs.getInt("ban_id");
+                List<Integer> warns;
+                if (HashMaps.isWarn(pId)) {
+                   warns = HashMaps.getWarn(pId);
+                   warns.add(bId);
+                } else {
+                    warns = new ArrayList<Integer>();
+                    warns.add(bId);
+                }
+                HashMaps.setWarn(pId, warns);
+            }
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
     }
 
     public static void addBan(String victim, int type, long length, String mod,
@@ -373,6 +436,46 @@ public class MySqlDatabase implements Runnable {
         return length;
     }
 
+    public static void addWarn(int pId, int bId) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            ps = conn.prepareStatement(
+                    "INSERT INTO warns (player_id, ban_id) VALUES(?,?);",
+                    Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, pId);
+            ps.setInt(2, bId);
+            ps.executeUpdate();
+            rs = ps.getGeneratedKeys();
+            List<Integer> warns;
+            if (HashMaps.isWarn(pId)) {
+               warns = HashMaps.getWarn(pId);
+               warns.add(bId);
+            } else {
+                warns = new ArrayList<Integer>();
+                warns.add(bId);
+            }
+            HashMaps.setWarn(pId, warns);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void removeWarn(int pId, int bId){
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            ps = conn.prepareStatement(
+                    "DELETE FROM warns WHERE player_id=? AND ban_id=?;");
+            ps.setInt(1, pId);
+            ps.setInt(2, bId);
+            ps.executeUpdate();
+           } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static List<Integer> searchPlayer(int id) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -475,8 +578,7 @@ public class MySqlDatabase implements Runnable {
     /**
      * Get ban id info
      * 
-     * @param id
-     *            ban id
+     * @param id ban id
      * @return
      */
     public static Map<String, String> getBanIdInfo(int id) {

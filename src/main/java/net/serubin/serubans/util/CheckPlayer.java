@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 public class CheckPlayer {
 
     public CheckPlayer() {
+        
     }
 
     public static void checkPlayer(Player victim, CommandSender player) {

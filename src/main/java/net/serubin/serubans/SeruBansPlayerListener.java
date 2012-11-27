@@ -1,5 +1,7 @@
 package net.serubin.serubans;
 
+import java.util.List;
+
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
@@ -8,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class SeruBansPlayerListener implements Listener {
@@ -66,5 +69,31 @@ public class SeruBansPlayerListener implements Listener {
                                 banMessage, reason, mod)));
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        int pId = HashMaps.getPlayerList(player.getName());
+        if (HashMaps.isWarn(pId)) {
+            final List<Integer> bId = HashMaps.getWarn(pId);
+            for (int i : bId) {
+                SeruBans.printInfo("Warning player, ban id:"
+                        + Integer.toString(i));
+                final String message = ArgProcessing.GetColor(ArgProcessing
+                        .PlayerMessage(SeruBans.WarnPlayerMessage,
+                                MySqlDatabase.getReason(i),
+                                MySqlDatabase.getMod(i)));
+                plugin.getServer().getScheduler()
+                        .scheduleSyncDelayedTask(plugin, new Runnable() {
+                            public void run() {
+                                player.sendMessage(message);
+                            }
+                        });
+                MySqlDatabase.removeWarn(pId, i);
+                HashMaps.remWarn(pId);
+            }
+        }
+
     }
 }
