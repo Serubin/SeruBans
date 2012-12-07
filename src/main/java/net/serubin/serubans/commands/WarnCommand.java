@@ -104,8 +104,8 @@ public class WarnCommand implements CommandExecutor {
                     MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod,
                             reason, display);
                     // Adds warn
-                    MySqlDatabase.addWarn(HashMaps.getPlayerList(args[0]),
-                            MySqlDatabase.getLastBanId());
+                        MySqlDatabase.addWarn(HashMaps.getPlayerList(args[0]),
+                                MySqlDatabase.getLastBanId());
                     // prints to players on server with perms
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             WarnMessage, reason, mod, args[0]), silent);
