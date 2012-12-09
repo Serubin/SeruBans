@@ -29,7 +29,32 @@ public class DebugCommand implements CommandExecutor {
             if (sender.hasPermission(SeruBans.DEBUGPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
                 if (args.length == 0) {
-                    return false;
+                    sender.sendMessage(ChatColor.GOLD + "Serubans "
+                            + ChatColor.YELLOW + " version "
+                            + SeruBans.getVersion());
+                    sender.sendMessage(ChatColor.YELLOW + "Type "
+                            + ChatColor.GOLD + "'/serubans ?' "
+                            + ChatColor.YELLOW + "for more debug options");
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("?")) {
+                    sender.sendMessage(ChatColor.YELLOW + "Use "
+                            + ChatColor.GOLD + "'/serubans -option' "
+                            + ChatColor.YELLOW + "for debug functionality.");
+                    sender.sendMessage(ChatColor.YELLOW + "Options:");
+                    sender.sendMessage(ChatColor.YELLOW
+                            + "-a    prints full hashmaps lists");
+                    sender.sendMessage(ChatColor.YELLOW
+                            + "-p    prints player hashmaps lists");
+                    sender.sendMessage(ChatColor.YELLOW
+                            + "-i     prints id  hashmaps lists");
+                    sender.sendMessage(ChatColor.YELLOW
+                            + "-b    prints banned player hashmaps lists");
+                    sender.sendMessage(ChatColor.YELLOW
+                            + "-w    prints warns hashmaps lists");
+                    sender.sendMessage(ChatColor.YELLOW
+                            + "-e    export bans to minecraft bans files");
+                    return true;
                 }
                 if (args[0].startsWith("-")) {
                     if (args[0].contains("a") && !args[0].contains("api")) {

@@ -1,20 +1,32 @@
 name: SeruBans
 main: net.serubin.serubans.SeruBans
-version: 2.8
+version: 2.8.3
 
 commands:
   ban:
     description: Bans player
-    usage: /<command> <player> <reason> - bans player
+    usage: |
+          /<command> [options] <player> <reason> - bans player
+          -s Silent broadcast on server
+          -h Hides from banlist
   tempban:
     description: tempbans player
-    usage: /<command> <player> <amount> <unit> <reason> - tempbans player
+    usage: |
+          /<command> [options] <player> <amount> <unit> <reason> - tempbans player
+          -s Silent broadcast on server
+          -h Hides from banlist
   kick:
     description: kicks player
-    usage: /<command> <player> <reason> - kicks player
+    usage: |
+          /<command> [options] <player> <reason> - kicks player
+          -s Silent broadcast on server
+          -h Hides from banlist
   warn:
     description: warns player
-    usage: /<command> <player> <reason> - warns player
+    usage: | 
+          /<command> [options] <player> <reason> - warns player
+          -s Silent broadcast on server
+          -h Hides from banlist
   unban:
     description: unbans player
     usage: /<command> <player> - unbans player
@@ -29,7 +41,7 @@ commands:
     usage: /<command> <id> <reason> - updates reason
   serubans:
     description: debug
-    usage: /<command> <-arg> - debug/export
+    usage: /<command> -<arg> - debug/export
       
 permissions:
   serubans.*:

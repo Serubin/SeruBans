@@ -205,9 +205,8 @@ public class SeruBans extends JavaPlugin {
          * Create listener
          */
 
-        pm.registerEvents(
-                new SeruBansPlayerListener(this, BanMessage, TempBanMessage),
-                this);
+        pm.registerEvents(new SeruBansPlayerListener(this, BanMessage,
+                TempBanMessage), this);
         /*
          * Create Thread
          */
@@ -255,6 +254,9 @@ public class SeruBans extends JavaPlugin {
         self.log.warning("[SeruBans] " + line);
     }
 
+    public static String getVersion() {
+        return version;
+    }
     /*
      * API GETTER / SETTER
      */
