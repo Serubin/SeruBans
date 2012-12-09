@@ -75,7 +75,7 @@ public class SeruBansPlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         int pId = 0;
-        if (!HashMaps.keyIsInPlayerList(player.getName())) {
+        if (!HashMaps.keyIsInPlayerList(player.getName().toLowerCase())) {
             return;
         }
         pId = HashMaps.getPlayerList(player.getName().toLowerCase());
