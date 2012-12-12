@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import net.serubin.serubans.commands.BanCommand;
 import net.serubin.serubans.commands.CheckBanCommand;
-import net.serubin.serubans.commands.DebugCommand;
+import net.serubin.serubans.commands.SeruBansCommand;
 import net.serubin.serubans.commands.KickCommand;
 import net.serubin.serubans.commands.SearchCommand;
 import net.serubin.serubans.commands.TempBanCommand;
@@ -12,7 +12,6 @@ import net.serubin.serubans.commands.UnbanCommand;
 import net.serubin.serubans.commands.UpdateCommand;
 import net.serubin.serubans.commands.WarnCommand;
 import net.serubin.serubans.search.DisplayManager;
-import net.serubin.serubans.search.SearchMethods;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;
@@ -179,7 +178,7 @@ public class SeruBans extends JavaPlugin {
         MySqlDatabase sqldb = new MySqlDatabase(host, username, password,
                 database, this);
         CheckPlayer CheckPlayer = new CheckPlayer();
-        DebugCommand DebugC = new DebugCommand(this);
+        SeruBansCommand DebugC = new SeruBansCommand(this);
         CheckBanCommand CheckBan = new CheckBanCommand(this);
         UnTempbanThread UnTempanThread = new UnTempbanThread(this);
         SearchCommand Search = new SearchCommand(this);
@@ -252,6 +251,15 @@ public class SeruBans extends JavaPlugin {
 
     public static void printWarning(String line) {
         self.log.warning("[SeruBans] " + line);
+    }
+
+    public static boolean hasPermission(Player player, String permission) {
+        if (player.hasPermission(permission) || player.isOp()) {
+            return true;
+        } else {
+            player.sendMessage(ChatColor.RED + "You do not have permission!");
+            return false;
+        }
     }
 
     public static String getVersion() {
