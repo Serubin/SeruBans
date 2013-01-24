@@ -1,7 +1,5 @@
 package net.serubin.serubans.commands;
 
-import java.awt.Color;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

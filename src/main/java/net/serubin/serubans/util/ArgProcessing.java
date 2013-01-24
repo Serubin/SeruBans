@@ -1,9 +1,7 @@
 package net.serubin.serubans.util;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.serubin.serubans.SeruBans;
@@ -76,7 +74,6 @@ public class ArgProcessing {
     }
 
     public static String GetColor(String line) {
-        line = line;
         line = line.replace("&0", "§0");
         line = line.replace("&1", "§1");
         line = line.replace("&2", "§2");

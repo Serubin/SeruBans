@@ -16,14 +16,12 @@ public class BanCommand implements CommandExecutor {
 
     private String BanMessage;
     private String GlobalBanMessage;
-    private String name;
     private SeruBans plugin;
 
     public BanCommand(String BanMessage, String GlobalBanMessage, String name,
             SeruBans plugin) {
         this.BanMessage = BanMessage;
         this.GlobalBanMessage = GlobalBanMessage;
-        this.name = name;
         this.plugin = plugin;
     }
 
@@ -69,7 +67,6 @@ public class BanCommand implements CommandExecutor {
                 mod = sender.getName();
                 victim = plugin.getServer().getPlayer(args[0]);
 
-                String line = "";
                 if (victim != null) {
                     // checks players for id in database
                     CheckPlayer.checkPlayer(victim, sender);

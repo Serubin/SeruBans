@@ -1,6 +1,6 @@
 name: SeruBans
 main: net.serubin.serubans.SeruBans
-version: 2.8.3
+version: 2.8.4
 
 commands:
   ban:
@@ -40,8 +40,8 @@ commands:
     description: updates reason
     usage: /<command> <id> <reason> - updates reason
   serubans:
-    description: debug
-    usage: /<command> -<arg> - debug/export
+    description: Help
+    usage: /<command> <help> [-option] - help/debug
       
 permissions:
   serubans.*:
@@ -58,6 +58,7 @@ permissions:
       serubans.search: true
       serubans.broadcast: true
       serubans.broadcast.normal: true
+      serubans.help: true
   serubans.ban:
     description: gives permission to ban players
     default: op
@@ -90,4 +91,7 @@ permissions:
     default: op
   serubans.broadcast.normal:
     description: gives permission to see ban broadcasts
+    default: op
+  serubans.help:
+    description: gives permission to see help menus
     default: op

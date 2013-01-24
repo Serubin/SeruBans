@@ -1,7 +1,5 @@
 package net.serubin.serubans.commands;
 
-import java.awt.Color;
-
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
@@ -17,14 +15,12 @@ public class KickCommand implements CommandExecutor {
 
     private String KickMessage;
     private String GlobalKickMessage;
-    private String name;
     private SeruBans plugin;
 
     public KickCommand(String KickMessage, String GlobalKickMessage,
             String name, SeruBans plugin) {
         this.KickMessage = KickMessage;
         this.GlobalKickMessage = GlobalKickMessage;
-        this.name = name;
         this.plugin = plugin;
     }
 
@@ -66,7 +62,6 @@ public class KickCommand implements CommandExecutor {
                 } else {
                     reason = "undefined";
                 }
-                String line = "";
                 mod = sender.getName();
                 victim = plugin.getServer().getPlayer(args[0]);
                 if (victim != null) {

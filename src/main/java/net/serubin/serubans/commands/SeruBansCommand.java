@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.HashMaps;
+import net.serubin.serubans.util.HelpMessages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,129 +27,85 @@ public class SeruBansCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("serubans")) {
-            if (sender.hasPermission(SeruBans.DEBUGPERM) || sender.isOp()
+            if (sender.hasPermission(SeruBans.HELPPERM) || sender.isOp()
                     || (!(sender instanceof Player))) {
                 if (args.length == 0) {
-                    boolean banPerm = false;
-                    sender.sendMessage(ChatColor.GOLD + "Serubans "
+                    sender.sendMessage(ChatColor.GREEN + "Serubans "
                             + ChatColor.YELLOW + " version "
                             + SeruBans.getVersion());
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.BANPERM)) {
-                        // Ban help
-                        banPerm = true;
-                        sender.sendMessage(ChatColor.GOLD
-                                + "/ban [-options] <player> <reason>");
-                        sender.sendMessage(ChatColor.GOLD
-                                + "    Usage: "
-                                + ChatColor.YELLOW
-                                + "Used to ban players permanently from the server.");
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.TEMPBANPERM)) {
-                        // Tempban help
-                        banPerm = true;
-                        sender.sendMessage(ChatColor.GOLD
-                                + "/tempban [-options] <player> <time> <unit> <reason>");
-                        sender.sendMessage(ChatColor.GOLD
-                                + "    Usage: "
-                                + ChatColor.YELLOW
-                                + "Used to ban players temporarily, for a defined amount of time, from the server.");
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.KICKPERM)) {
-                        // Kick help
-                        banPerm = true;
-                        sender.sendMessage(ChatColor.GOLD
-                                + "/kick [-options] <player> <reason>");
-                        sender.sendMessage(ChatColor.GOLD + "    Usage: "
-                                + ChatColor.YELLOW
-                                + "Used to kick players from the server.");
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.WARNPERM)) {
-                        // Warn help
-                        banPerm = true;
-                        sender.sendMessage(ChatColor.GOLD
-                                + "/warn [-options] <player> <reason>");
-                        sender.sendMessage(ChatColor.GOLD + "    Usage: "
-                                + ChatColor.YELLOW + "Used to warn a player.");
-                        sender.sendMessage(ChatColor.GOLD
-                                + "    Note: "
-                                + ChatColor.YELLOW
-                                + "When warning an offline player, they will be notified when they next login.");
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.UNBANPERM)) {
-                        // Unban perm
-                        banPerm = true;
-                        sender.sendMessage(ChatColor.GOLD
-                                + "/unban [-options] <player>");
-                        sender.sendMessage(ChatColor.GOLD + "    Usage: "
-                                + ChatColor.YELLOW + "Used to unban a player.");
-                        sender.sendMessage(ChatColor.GOLD
-                                + "    Note: "
-                                + ChatColor.YELLOW
-                                + "Spelling must be exact to the player's name. Also, -h option does not work with this command");
-                    }
-                    if (banPerm) {
-                        sender.sendMessage(ChatColor.GOLD + "Options: ");
-                        sender.sendMessage(ChatColor.GOLD
-                                + "-s    "
-                                + ChatColor.YELLOW
-                                + "Hides the ban messages from the displaying to players.");
-                        sender.sendMessage(ChatColor.GOLD + "-h    "
-                                + ChatColor.YELLOW
-                                + "Hides the ban from the ban list.");
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.CHECKBANPERM)) {
-                        sender.sendMessage(ChatColor.GOLD
-                                + "/checkban <player>");
-                        sender.sendMessage(ChatColor.GOLD
-                                + "    Usage: "
-                                + ChatColor.YELLOW
-                                + "Used to determine if a player is banned or not");
-
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.UPDATEPERM)) {
-
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.SEARCHPERM)) {
-
-                    }
-                    if (SeruBans.hasPermission((Player) sender,
-                            SeruBans.DEBUGPERM)) {
-
-                    }
-
-                    sender.sendMessage(ChatColor.YELLOW + "Type "
-                            + ChatColor.GOLD + "'/serubans debug' "
-                            + ChatColor.YELLOW + "for more debug options");
+                    sender.sendMessage(ChatColor.YELLOW + "For help with: ");
+                    sender.sendMessage(ChatColor.GREEN + "    baning "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans ban");
+                    sender.sendMessage(ChatColor.GREEN + "    tempbaning "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans tempban");
+                    sender.sendMessage(ChatColor.GREEN + "    kicking "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans kick");
+                    sender.sendMessage(ChatColor.GREEN + "    warning "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans warn");
+                    sender.sendMessage(ChatColor.GREEN + "    unbaning "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans unban");
+                    sender.sendMessage(ChatColor.GREEN + "    checking bans "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans checkban");
+                    sender.sendMessage(ChatColor.GREEN + "    updating bans "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans update");
+                    sender.sendMessage(ChatColor.GREEN + "    searching "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans search");
+                    sender.sendMessage(ChatColor.GREEN + "    debug "
+                            + ChatColor.YELLOW + "type " + ChatColor.GREEN
+                            + "/serubans debug");
                     return true;
                 }
-                if (args[0].equalsIgnoreCase("debug")) {
-                    sender.sendMessage(ChatColor.YELLOW + "Use "
-                            + ChatColor.GOLD + "'/serubans -option' "
-                            + ChatColor.YELLOW + "for debug functionality.");
-                    sender.sendMessage(ChatColor.YELLOW + "Options:");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-a    prints full hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-p    prints player hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-i     prints id  hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-b    prints banned player hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-w    prints warns hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-e    export bans to minecraft bans files");
-                    return true;
+                if (args[0].equalsIgnoreCase("ban")) {
+                    // Ban help
+                    HelpMessages.banHelp(sender);
+                    HelpMessages.banOptions(sender);
+
+                } else if (args[0].equalsIgnoreCase("tempban")) {
+                    // Tempban help
+                    HelpMessages.tempBanHelp(sender);
+                    HelpMessages.banOptions(sender);
+
+                } else if (args[0].equalsIgnoreCase("kick")) {
+                    // Kick help
+                    HelpMessages.kickHelp(sender);
+                    HelpMessages.banOptions(sender);
+                } else if (args[0].equalsIgnoreCase("warn")) {
+                    // Warn help
+                    HelpMessages.warnHelp(sender);
+                    HelpMessages.banOptions(sender);
+                } else if (args[0].equalsIgnoreCase("unban")) {
+                    // Unban help
+                    HelpMessages.unbanHelp(sender);
+                    HelpMessages.banOptions(sender);
                 }
 
+                else if (args[0].equalsIgnoreCase("checkban")) {
+                    // Checkban help
+                    HelpMessages.checkbanHelp(sender);
+
+                } else if (args[0].equalsIgnoreCase("update")) {
+                    // Update help
+                    HelpMessages.updateHelp(sender);
+                } else if (args[0].equalsIgnoreCase("search")) {
+                    // Search help
+                    HelpMessages.searchHelp(sender);
+                } else if (args[0].equalsIgnoreCase("debug")) {
+                    // Debug help
+                    HelpMessages.debugHelp(sender);
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Help page not found!");
+                }
+                return true;
+            } else if (sender.hasPermission(SeruBans.DEBUGPERM)
+                    || sender.isOp() || (!(sender instanceof Player))) {
                 if (args[0].startsWith("-")) {
                     if (args[0].contains("a") && !args[0].contains("api")) {
                         sender.sendMessage("Players: "

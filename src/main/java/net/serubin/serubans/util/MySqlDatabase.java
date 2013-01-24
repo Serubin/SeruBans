@@ -22,7 +22,6 @@ public class MySqlDatabase implements Runnable {
     private static String username;
     private static String password;
     private static String database;
-    private SeruBans plugin;
     private static String reason;
     private static String mod;
     private static int lastBanId;
@@ -38,7 +37,6 @@ public class MySqlDatabase implements Runnable {
      */
     public MySqlDatabase(String host, String username, String password,
             String database, SeruBans plugin) {
-        this.plugin = plugin;
         this.host = host;
         this.username = username;
         this.password = password;
@@ -171,10 +169,9 @@ public class MySqlDatabase implements Runnable {
 
     public static void maintainConnection() {
         PreparedStatement ps = null;
-        ResultSet rs = null;
         try {
             ps = conn.prepareStatement("SELECT count(*) FROM bans limit 1;");
-            rs = ps.executeQuery();
+            ps.executeQuery();
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -322,7 +319,6 @@ public class MySqlDatabase implements Runnable {
 
     public static void updateBan(int type, int bId) {
         PreparedStatement ps = null;
-        ResultSet rs = null;
         try {
             ps = conn.prepareStatement("UPDATE bans SET type=? WHERE id=?;");
             ps.setInt(1, type);
@@ -337,7 +333,6 @@ public class MySqlDatabase implements Runnable {
     public static void updateReason(int bId, String reason) {
         PreparedStatement ps = null;
         PreparedStatement ps2 = null;
-        ResultSet rs = null;
         try {
             ps = conn.prepareStatement("UPDATE bans SET reason=? WHERE id=?;");
             ps2 = conn
@@ -438,8 +433,6 @@ public class MySqlDatabase implements Runnable {
 
     public static void addWarn(int pId, int bId) {
         PreparedStatement ps = null;
-        ResultSet rs = null;
-
         try {
             ps = conn.prepareStatement(
                     "INSERT INTO warns (player_id, ban_id) VALUES(?,?);",
@@ -447,7 +440,7 @@ public class MySqlDatabase implements Runnable {
             ps.setInt(1, pId);
             ps.setInt(2, bId);
             ps.executeUpdate();
-            rs = ps.getGeneratedKeys();
+            ps.getGeneratedKeys();
             List<Integer> warns;
             if (HashMaps.isWarn(pId)) {
                warns = HashMaps.getWarn(pId);
@@ -463,8 +456,6 @@ public class MySqlDatabase implements Runnable {
     }
     public static void removeWarn(int pId, int bId){
         PreparedStatement ps = null;
-        ResultSet rs = null;
-
         try {
             ps = conn.prepareStatement(
                     "DELETE FROM warns WHERE player_id=? AND ban_id=?;");
@@ -550,7 +541,7 @@ public class MySqlDatabase implements Runnable {
         PreparedStatement ps = null;
         ResultSet rs = null;
         String line = null;
-        List<String> PlayerInfo = new ArrayList<String>();
+        new ArrayList<String>();
         try {
             ps = conn
                     .prepareStatement("SELECT bans.id, bans.mod, users.id, users.name, bans.type, bans.reason, bans.length, bans.date FROM bans INNER JOIN users ON bans.mod = users.id WHERE (bans.id = ?);");
@@ -562,9 +553,8 @@ public class MySqlDatabase implements Runnable {
                 String mName = rs.getString("users.name");
                 String date = rs.getObject("bans.date").toString();
                 String reason = rs.getString("bans.reason");
-                Long length = null;
                 if (tId == 2) {
-                    length = rs.getLong("bans.length");
+                    rs.getLong("bans.length");
                 }
                 line = bId + " - " + ArgProcessing.getBanTypeString(tId)
                         + " - " + mName + " - " + date + " - " + reason;

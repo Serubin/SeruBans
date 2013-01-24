@@ -13,7 +13,6 @@ import net.serubin.serubans.commands.UpdateCommand;
 import net.serubin.serubans.commands.WarnCommand;
 import net.serubin.serubans.search.DisplayManager;
 import net.serubin.serubans.util.ArgProcessing;
-import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
@@ -82,6 +81,7 @@ public class SeruBans extends JavaPlugin {
      * perms
      */
 
+    public static final String HELPPERM = "serubans.help";
     public static final String BANPERM = "serubans.ban";
     public static final String TEMPBANPERM = "serubans.tempban";
     public static final String KICKPERM = "serubans.kick";
@@ -177,7 +177,6 @@ public class SeruBans extends JavaPlugin {
         UnbanCommand Unban = new UnbanCommand(this);
         MySqlDatabase sqldb = new MySqlDatabase(host, username, password,
                 database, this);
-        CheckPlayer CheckPlayer = new CheckPlayer();
         SeruBansCommand DebugC = new SeruBansCommand(this);
         CheckBanCommand CheckBan = new CheckBanCommand(this);
         UnTempbanThread UnTempanThread = new UnTempbanThread(this);

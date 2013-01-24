@@ -55,6 +55,7 @@ public class SeruBansPlayerListener implements Listener {
                     .getBannedPlayers(player.getName().toLowerCase());
             String reason = MySqlDatabase.getReason(b_Id);
             String mod = MySqlDatabase.getMod(b_Id);
+            // Handles tempban stuff
             if (tempban) {
                 plugin.printDebug(player.getName() + "tempban");
                 Long length = MySqlDatabase.getLength(b_Id);

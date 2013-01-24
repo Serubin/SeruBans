@@ -1,17 +1,12 @@
 package net.serubin.serubans.commands;
 
-import java.awt.Color;
-
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
 import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,7 +15,6 @@ import org.bukkit.entity.Player;
 public class WarnCommand implements CommandExecutor {
 
     private String WarnMessage;
-    private String name;
     private SeruBans plugin;
     private String WarnPlayerMessage;
 
@@ -28,7 +22,6 @@ public class WarnCommand implements CommandExecutor {
             String name, SeruBans plugin) {
         this.WarnMessage = WarnMessage;
         this.WarnPlayerMessage = WarnPlayerMessage;
-        this.name = name;
         this.plugin = plugin;
     }
 
@@ -74,7 +67,6 @@ public class WarnCommand implements CommandExecutor {
                 victim = plugin.getServer().getPlayer(args[0]);
                 // processes Warn message
 
-                String line = "";
                 if (victim != null) {
                     // checks player for id in database
                     CheckPlayer.checkPlayer(victim, sender);
@@ -104,7 +96,7 @@ public class WarnCommand implements CommandExecutor {
                     MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod,
                             reason, display);
                     // Adds warn
-                        MySqlDatabase.addWarn(HashMaps.getPlayerList(args[0]),
+                        MySqlDatabase.addWarn(HashMaps.getPlayerList(args[0].toLowerCase()),
                                 MySqlDatabase.getLastBanId());
                     // prints to players on server with perms
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
