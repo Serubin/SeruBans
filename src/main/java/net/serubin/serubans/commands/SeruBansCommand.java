@@ -14,7 +14,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class SeruBansCommand implements CommandExecutor {
 
@@ -27,8 +26,8 @@ public class SeruBansCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("serubans")) {
-            if (sender.hasPermission(SeruBans.HELPPERM) || sender.isOp()
-                    || (!(sender instanceof Player))) {
+            if (SeruBans.hasPermission(sender, SeruBans.HELPPERM)
+                    || SeruBans.hasPermission(sender, SeruBans.DEBUGPERM)) {
                 if (args.length == 0) {
                     sender.sendMessage(ChatColor.GREEN + "Serubans "
                             + ChatColor.YELLOW + " version "
@@ -101,66 +100,79 @@ public class SeruBansCommand implements CommandExecutor {
                     // Debug help
                     HelpMessages.debugHelp(sender);
                 } else {
-                    sender.sendMessage(ChatColor.RED + "Help page not found!");
-                }
-                return true;
-            } else if (sender.hasPermission(SeruBans.DEBUGPERM)
-                    || sender.isOp() || (!(sender instanceof Player))) {
-                if (args[0].startsWith("-")) {
-                    if (args[0].contains("a") && !args[0].contains("api")) {
-                        sender.sendMessage("Players: "
-                                + HashMaps.getFullPlayerList());
-                        sender.sendMessage("Banned Players: "
-                                + HashMaps.getFullBannedPlayers());
-                        sender.sendMessage("TempBan: "
-                                + HashMaps.getFullTempBannedTime());
-                        sender.sendMessage("Ids: " + HashMaps.getFullIds());
-                        return true;
-                    }
-                    if (args[0].contains("p") && !args[0].contains("api")) {
-                        sender.sendMessage("Players: "
-                                + HashMaps.getFullPlayerList());
-                    }
-                    if (args[0].contains("i") && !args[0].contains("api")) {
-                        sender.sendMessage("Ids: " + HashMaps.getFullIds());
-                    }
-                    if (args[0].contains("b")) {
-                        sender.sendMessage("Banned Players: "
-                                + HashMaps.getFullBannedPlayers());
-                    }
-                    if (args[0].contains("t")) {
-                        sender.sendMessage("TempBan: "
-                                + HashMaps.getFullTempBannedTime());
-                    }
-                    if (args[0].contains("w")) {
-                        sender.sendMessage("Warns: "
-                                + HashMaps.getFullWarnList());
-                    }
-                    if (args[0].contains("e")) {
-                        List<String> ban = HashMaps.getBannedForFile();
-                        Iterator<String> iterator = ban.iterator();
-                        try {
-                            BufferedWriter banlist = new BufferedWriter(
-                                    new FileWriter("banned-players.txt", true));
-
-                            while (iterator.hasNext()) {
-                                String player = iterator.next();
-                                banlist.write(player);
-                                banlist.newLine();
+                    if (SeruBans.hasPermission(sender, SeruBans.DEBUGPERM)) {
+                        if (args[0].startsWith("-")) {
+                            if (args[0].contains("a")
+                                    && !args[0].contains("api")) {
+                                sender.sendMessage("Players: "
+                                        + HashMaps.getFullPlayerList());
+                                sender.sendMessage("Banned Players: "
+                                        + HashMaps.getFullBannedPlayers());
+                                sender.sendMessage("TempBan: "
+                                        + HashMaps.getFullTempBannedTime());
+                                sender.sendMessage("Ids: "
+                                        + HashMaps.getFullIds());
+                                return true;
                             }
-                            banlist.close();
-                        } catch (IOException e) {
-                            plugin.log.severe("File Could not be writen!");
+                            if (args[0].contains("p")
+                                    && !args[0].contains("api")) {
+                                sender.sendMessage("Players: "
+                                        + HashMaps.getFullPlayerList());
+                            }
+                            if (args[0].contains("i")
+                                    && !args[0].contains("api")) {
+                                sender.sendMessage("Ids: "
+                                        + HashMaps.getFullIds());
+                            }
+                            if (args[0].contains("b")) {
+                                sender.sendMessage("Banned Players: "
+                                        + HashMaps.getFullBannedPlayers());
+                            }
+                            if (args[0].contains("t")) {
+                                sender.sendMessage("TempBan: "
+                                        + HashMaps.getFullTempBannedTime());
+                            }
+                            if (args[0].contains("w")) {
+                                sender.sendMessage("Warns: "
+                                        + HashMaps.getFullWarnList());
+                            }
+                            if (args[0].contains("e")) {
+                                plugin.log
+                                        .info(sender.getName()
+                                                + " has exected the export command. Now attempting to export bans to vanilla bans file. Once this has completed unbanning a player in serubans may not unban them. Make sure to remove their name from the vanilla bans file!");
+                                List<String> ban = HashMaps.getBannedForFile();
+                                Iterator<String> iterator = ban.iterator();
+                                try {
+                                    BufferedWriter banlist = new BufferedWriter(
+                                            new FileWriter(
+                                                    "banned-players.txt", true));
+
+                                    while (iterator.hasNext()) {
+                                        String player = iterator.next();
+                                        banlist.write(player);
+                                        banlist.newLine();
+                                    }
+                                    banlist.close();
+                                    sender.sendMessage(ChatColor.GREEN
+                                            + "Bans were successfully exported!");
+                                } catch (IOException e) {
+                                    plugin.log
+                                            .severe("File Could not be writen!");
+                                    sender.sendMessage(ChatColor.RED
+                                            + "File Could not be writen!");
+                                }
+
+                            }
+                            return true;
+                        } else {
+                            sender.sendMessage(ChatColor.RED
+                                    + "Help/Debug argument was not found.");
+                            return true;
                         }
                     }
-                    return true;
                 }
-                return false;
-            } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
-                return true;
             }
+            return true;
         }
         return false;
     }

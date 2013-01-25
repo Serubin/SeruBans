@@ -70,11 +70,8 @@ public class UnbanCommand implements CommandExecutor {
                         return true;
                     }
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
-                return true;
             }
+            return true;
         }
         return false;
     }

@@ -33,8 +33,7 @@ public class KickCommand implements CommandExecutor {
         boolean silent = false;
 
         if (commandLabel.equalsIgnoreCase("kick")) {
-            if (sender.hasPermission(SeruBans.KICKPERM) || sender.isOp()
-                    || (!(sender instanceof Player))) {
+            if (SeruBans.hasPermission(sender, SeruBans.KICKPERM)) {
 
                 // checks for options
                 // TODO Make this more efficient
@@ -91,11 +90,8 @@ public class KickCommand implements CommandExecutor {
                             + "This Player was not found!");
                     return true;
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
-                return true;
             }
+            return true;
         }
 
         return false;

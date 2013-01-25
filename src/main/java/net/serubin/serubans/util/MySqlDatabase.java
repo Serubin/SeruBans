@@ -263,8 +263,8 @@ public class MySqlDatabase implements Runnable {
                 Integer bId = rs.getInt("ban_id");
                 List<Integer> warns;
                 if (HashMaps.isWarn(pId)) {
-                   warns = HashMaps.getWarn(pId);
-                   warns.add(bId);
+                    warns = HashMaps.getWarn(pId);
+                    warns.add(bId);
                 } else {
                     warns = new ArrayList<Integer>();
                     warns.add(bId);
@@ -307,7 +307,8 @@ public class MySqlDatabase implements Runnable {
                     HashMaps.setTempBannedTime(bId, length);
                 }
                 lastBanId = bId;
-                SeruBans.printInfo("Banned: " + victim + " Ban Id: " + bId);
+                SeruBans.printInfo(ArgProcessing.getBanTypeString(type) + ": "
+                        + victim + " Ban Id: " + bId);
             } else {
                 SeruBans.printInfo("Error adding ban!");
             }
@@ -443,8 +444,8 @@ public class MySqlDatabase implements Runnable {
             ps.getGeneratedKeys();
             List<Integer> warns;
             if (HashMaps.isWarn(pId)) {
-               warns = HashMaps.getWarn(pId);
-               warns.add(bId);
+                warns = HashMaps.getWarn(pId);
+                warns.add(bId);
             } else {
                 warns = new ArrayList<Integer>();
                 warns.add(bId);
@@ -454,15 +455,16 @@ public class MySqlDatabase implements Runnable {
             e.printStackTrace();
         }
     }
-    public static void removeWarn(int pId, int bId){
+
+    public static void removeWarn(int pId, int bId) {
         PreparedStatement ps = null;
         try {
-            ps = conn.prepareStatement(
-                    "DELETE FROM warns WHERE player_id=? AND ban_id=?;");
+            ps = conn
+                    .prepareStatement("DELETE FROM warns WHERE player_id=? AND ban_id=?;");
             ps.setInt(1, pId);
             ps.setInt(2, bId);
             ps.executeUpdate();
-           } catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

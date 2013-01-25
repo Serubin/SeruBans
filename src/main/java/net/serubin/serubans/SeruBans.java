@@ -17,6 +17,7 @@ import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -226,16 +227,22 @@ public class SeruBans extends JavaPlugin {
         }
     }
 
+    /**
+     * Prints message to player when called. Will not print message to a player
+     * without them having permissions. If the silent argument is true, it will
+     * only be broadcasted to those with the silent permission.
+     * 
+     * @param line Message to be broadcasted
+     * @param silent
+     */
     public static void printServer(String line, boolean silent) {
         Player[] players = Bukkit.getOnlinePlayers();
         for (Player player : players) {
-            if ((player.hasPermission(BROADCASTPERM)
-                    || player.hasPermission(BROADCASTPERMSILENT) || player
-                        .isOp()) && !silent) {
+            if ((player.hasPermission(BROADCASTPERM) || player
+                    .hasPermission(BROADCASTPERMSILENT)) && !silent) {
                 player.sendMessage(ArgProcessing.GetColor(line));
             }
-            if ((player.hasPermission(BROADCASTPERMSILENT) || player.isOp())
-                    && silent) {
+            if (player.hasPermission(BROADCASTPERMSILENT) && silent) {
                 player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA
                         + "Silent" + ChatColor.DARK_AQUA + "] "
                         + ChatColor.WHITE + ArgProcessing.GetColor(line));
@@ -252,11 +259,12 @@ public class SeruBans extends JavaPlugin {
         self.log.warning("[SeruBans] " + line);
     }
 
-    public static boolean hasPermission(Player player, String permission) {
-        if (player.hasPermission(permission) || player.isOp()) {
+    public static boolean hasPermission(CommandSender sender, String permission) {
+        if (sender.hasPermission(permission) || sender.isOp()
+                || (!(sender instanceof Player))) {
             return true;
         } else {
-            player.sendMessage(ChatColor.RED + "You do not have permission!");
+            sender.sendMessage(ChatColor.RED + "You do not have permission!");
             return false;
         }
     }

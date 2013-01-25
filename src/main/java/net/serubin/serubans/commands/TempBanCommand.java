@@ -34,8 +34,7 @@ public class TempBanCommand implements CommandExecutor {
         boolean silent = false;
 
         if (commandLabel.equalsIgnoreCase("tempban")) {
-            if (sender.hasPermission(SeruBans.TEMPBANPERM) || sender.isOp()
-                    || (!(sender instanceof Player))) {
+            if (SeruBans.hasPermission(sender, SeruBans.TEMPBANPERM)) {
 
                 // checks for options
                 // TODO Make this more efficient
@@ -142,11 +141,8 @@ public class TempBanCommand implements CommandExecutor {
                     }
 
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
+            } else
                 return true;
-            }
         }
         return false;
     }

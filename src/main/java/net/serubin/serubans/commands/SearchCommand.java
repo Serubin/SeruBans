@@ -21,8 +21,7 @@ public class SearchCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("bsearch")) {
-            if (sender.hasPermission(SeruBans.SEARCHPERM) || sender.isOp()
-                    || (!(sender instanceof Player))) {
+            if (SeruBans.hasPermission(sender, SeruBans.SEARCHPERM)) {
                 boolean idB = false;
                 boolean playerB = false;
                 boolean typeB = false;
@@ -102,11 +101,8 @@ public class SearchCommand implements CommandExecutor {
                 } else {
                     return false;
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
-                return true;
             }
+            return true;
         }
         return false;
     }

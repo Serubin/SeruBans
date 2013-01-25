@@ -33,11 +33,10 @@ public class BanCommand implements CommandExecutor {
         boolean silent = false;
         int display = SeruBans.SHOW;
         if (commandLabel.equalsIgnoreCase("ban")) {
-            if (sender.hasPermission(SeruBans.BANPERM) || sender.isOp()
-                    || (!(sender instanceof Player))) {
+            if (SeruBans.hasPermission(sender, SeruBans.BANPERM)) {
 
                 // checks for options
-                //TODO Make this more efficient 
+                // TODO Make this more efficient
                 if (args.length == 0
                         || (args.length == 1 && args[0].startsWith("-"))) {
                     return false;
@@ -126,11 +125,8 @@ public class BanCommand implements CommandExecutor {
                     }
 
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
-                return true;
             }
+            return true;
         }
         return false;
     }

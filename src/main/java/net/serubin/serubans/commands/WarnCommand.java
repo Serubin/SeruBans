@@ -34,8 +34,7 @@ public class WarnCommand implements CommandExecutor {
         boolean silent = false;
 
         if (commandLabel.equalsIgnoreCase("warn")) {
-            if (sender.hasPermission(SeruBans.WARNPERM) || sender.isOp()
-                    || (!(sender instanceof Player))) {
+            if (SeruBans.hasPermission(sender, SeruBans.WARNPERM)) {
 
                 // checks for options
                 // TODO Make this more efficient
@@ -96,8 +95,9 @@ public class WarnCommand implements CommandExecutor {
                     MySqlDatabase.addBan(args[0], SeruBans.WARN, 0, mod,
                             reason, display);
                     // Adds warn
-                        MySqlDatabase.addWarn(HashMaps.getPlayerList(args[0].toLowerCase()),
-                                MySqlDatabase.getLastBanId());
+                    MySqlDatabase.addWarn(
+                            HashMaps.getPlayerList(args[0].toLowerCase()),
+                            MySqlDatabase.getLastBanId());
                     // prints to players on server with perms
                     SeruBans.printServer(ArgProcessing.GlobalMessage(
                             WarnMessage, reason, mod, args[0]), silent);
@@ -110,11 +110,8 @@ public class WarnCommand implements CommandExecutor {
                             + Integer.toString(MySqlDatabase.getLastBanId()));
                     return true;
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED
-                        + "You do not have permission!");
-                return true;
             }
+            return true;
         }
         return false;
     }
