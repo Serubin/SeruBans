@@ -33,10 +33,10 @@ public class SeruBansCommand implements CommandExecutor {
                             + ChatColor.YELLOW + " version "
                             + SeruBans.getVersion());
                     sender.sendMessage(ChatColor.YELLOW + "For help with: ");
-                    sender.sendMessage(ChatColor.GREEN + "    baning "
+                    sender.sendMessage(ChatColor.GREEN + "    banning "
                             + ChatColor.YELLOW + "type " + ChatColor.GREEN
                             + "/serubans ban");
-                    sender.sendMessage(ChatColor.GREEN + "    tempbaning "
+                    sender.sendMessage(ChatColor.GREEN + "    tempbanning "
                             + ChatColor.YELLOW + "type " + ChatColor.GREEN
                             + "/serubans tempban");
                     sender.sendMessage(ChatColor.GREEN + "    kicking "
