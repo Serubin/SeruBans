@@ -62,7 +62,7 @@ public class SearchCommand implements CommandExecutor {
                 if (playerB && !typeB && !idB) {
                     plugin.printDebug(sender.getName()
                             + " is searching player " + player);
-                    search.searchPlayer(player, sender);
+                    search.searchPlayer(player.toLowerCase(), sender);
                     return true;
                 } else if (playerB && typeB && !idB) {
                     plugin.printDebug(sender.getName() + " is searching "
@@ -93,7 +93,7 @@ public class SearchCommand implements CommandExecutor {
                                 + ChatColor.YELLOW + "kicks");
                         return true;
                     }
-                    search.searchType(player, typeInt, sender);
+                    search.searchType(player.toLowerCase(), typeInt, sender);
                     return true;
                 } else if (idB && !typeB && !playerB) {
                     search.searchId(id, sender);
