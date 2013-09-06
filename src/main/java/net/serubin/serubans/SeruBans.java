@@ -28,7 +28,12 @@ public class SeruBans extends JavaPlugin {
      * 
      * By Serubin323, Solomon Rubin
      */
-
+	
+	//TODO remove hashmaps - no need to keep things in the memeory
+	//TODO ever minute polls on all players logged in to check if new bans appear
+	//TODO check for new ban - kick if found. Same with tempbans
+	//TODO add bungee message channel
+	
     public SeruBans plugin;
     public Logger log = Logger.getLogger("Minecraft");
     private static boolean debug;
@@ -62,10 +67,10 @@ public class SeruBans extends JavaPlugin {
      * sql variables
      */
 
-    public static String username;
-    public static String password;
-    public static String database;
-    public static String host;
+    private static String username;
+    private static String password;
+    private static String database;
+    private static String host;
 
     /*
      * Ban types
