@@ -210,10 +210,10 @@ public class SeruBans extends JavaPlugin {
          * Create Thread
          */
 
-        taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this,
+        taskId = getServer().getScheduler().runTaskTimerAsynchronously(this,
                 UnTempanThread, 1200, 1200);
         taskId_maintain = getServer().getScheduler()
-                .scheduleAsyncRepeatingTask(this, sqldb, 5800, 5800);
+                .runTaskTimerAsynchronously(this, sqldb, 5800, 5800);
 
     }
 
