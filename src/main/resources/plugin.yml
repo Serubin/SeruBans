@@ -1,6 +1,6 @@
 name: SeruBans
 main: net.serubin.serubans.SeruBans
-version: 2.9
+version: ${project.version}
 
 commands:
   ban:
