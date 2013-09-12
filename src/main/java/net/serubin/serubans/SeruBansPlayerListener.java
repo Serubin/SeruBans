@@ -18,7 +18,6 @@ public class SeruBansPlayerListener implements Listener {
 
     private SeruBans plugin;
     private String banMessage;
-    public boolean tempban = false;
     private String tempBanMessage;
 
     public SeruBansPlayerListener(SeruBans plugin, String banMessage,
@@ -31,8 +30,6 @@ public class SeruBansPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        tempban = false;
-
         Player player = event.getPlayer();
         String name = player.getName();
         String lcName = name.toLowerCase();
@@ -73,30 +70,28 @@ public class SeruBansPlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        int pId = 0;
-        if (!HashMaps.keyIsInPlayerList(player.getName().toLowerCase())) {
+        String name = player.getName();
+        String lcName = name.toLowerCase();
+
+        // checks if players has warns to be notified of
+        List<BanInfo> warnInfo = MySqlDatabase.getPlayerWarnsInfo(lcName);
+        if (warnInfo == null) {
             return;
         }
-        pId = HashMaps.getPlayerList(player.getName().toLowerCase());
-        if (HashMaps.isWarn(pId)) {
-            final List<Integer> bId = HashMaps.getWarn(pId);
-            for (int i : bId) {
-                SeruBans.printInfo("Warning player, ban id:"
-                        + Integer.toString(i));
-                final String message = ArgProcessing.GetColor(ArgProcessing
-                        .PlayerMessage(SeruBans.WarnPlayerMessage,
-                                MySqlDatabase.getReason(i),
-                                MySqlDatabase.getMod(i)));
-                plugin.getServer().getScheduler()
-                        .scheduleSyncDelayedTask(plugin, new Runnable() {
-                            public void run() {
-                                player.sendMessage(message);
-                            }
-                        });
-                MySqlDatabase.removeWarn(pId, i);
-                HashMaps.remWarn(pId);
-            }
+        for (BanInfo warn : warnInfo) {
+            SeruBans.printInfo("Warning player, ban id:"
+                    + Integer.toString(warn.getBanId()));
+            final String message = ArgProcessing.GetColor(ArgProcessing
+                    .PlayerMessage(SeruBans.WarnPlayerMessage,
+                            warn.getReason(),
+                            warn.getModName()));
+            plugin.getServer().getScheduler()
+                    .scheduleSyncDelayedTask(plugin, new Runnable() {
+                        public void run() {
+                            player.sendMessage(message);
+                        }
+                    });
+            MySqlDatabase.removeWarn(warn.getPlayerId(), warn.getBanId());
         }
-
     }
 }
