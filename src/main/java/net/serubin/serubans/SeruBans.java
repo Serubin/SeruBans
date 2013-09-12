@@ -21,6 +21,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public class SeruBans extends JavaPlugin {
     /*
@@ -102,13 +103,13 @@ public class SeruBans extends JavaPlugin {
     public static final int SHOW = 0;
     public static final int HIDE = 1;
 
-    int taskId;
-    int taskId_maintain;
+    BukkitTask checkTempBansTask;
+    BukkitTask dbKeepAliveTask;
 
     public void onDisable() {
         reloadConfig();
         saveConfig();
-        getServer().getScheduler().cancelTask(taskId);
+        getServer().getScheduler().cancelTask(checkTempBansTask.getTaskId());
         log.info(name + " has been disabled");
 
     }
@@ -210,9 +211,9 @@ public class SeruBans extends JavaPlugin {
          * Create Thread
          */
 
-        taskId = getServer().getScheduler().runTaskTimerAsynchronously(this,
+        checkTempBansTask = getServer().getScheduler().runTaskTimerAsynchronously(this,
                 UnTempanThread, 1200, 1200);
-        taskId_maintain = getServer().getScheduler()
+        dbKeepAliveTask = getServer().getScheduler()
                 .runTaskTimerAsynchronously(this, sqldb, 5800, 5800);
 
     }

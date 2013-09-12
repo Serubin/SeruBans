@@ -3,6 +3,7 @@ package net.serubin.serubans;
 import java.util.List;
 
 import net.serubin.serubans.util.ArgProcessing;
+import net.serubin.serubans.util.BanInfo;
 import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
 
@@ -31,44 +32,41 @@ public class SeruBansPlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         tempban = false;
-        Player player = event.getPlayer();
-        plugin.printDebug(player.getName() + " is attempting to login");
-        // checks if player is banned
-        if (HashMaps.keyIsInBannedPlayers(player.getName().toLowerCase())) {
-            int bId = HashMaps.getBannedPlayers(player.getName().toLowerCase());
-            if (HashMaps.keyIsInTempBannedTime(bId)) {
-                plugin.printDebug(player.getName() + "Is tempbaned");
-                tempban = true;
-                if (HashMaps.getTempBannedTime(bId) < System
-                        .currentTimeMillis() / 1000) {
-                    HashMaps.removeBannedPlayerItem(player.getName()
-                            .toLowerCase());
-                    HashMaps.removeTempBannedTimeItem(bId);
-                    MySqlDatabase.updateBan(SeruBans.UNTEMPBAN, bId);
-                    return;
-                } else {
 
-                }
+        Player player = event.getPlayer();
+        String name = player.getName();
+        String lcName = name.toLowerCase();
+
+        plugin.printDebug(name + " is attempting to login");
+
+        // checks if player is banned
+        BanInfo banInfo = MySqlDatabase.getPlayerBannedInfo(lcName);
+        if (banInfo != null) {
+            plugin.log.warning(name + " LOGIN DENIED - BANNED");
+            String reason = banInfo.getReason();
+            String mod = banInfo.getModName();
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+                       ArgProcessing.GetColor(ArgProcessing.PlayerMessage(
+                               banMessage, reason, mod)));
+            return;
+        }
+
+        // checks if player is tempbanned
+        BanInfo tempbanInfo = MySqlDatabase.getPlayerTempBannedInfo(lcName);
+        if (tempbanInfo != null) {
+            plugin.printDebug(name + "is tempbanned");
+            Long length = tempbanInfo.getLength();
+            if (length < (System.currentTimeMillis() / 1000)) {
+                MySqlDatabase.updateBan(SeruBans.UNTEMPBAN, tempbanInfo.getBanId());
+                return;
             }
-            plugin.log.warning(player.getName() + " LOGIN DENIED - BANNED");
-            int b_Id = HashMaps
-                    .getBannedPlayers(player.getName().toLowerCase());
-            String reason = MySqlDatabase.getReason(b_Id);
-            String mod = MySqlDatabase.getMod(b_Id);
-            // Handles tempban stuff
-            if (tempban) {
-                plugin.printDebug(player.getName() + "tempban");
-                Long length = MySqlDatabase.getLength(b_Id);
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                        ArgProcessing.GetColor(ArgProcessing
-                                .PlayerTempBanMessage(tempBanMessage, reason,
-                                        mod,
-                                        ArgProcessing.getStringDate(length))));
-            } else {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                        ArgProcessing.GetColor(ArgProcessing.PlayerMessage(
-                                banMessage, reason, mod)));
-            }
+            String reason = tempbanInfo.getReason();
+            String mod = tempbanInfo.getModName();
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+                    ArgProcessing.GetColor(ArgProcessing
+                            .PlayerTempBanMessage(tempBanMessage, reason,
+                                    mod,
+                                    ArgProcessing.getStringDate(length))));
         }
     }
 
