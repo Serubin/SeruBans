@@ -261,7 +261,7 @@ public class MySqlDatabase implements Runnable {
         return 0;
     }
 
-    public static ArrayList<BanInfo> getPlayerWarnsInfo(String name) {
+    public static List<BanInfo> getPlayerWarnsInfo(String name) {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -273,7 +273,7 @@ public class MySqlDatabase implements Runnable {
                             + name
                             + "\"");
             rs = ps.executeQuery();
-            ArrayList<BanInfo> warnInfo = new ArrayList<BanInfo>();
+            List<BanInfo> warnInfo = new ArrayList<BanInfo>();
             while (rs.next()) {
                 BanInfo banInfo = new BanInfo();
                 banInfo.setBanId(rs.getInt("bans.id"));
@@ -292,7 +292,7 @@ public class MySqlDatabase implements Runnable {
         return null;
     }
 
-    public static ArrayList<BanInfo> getTempBans() {
+    public static List<BanInfo> getTempBans() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -301,7 +301,7 @@ public class MySqlDatabase implements Runnable {
                             + " WHERE type ="
                             + SeruBans.TEMPBAN);
             rs = ps.executeQuery();
-            ArrayList<BanInfo> tempbanInfo = new ArrayList<BanInfo>();
+            List<BanInfo> tempbanInfo = new ArrayList<BanInfo>();
             while (rs.next()) {
                 BanInfo banInfo = new BanInfo();
                 banInfo.setBanId(rs.getInt("bans.id"));

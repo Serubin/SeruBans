@@ -1,6 +1,6 @@
 package net.serubin.serubans;
 
-import java.util.ArrayList;
+import java.util.List;
 import net.serubin.serubans.util.BanInfo;
 import net.serubin.serubans.util.MySqlDatabase;
 
@@ -16,7 +16,7 @@ public class UnTempbanThread implements Runnable {
         plugin.printDebug("Check tempban thread has started.");
         plugin.printDebug(Long.toString(System.currentTimeMillis()/1000));
 
-        ArrayList<BanInfo> tempbanInfo = MySqlDatabase.getTempBans();
+        List<BanInfo> tempbanInfo = MySqlDatabase.getTempBans();
         if (tempbanInfo == null) {
             return;
         }
