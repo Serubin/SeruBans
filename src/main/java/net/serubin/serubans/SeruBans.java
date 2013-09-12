@@ -110,6 +110,7 @@ public class SeruBans extends JavaPlugin {
         reloadConfig();
         saveConfig();
         getServer().getScheduler().cancelTask(checkTempBansTask.getTaskId());
+        getServer().getScheduler().cancelTask(dbKeepAliveTask.getTaskId());
         log.info(name + " has been disabled");
 
     }
