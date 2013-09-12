@@ -51,7 +51,6 @@ public class MySqlDatabase implements Runnable {
         createTable();
         getPlayer();
         getBans();
-        getTempBans();
         getBanIds();
         getWarns();
 
@@ -293,6 +292,30 @@ public class MySqlDatabase implements Runnable {
         return null;
     }
 
+    public static ArrayList<BanInfo> getTempBans() {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT id, length"
+                            + " FROM bans"
+                            + " WHERE type ="
+                            + SeruBans.TEMPBAN);
+            rs = ps.executeQuery();
+            ArrayList<BanInfo> tempbanInfo = new ArrayList<BanInfo>();
+            while (rs.next()) {
+                BanInfo banInfo = new BanInfo();
+                banInfo.setBanId(rs.getInt("bans.id"));
+                banInfo.setLength(rs.getLong("length"));
+                tempbanInfo.add(banInfo);
+            }
+            return tempbanInfo;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 // to remove - START
     public static void getPlayer() {
         PreparedStatement ps = null;
@@ -346,25 +369,6 @@ public class MySqlDatabase implements Runnable {
 
             e.printStackTrace();
         }
-    }
-
-    public static void getTempBans() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = conn.prepareStatement("SELECT id, length" + " FROM bans"
-                    + " WHERE (type = 2) ");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                Integer bId = rs.getInt("id");
-                Long length = rs.getLong("length");
-                HashMaps.setTempBannedTime(bId, length);
-            }
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-        }
-
     }
 
     public static void getWarns() {

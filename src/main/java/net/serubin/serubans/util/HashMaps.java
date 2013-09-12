@@ -100,22 +100,6 @@ public class HashMaps {
         return TempBannedTime.entrySet();
     }
 
-    public static List<String> getTempBannedTimeUnbans() {
-        List<String> unban = new ArrayList<String>();
-        int b_Id;
-        for (Entry<String, Integer> entry : BannedPlayers.entrySet()) {
-            String key = entry.getKey();
-            b_Id = getBannedPlayers(key);
-            if (keyIsInTempBannedTime(b_Id)) {
-
-                if (TempBannedTime.get(b_Id) < System.currentTimeMillis() / 1000) {
-                    unban.add(key);
-                }
-            }
-        }
-        return unban;
-    }
-
     // player list
     public static Integer getPlayerList(String key) {
         return PlayerList.get(key);
