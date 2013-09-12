@@ -50,8 +50,6 @@ public class MySqlDatabase implements Runnable {
         createConnection();
         createTable();
         getPlayer();
-        getBans();
-        getTempBans();
         getBanIds();
         getWarns();
 
@@ -179,6 +177,156 @@ public class MySqlDatabase implements Runnable {
         SeruBans.self.log.info("SeruBans has checked in with database");
     }
 
+    public static BanInfo getPlayerBannedInfo(String name) {
+        return getPlayerBanInfo(name, SeruBans.BAN);
+    }
+
+    public static BanInfo getPlayerTempBannedInfo(String name) {
+        return getPlayerBanInfo(name, SeruBans.TEMPBAN);
+    }
+
+    private static BanInfo getPlayerBanInfo(String name, int status) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn
+                    .prepareStatement("SELECT type, bans.id, mod, users.id, name, length, reason"
+                            + " FROM bans"
+                            + " INNER JOIN users"
+                            + "  ON bans.player_id=users.id"
+                            + " WHERE type = "
+                            + status
+                            + " AND name = \""
+                            + name
+                            + "\"");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                BanInfo banInfo = new BanInfo();
+                banInfo.setType(rs.getInt("type"));
+                banInfo.setBanId(rs.getInt("bans.id"));
+                int modId = rs.getInt("mod");
+                banInfo.setModId(modId);
+                banInfo.setModName(getUserName(modId));
+                banInfo.setPlayerId(rs.getInt("users.id"));
+                banInfo.setPlayerName(rs.getString("name"));
+                banInfo.setLength(rs.getLong("length"));
+                banInfo.setReason(rs.getString("reason"));
+                return banInfo;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private static String getUserName(int id) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT name"
+                            + " FROM users"
+                            + " WHERE id = "
+                            + id);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getString("name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static int getBanId(String name, int status) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT id"
+                            + " FROM bans"
+                            + " WHERE name = \""
+                            + name
+                            + "\" AND type ="
+                            + status);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public static List<BanInfo> getPlayerWarnsInfo(String name) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT ban_id"
+                            + " FROM warns"
+                            + " INNER JOIN users"
+                            + "  ON warns.player_id=id"
+                            + " WHERE name = \""
+                            + name
+                            + "\"");
+            rs = ps.executeQuery();
+            List<BanInfo> warnInfo = new ArrayList<BanInfo>();
+            while (rs.next()) {
+                BanInfo banInfo = new BanInfo();
+                banInfo.setBanId(rs.getInt("bans.id"));
+                int modId = rs.getInt("mod");
+                banInfo.setModId(modId);
+                banInfo.setModName(getUserName(modId));
+                banInfo.setPlayerId(rs.getInt("users.id"));
+                banInfo.setReason(rs.getString("reason"));
+                warnInfo.add(banInfo);
+            }
+            return warnInfo;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static List<BanInfo> getPermBans() {
+        return getBans(SeruBans.BAN);
+    }
+
+    public static List<BanInfo> getTempBans() {
+        return getBans(SeruBans.TEMPBAN);
+    }
+
+    public static List<BanInfo> getBans(int status) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = conn.prepareStatement("SELECT bans.id, name, length"
+                            + " FROM bans"
+                            + " INNER JOIN users"
+                            + "  ON bans.player_id=users.id"
+                            + " WHERE type ="
+                            + status);
+            rs = ps.executeQuery();
+            List<BanInfo> listInfo = new ArrayList<BanInfo>();
+            while (rs.next()) {
+                BanInfo banInfo = new BanInfo();
+                banInfo.setBanId(rs.getInt("bans.id"));
+                banInfo.setPlayerName(rs.getString("name"));
+                banInfo.setLength(rs.getLong("length"));
+                listInfo.add(banInfo);
+            }
+            return listInfo;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+// to remove - START
     public static void getPlayer() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -191,28 +339,6 @@ public class MySqlDatabase implements Runnable {
                 HashMaps.setPlayerList(pName, pId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void getBans() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = conn
-                    .prepareStatement("SELECT bans.player_id, bans.id, users.name, users.id"
-                            + " FROM bans"
-                            + " INNER JOIN users"
-                            + "  ON bans.player_id=users.id"
-                            + " WHERE (type = 1 OR type = 2) ");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                Integer bId = rs.getInt("bans.id");
-                String pName = rs.getString("name");
-                HashMaps.setBannedPlayers(pName, bId);
-            }
-        } catch (SQLException e) {
-
             e.printStackTrace();
         }
     }
@@ -231,25 +357,6 @@ public class MySqlDatabase implements Runnable {
 
             e.printStackTrace();
         }
-    }
-
-    public static void getTempBans() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = conn.prepareStatement("SELECT id, length" + " FROM bans"
-                    + " WHERE (type = 2) ");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                Integer bId = rs.getInt("id");
-                Long length = rs.getLong("length");
-                HashMaps.setTempBannedTime(bId, length);
-            }
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-        }
-
     }
 
     public static void getWarns() {
@@ -276,6 +383,7 @@ public class MySqlDatabase implements Runnable {
             e.printStackTrace();
         }
     }
+// to remove - END
 
     public static void addBan(String victim, int type, long length, String mod,
             String reason, int display) {
@@ -326,7 +434,6 @@ public class MySqlDatabase implements Runnable {
             ps.setInt(2, bId);
             ps.executeUpdate();
         } catch (SQLException e) {
-
             e.printStackTrace();
         }
     }

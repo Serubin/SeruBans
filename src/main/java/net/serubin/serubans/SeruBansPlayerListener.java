@@ -3,7 +3,7 @@ package net.serubin.serubans;
 import java.util.List;
 
 import net.serubin.serubans.util.ArgProcessing;
-import net.serubin.serubans.util.HashMaps;
+import net.serubin.serubans.util.BanInfo;
 import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.entity.Player;
@@ -17,7 +17,6 @@ public class SeruBansPlayerListener implements Listener {
 
     private SeruBans plugin;
     private String banMessage;
-    public boolean tempban = false;
     private String tempBanMessage;
 
     public SeruBansPlayerListener(SeruBans plugin, String banMessage,
@@ -30,75 +29,68 @@ public class SeruBansPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        tempban = false;
         Player player = event.getPlayer();
-        plugin.printDebug(player.getName() + " is attempting to login");
-        // checks if player is banned
-        if (HashMaps.keyIsInBannedPlayers(player.getName().toLowerCase())) {
-            int bId = HashMaps.getBannedPlayers(player.getName().toLowerCase());
-            if (HashMaps.keyIsInTempBannedTime(bId)) {
-                plugin.printDebug(player.getName() + "Is tempbaned");
-                tempban = true;
-                if (HashMaps.getTempBannedTime(bId) < System
-                        .currentTimeMillis() / 1000) {
-                    HashMaps.removeBannedPlayerItem(player.getName()
-                            .toLowerCase());
-                    HashMaps.removeTempBannedTimeItem(bId);
-                    MySqlDatabase.updateBan(SeruBans.UNTEMPBAN, bId);
-                    return;
-                } else {
+        String name = player.getName();
+        String lcName = name.toLowerCase();
 
-                }
+        plugin.printDebug(name + " is attempting to login");
+
+        // checks if player is banned
+        BanInfo banInfo = MySqlDatabase.getPlayerBannedInfo(lcName);
+        if (banInfo != null) {
+            plugin.log.warning(name + " LOGIN DENIED - BANNED");
+            String reason = banInfo.getReason();
+            String mod = banInfo.getModName();
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+                       ArgProcessing.GetColor(ArgProcessing.PlayerMessage(
+                               banMessage, reason, mod)));
+            return;
+        }
+
+        // checks if player is tempbanned
+        BanInfo tempbanInfo = MySqlDatabase.getPlayerTempBannedInfo(lcName);
+        if (tempbanInfo != null) {
+            plugin.printDebug(name + "is tempbanned");
+            Long length = tempbanInfo.getLength();
+            if (length < (System.currentTimeMillis() / 1000)) {
+                MySqlDatabase.updateBan(SeruBans.UNTEMPBAN, tempbanInfo.getBanId());
+                return;
             }
-            plugin.log.warning(player.getName() + " LOGIN DENIED - BANNED");
-            int b_Id = HashMaps
-                    .getBannedPlayers(player.getName().toLowerCase());
-            String reason = MySqlDatabase.getReason(b_Id);
-            String mod = MySqlDatabase.getMod(b_Id);
-            // Handles tempban stuff
-            if (tempban) {
-                plugin.printDebug(player.getName() + "tempban");
-                Long length = MySqlDatabase.getLength(b_Id);
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                        ArgProcessing.GetColor(ArgProcessing
-                                .PlayerTempBanMessage(tempBanMessage, reason,
-                                        mod,
-                                        ArgProcessing.getStringDate(length))));
-            } else {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                        ArgProcessing.GetColor(ArgProcessing.PlayerMessage(
-                                banMessage, reason, mod)));
-            }
+            String reason = tempbanInfo.getReason();
+            String mod = tempbanInfo.getModName();
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
+                    ArgProcessing.GetColor(ArgProcessing
+                            .PlayerTempBanMessage(tempBanMessage, reason,
+                                    mod,
+                                    ArgProcessing.getStringDate(length))));
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        int pId = 0;
-        if (!HashMaps.keyIsInPlayerList(player.getName().toLowerCase())) {
+        String name = player.getName();
+        String lcName = name.toLowerCase();
+
+        // checks if players has warns to be notified of
+        List<BanInfo> warnInfo = MySqlDatabase.getPlayerWarnsInfo(lcName);
+        if (warnInfo == null) {
             return;
         }
-        pId = HashMaps.getPlayerList(player.getName().toLowerCase());
-        if (HashMaps.isWarn(pId)) {
-            final List<Integer> bId = HashMaps.getWarn(pId);
-            for (int i : bId) {
-                SeruBans.printInfo("Warning player, ban id:"
-                        + Integer.toString(i));
-                final String message = ArgProcessing.GetColor(ArgProcessing
-                        .PlayerMessage(SeruBans.WarnPlayerMessage,
-                                MySqlDatabase.getReason(i),
-                                MySqlDatabase.getMod(i)));
-                plugin.getServer().getScheduler()
-                        .scheduleSyncDelayedTask(plugin, new Runnable() {
-                            public void run() {
-                                player.sendMessage(message);
-                            }
-                        });
-                MySqlDatabase.removeWarn(pId, i);
-                HashMaps.remWarn(pId);
-            }
+        for (BanInfo warn : warnInfo) {
+            SeruBans.printInfo("Warning player, ban id:"
+                    + Integer.toString(warn.getBanId()));
+            final String message = ArgProcessing.GetColor(ArgProcessing
+                    .PlayerMessage(SeruBans.WarnPlayerMessage,
+                            warn.getReason(),
+                            warn.getModName()));
+            plugin.getServer().getScheduler()
+                    .scheduleSyncDelayedTask(plugin, new Runnable() {
+                        public void run() {
+                            player.sendMessage(message);
+                        }
+                    });
+            MySqlDatabase.removeWarn(warn.getPlayerId(), warn.getBanId());
         }
-
     }
 }
