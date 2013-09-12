@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.BanInfo;
-import net.serubin.serubans.util.HashMaps;
 import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.entity.Player;

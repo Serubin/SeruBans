@@ -7,8 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.util.HashMaps;
+import net.serubin.serubans.util.BanInfo;
 import net.serubin.serubans.util.HelpMessages;
+import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -102,66 +103,11 @@ public class SeruBansCommand implements CommandExecutor {
                 } else {
                     if (SeruBans.hasPermission(sender, SeruBans.DEBUGPERM)) {
                         if (args[0].startsWith("-")) {
-                            if (args[0].contains("a")
-                                    && !args[0].contains("api")) {
-                                sender.sendMessage("Players: "
-                                        + HashMaps.getFullPlayerList());
-                                sender.sendMessage("Banned Players: "
-                                        + HashMaps.getFullBannedPlayers());
-                                sender.sendMessage("TempBan: "
-                                        + HashMaps.getFullTempBannedTime());
-                                sender.sendMessage("Ids: "
-                                        + HashMaps.getFullIds());
-                                return true;
-                            }
-                            if (args[0].contains("p")
-                                    && !args[0].contains("api")) {
-                                sender.sendMessage("Players: "
-                                        + HashMaps.getFullPlayerList());
-                            }
-                            if (args[0].contains("i")
-                                    && !args[0].contains("api")) {
-                                sender.sendMessage("Ids: "
-                                        + HashMaps.getFullIds());
-                            }
-                            if (args[0].contains("b")) {
-                                sender.sendMessage("Banned Players: "
-                                        + HashMaps.getFullBannedPlayers());
-                            }
-                            if (args[0].contains("t")) {
-                                sender.sendMessage("TempBan: "
-                                        + HashMaps.getFullTempBannedTime());
-                            }
-                            if (args[0].contains("w")) {
-                                sender.sendMessage("Warns: "
-                                        + HashMaps.getFullWarnList());
-                            }
                             if (args[0].contains("e")) {
                                 plugin.log
                                         .info(sender.getName()
-                                                + " has exected the export command. Now attempting to export bans to vanilla bans file. Once this has completed unbanning a player in serubans may not unban them. Make sure to remove their name from the vanilla bans file!");
-                                List<String> ban = HashMaps.getBannedForFile();
-                                Iterator<String> iterator = ban.iterator();
-                                try {
-                                    BufferedWriter banlist = new BufferedWriter(
-                                            new FileWriter(
-                                                    "banned-players.txt", true));
-
-                                    while (iterator.hasNext()) {
-                                        String player = iterator.next();
-                                        banlist.write(player);
-                                        banlist.newLine();
-                                    }
-                                    banlist.close();
-                                    sender.sendMessage(ChatColor.GREEN
-                                            + "Bans were successfully exported!");
-                                } catch (IOException e) {
-                                    plugin.log
-                                            .severe("File Could not be writen!");
-                                    sender.sendMessage(ChatColor.RED
-                                            + "File Could not be writen!");
-                                }
-
+                                                + " has detected the export command. Now attempting to export bans to vanilla bans file. Once this has completed unbanning a player in serubans may not unban them. Make sure to remove their name from the vanilla bans file!");
+                                exportToBannedPlayersTxtFile(sender);
                             }
                             return true;
                         } else {
@@ -175,5 +121,37 @@ public class SeruBansCommand implements CommandExecutor {
             return true;
         }
         return false;
+    }
+
+    public void exportToBannedPlayersTxtFile(CommandSender sender) {
+        List<BanInfo> permBans = MySqlDatabase.getPermBans();
+        List<BanInfo> tempBans = MySqlDatabase.getTempBans();
+        if ((permBans == null) && (tempBans == null)) {
+            plugin.log.info("There are no bans to export.");
+            return;
+        }
+
+        try {
+            BufferedWriter banlist = new BufferedWriter(
+                    new FileWriter("banned-players.txt", true));
+
+            // write perm bans
+            for (BanInfo permBan : permBans) {
+                banlist.write(permBan.getPlayerName());
+                banlist.newLine();
+            }
+
+            // write temp bans
+            for (BanInfo tempBan : tempBans) {
+                banlist.write(tempBan.getPlayerName());
+                banlist.newLine();
+            }
+
+            banlist.close();
+            sender.sendMessage(ChatColor.GREEN + "Bans were successfully exported!");
+        } catch (IOException e) {
+            plugin.log.severe("Bans file could not be written!");
+            sender.sendMessage(ChatColor.RED + "Bans file could not be written!");
+        }
     }
 }
