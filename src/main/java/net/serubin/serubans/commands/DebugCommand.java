@@ -7,7 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.util.HashMaps;
+import net.serubin.serubans.util.BanInfo;
+import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -43,65 +44,12 @@ public class DebugCommand implements CommandExecutor {
                             + ChatColor.YELLOW + "for debug functionality.");
                     sender.sendMessage(ChatColor.YELLOW + "Options:");
                     sender.sendMessage(ChatColor.YELLOW
-                            + "-a    prints full hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-p    prints player hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-i     prints id  hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-b    prints banned player hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
-                            + "-w    prints warns hashmaps lists");
-                    sender.sendMessage(ChatColor.YELLOW
                             + "-e    export bans to minecraft bans files");
                     return true;
                 }
                 if (args[0].startsWith("-")) {
-                    if (args[0].contains("a") && !args[0].contains("api")) {
-                        sender.sendMessage("Players: "
-                                + HashMaps.getFullPlayerList());
-                        sender.sendMessage("Banned Players: "
-                                + HashMaps.getFullBannedPlayers());
-                        sender.sendMessage("TempBan: "
-                                + HashMaps.getFullTempBannedTime());
-                        sender.sendMessage("Ids: " + HashMaps.getFullIds());
-                        return true;
-                    }
-                    if (args[0].contains("p") && !args[0].contains("api")) {
-                        sender.sendMessage("Players: "
-                                + HashMaps.getFullPlayerList());
-                    }
-                    if (args[0].contains("i") && !args[0].contains("api")) {
-                        sender.sendMessage("Ids: " + HashMaps.getFullIds());
-                    }
-                    if (args[0].contains("b")) {
-                        sender.sendMessage("Banned Players: "
-                                + HashMaps.getFullBannedPlayers());
-                    }
-                    if (args[0].contains("t")) {
-                        sender.sendMessage("TempBan: "
-                                + HashMaps.getFullTempBannedTime());
-                    }
-                    if (args[0].contains("w")) {
-                        sender.sendMessage("Warns: "
-                                + HashMaps.getFullWarnList());
-                    }
                     if (args[0].contains("e")) {
-                        List<String> ban = HashMaps.getBannedForFile();
-                        Iterator<String> iterator = ban.iterator();
-                        try {
-                            BufferedWriter banlist = new BufferedWriter(
-                                    new FileWriter("banned-players.txt", true));
-
-                            while (iterator.hasNext()) {
-                                String player = iterator.next();
-                                banlist.write(player);
-                                banlist.newLine();
-                            }
-                            banlist.close();
-                        } catch (IOException e) {
-                            plugin.log.severe("File Could not be writen!");
-                        }
+                        exportToBannedPlayersTxtFile();
                     }
                     return true;
                 }
@@ -113,5 +61,35 @@ public class DebugCommand implements CommandExecutor {
             }
         }
         return false;
+    }
+
+    public void exportToBannedPlayersTxtFile() {
+        List<BanInfo> permBans = MySqlDatabase.getPermBans();
+        List<BanInfo> tempBans = MySqlDatabase.getTempBans();
+        if ((permBans == null) && (tempBans == null)) {
+            plugin.log.info("There are no bans to export.");
+            return;
+        }
+
+        try {
+            BufferedWriter banlist = new BufferedWriter(
+                    new FileWriter("banned-players.txt", true));
+
+            // write perm bans
+            for (BanInfo permBan : permBans) {
+                banlist.write(permBan.getPlayerName());
+                banlist.newLine();
+            }
+
+            // write temp bans
+            for (BanInfo tempBan : tempBans) {
+                banlist.write(tempBan.getPlayerName());
+                banlist.newLine();
+            }
+
+            banlist.close();
+        } catch (IOException e) {
+            plugin.log.severe("Bans file could not be written!");
+        }
     }
 }
