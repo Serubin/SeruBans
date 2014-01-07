@@ -7,22 +7,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.dataproviders.IBansDataProvider;
+import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.CheckPlayer;
+import net.serubin.serubans.util.DataCache;
 import net.serubin.serubans.util.HashMaps;
-import net.serubin.serubans.util.MySqlDatabase;
 
 public class TempBanCommand implements CommandExecutor {
 
-    private String tempBanMessage;
-    private String globalTempBanMessage;
     private SeruBans plugin;
+    private IBansDataProvider db;
+    private DataCache dc;
 
-    public TempBanCommand(String tempBanMessage, String globalTempBanMessage,
-            String name, SeruBans plugin) {
-        this.tempBanMessage = tempBanMessage;
-        this.globalTempBanMessage = globalTempBanMessage;
+    public TempBanCommand(SeruBans plugin, IBansDataProvider db, DataCache dc) {
         this.plugin = plugin;
+        this.db = db;
+        this.dc = dc;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,
@@ -34,115 +35,92 @@ public class TempBanCommand implements CommandExecutor {
         boolean silent = false;
 
         if (commandLabel.equalsIgnoreCase("tempban")) {
-            if (SeruBans.hasPermission(sender, SeruBans.TEMPBANPERM)) {
-
-                // checks for options
-                // TODO Make this more efficient
-                if (args.length == 0
-                        || (args.length == 1 && args[0].startsWith("-"))) {
-                    return false;
-                } else {
-                    silent = false;
-                    display = SeruBans.SHOW;
-                    if (args[0].startsWith("-")) {
-                        if (args[0].contains("s")) {
-                            silent = true;
-                        }
-                        if (args[0].contains("h")) {
-                            display = SeruBans.HIDE;
-                        }
-                        args = ArgProcessing.stripFirstArg(args);
-                    }
-                }
-
-                if (args.length == 0) {
-                    return false;
-                } else if (args.length > 3) {
-                    reason = ArgProcessing.reasonArgsTB(args);
-                } else {
-                    reason = "undefined";
-                }
-
-                mod = sender.getName();
-                victim = plugin.getServer().getPlayer(args[0]);
-
-                if (victim != null) {
-                    // adds player to db
-                    CheckPlayer.checkPlayer(victim, sender);
-                    // checks if banned
-                    if (!HashMaps.keyIsInBannedPlayers(victim.getName())) {
-                        long length = ArgProcessing.parseTimeSpec(args[1],
-                                args[2]);
-                        plugin.printDebug(Long.toString(length));
-                        if (length == 0)
-                            return false;
-                        length = System.currentTimeMillis() / 1000 + length;
-                        MySqlDatabase.addBan(victim.getName(),
-                                SeruBans.TEMPBAN, length, mod, reason, display);
-                        // kicks and broadcasts message
-
-                        String date = ArgProcessing.getStringDate(length);
-                        // sends kicker ban id
-                        SeruBans.printServer(ArgProcessing
-                                .GlobalTempBanMessage(globalTempBanMessage,
-                                        reason, mod, victim.getName(), date),
-                                silent);
-                        // logs it
-                        plugin.log.info(mod + " banned " + victim.getName()
-                                + " for " + reason);
-                        // sends kicker ban id
-                        sender.sendMessage(ChatColor.GOLD
-                                + "Ban Id: "
-                                + ChatColor.YELLOW
-                                + Integer.toString(MySqlDatabase.getLastBanId()));
-                        // kicks player of the server
-                        victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing
-                                .PlayerTempBanMessage(tempBanMessage, reason,
-                                        mod, date)));
-                        return true;
-                    } else {
-                        // TODO fix spelling - lazy
-                        sender.sendMessage(ChatColor.GOLD
-                                + victim.getName()
-                                + ChatColor.RED
-                                + " This player is banned and on your server, Please inform your admin imidiatly!");
-                        return true;
-                    }
-                } else {
-                    // checks player for id in database
-                    CheckPlayer.checkPlayerOffline(args[0], sender);
-                    // checks if banned
-                    if (!HashMaps.keyIsInBannedPlayers(args[0])) {
-                        long length = ArgProcessing.parseTimeSpec(args[1],
-                                args[2]);
-                        if (length == 0)
-                            return false;
-                        length = System.currentTimeMillis() / 1000 + length;
-                        // adds ban to database
-                        MySqlDatabase.addBan(args[0], SeruBans.TEMPBAN, length,
-                                mod, reason, display);
-                        // prints to players on server with perms
-                        SeruBans.printServer(ArgProcessing.GlobalMessage(
-                                globalTempBanMessage, reason, mod, args[0]),
-                                silent);
-                        // lgos its
-                        plugin.log.info(mod + " banned " + args[0] + " for "
-                                + reason);
-                        // sends kicker ban id
-                        sender.sendMessage(ChatColor.GOLD
-                                + "Ban Id: "
-                                + ChatColor.YELLOW
-                                + Integer.toString(MySqlDatabase.getLastBanId()));
-                        return true;
-                    } else {
-                        sender.sendMessage(ChatColor.GOLD + args[0]
-                                + ChatColor.RED + " is already banned!");
-                        return true;
-                    }
-
-                }
-            } else
+            if (!plugin.hasPermission(sender, SeruBans.TEMPBANPERM)) {
                 return true;
+            }
+            // Checks for invalid arugments
+            if (args.length == 0
+                    || (args.length == 1 && args[0].startsWith("-"))) {
+                return false;
+
+                // Checks for options
+            } else {
+
+                silent = false;
+                display = SeruBans.SHOW;
+
+                if (args[0].startsWith("-")) {
+                    if (args[0].contains("s")) {
+                        silent = true;
+                    }
+                    if (args[0].contains("h")) {
+                        display = SeruBans.HIDE;
+                    }
+                    args = ArgProcessing.stripFirstArg(args);
+                }
+            }
+
+            // Checks for user defined reason.
+            if (args.length > 3) {
+                reason = ArgProcessing.reasonArgsTB(args);
+            } else {
+                reason = "Undefined";
+            }
+
+            mod = sender.getName();
+            victim = plugin.getServer().getPlayer(args[0]);
+            boolean online = false;
+            // Checks to see if player is online
+            if (victim != null) {
+                online = true;
+                args[0] = victim.getName();
+            }
+
+            // Checks to see if player is registered
+            if (!dc.checkPlayer(args[0].toLowerCase())) {
+                db.addPlayer(args[0]);
+            }
+
+            // Checks to see if player is already banned
+            if (db.getPlayerBannedInfo(args[0]) != null
+                    || db.getPlayerTempBannedInfo(args[0]) != null) {
+                sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
+                        + " is already banned!");
+                return true;
+            }
+
+            // Handles ban length
+            long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
+            plugin.printDebug("Ban length " + Long.toString(length));
+
+            if (length == 0)
+                return false;
+            length = System.currentTimeMillis() / 1000 + length;
+            String date = ArgProcessing.getStringDate(length);
+
+            // prints to players on server with perms
+            plugin.printServer(ArgProcessing.GlobalTempBanMessage(
+                    plugin.GlobalTempBanMessage, reason, mod, victim.getName(),
+                    date), silent);
+
+            // Adds ban to database
+            db.addBan(args[0], SeruBans.TEMPBAN, length, mod, reason, display);
+
+            // logs it
+            plugin.log.info(mod + " banned " + victim.getName() + " for "
+                    + reason);
+
+            // sends kicker ban id
+            sender.sendMessage(ChatColor.GOLD + "Ban Id: " + ChatColor.YELLOW
+                    + Integer.toString(db.getLastBanId()));
+
+            // kicks player of the server
+            if (online) {
+                victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing.PlayerTempBanMessage(
+                        plugin.TempBanMessage, reason, mod, date)));
+            }
+            return true;
+
         }
         return false;
     }

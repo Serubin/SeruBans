@@ -2,16 +2,32 @@ package net.serubin.serubans.util;
 
 public class BanInfo {
 
-    private int type;
     private int banId;
-    private int modId;
-    private String modName;
     private int playerId;
-    private String playerName;
+    private int type;
+    private int modId;
     private long length;
     private String reason;
 
-    public BanInfo() {
+    private String modName;
+    private String playerName;
+
+    public BanInfo(int banId, int playerId, int type, int modId, String reason) {
+        this.banId = banId;
+        this.playerId = playerId;
+        this.type = type;
+        this.modId = modId;
+        this.reason = reason;
+    }
+
+    public BanInfo(int banId, int playerId, int type, int modId, long length,
+            String reason) {
+        this.banId = banId;
+        this.playerId = playerId;
+        this.type = type;
+        this.modId = modId;
+        this.length = length;
+        this.reason = reason;
     }
 
     public int getType() {

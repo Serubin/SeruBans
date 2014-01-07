@@ -9,9 +9,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
 import net.serubin.serubans.util.ArgProcessing;
 import net.serubin.serubans.util.HashMaps;
-import net.serubin.serubans.util.MySqlDatabase;
 
 public class SearchMethods {
 
@@ -23,7 +23,7 @@ public class SearchMethods {
     public boolean searchPlayer(String player, CommandSender sender) {
         List<Integer> BanTypes = null;
         try {
-            BanTypes = MySqlDatabase.searchPlayer(HashMaps
+            BanTypes = MysqlBansDataProvider.searchPlayer(HashMaps
                     .getPlayerList(player));
         } catch (NullPointerException NPE) {
             SeruBans.self.printDebug(NPE.toString());
@@ -76,7 +76,7 @@ public class SearchMethods {
     public boolean searchType(String player, int type, CommandSender sender) {
         List<String> PlayerInfo = null;
         try {
-            PlayerInfo = MySqlDatabase.searchType(
+            PlayerInfo = MysqlBansDataProvider.searchType(
                     HashMaps.getPlayerList(player), type);
         } catch (NullPointerException NPE) {
             SeruBans.self.printDebug(NPE.toString());
@@ -104,7 +104,7 @@ public class SearchMethods {
     public boolean searchId(int id, CommandSender sender) {
         Map<String, String> BanId = new HashMap<String, String>();
         try {
-            BanId = MySqlDatabase.getBanIdInfo(id);
+            BanId = MysqlBansDataProvider.getBanIdInfo(id);
         } catch (NullPointerException NPE) {
             SeruBans.self.printDebug(NPE.toString());
             return true;

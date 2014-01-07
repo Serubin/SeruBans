@@ -7,9 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
 import net.serubin.serubans.util.BanInfo;
 import net.serubin.serubans.util.HelpMessages;
-import net.serubin.serubans.util.MySqlDatabase;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -124,8 +124,8 @@ public class SeruBansCommand implements CommandExecutor {
     }
 
     public void exportToBannedPlayersTxtFile(CommandSender sender) {
-        List<BanInfo> permBans = MySqlDatabase.getPermBans();
-        List<BanInfo> tempBans = MySqlDatabase.getTempBans();
+        List<BanInfo> permBans = MysqlBansDataProvider.getPermBans();
+        List<BanInfo> tempBans = MysqlBansDataProvider.getTempBans();
         if ((permBans == null) && (tempBans == null)) {
             plugin.log.info("There are no bans to export.");
             return;

@@ -11,9 +11,11 @@ import net.serubin.serubans.commands.TempBanCommand;
 import net.serubin.serubans.commands.UnbanCommand;
 import net.serubin.serubans.commands.UpdateCommand;
 import net.serubin.serubans.commands.WarnCommand;
+import net.serubin.serubans.dataproviders.IBansDataProvider;
+import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
 import net.serubin.serubans.search.DisplayManager;
 import net.serubin.serubans.util.ArgProcessing;
-import net.serubin.serubans.util.MySqlDatabase;
+import net.serubin.serubans.util.DataCache;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,41 +34,42 @@ public class SeruBans extends JavaPlugin {
 
     public SeruBans plugin;
     public Logger log = Logger.getLogger("Minecraft");
-    private static boolean debug;
+    private boolean debug;
 
-    private static String name;
-    private static String version;
-    public static SeruBans self = null;
+    private String name;
+    private String version;
+    public SeruBans self = null;
 
     /*
      * Class Short Cuts
      */
-
-    MySqlDatabase db;
-    DisplayManager dm = null;
+    // TODO add flatfile
+    private IBansDataProvider db = null;
+    private DisplayManager dm = null;
+    private DataCache dc = null;
 
     /*
      * defines config variables
      */
 
-    public static String BanMessage;
-    public static String GlobalBanMessage;
-    public static String TempBanMessage;
-    public static String GlobalTempBanMessage;
-    public static String KickMessage;
-    public static String GlobalKickMessage;
-    public static String WarnMessage;
-    public static String WarnPlayerMessage;
-    public static String UnBanMessage;
+    public String BanMessage;
+    public String GlobalBanMessage;
+    public String TempBanMessage;
+    public String GlobalTempBanMessage;
+    public String KickMessage;
+    public String GlobalKickMessage;
+    public String WarnMessage;
+    public String WarnPlayerMessage;
+    public String UnBanMessage;
 
     /*
      * sql variables
      */
 
-    public static String username;
-    public static String password;
-    public static String database;
-    public static String host;
+    private String username;
+    private String password;
+    public String database;
+    public String host;
 
     /*
      * Ban types
@@ -130,28 +133,21 @@ public class SeruBans extends JavaPlugin {
          */
 
         BanMessage = getConfig().getString("SeruBans.messages.ban.BanMessage");
-        GlobalBanMessage = getConfig().getString(
-                "SeruBans.messages.ban.GlobalBanMessage");
-        TempBanMessage = getConfig().getString(
-                "SeruBans.messages.tempban.TempBanMessage");
-        GlobalTempBanMessage = getConfig().getString(
-                "SeruBans.messages.tempban.GlobalTempBanMessage");
+        GlobalBanMessage = getConfig().getString("SeruBans.messages.ban.GlobalBanMessage");
+        TempBanMessage = getConfig().getString("SeruBans.messages.tempban.TempBanMessage");
+        GlobalTempBanMessage = getConfig().getString("SeruBans.messages.tempban.GlobalTempBanMessage");
         /*
          * kick messages
          */
 
-        KickMessage = getConfig().getString(
-                "SeruBans.messages.kick.KickMessage");
-        GlobalKickMessage = getConfig().getString(
-                "SeruBans.messages.kick.GlobalKickMessage");
+        KickMessage = getConfig().getString("SeruBans.messages.kick.KickMessage");
+        GlobalKickMessage = getConfig().getString("SeruBans.messages.kick.GlobalKickMessage");
         /*
          * warn message
          */
 
-        WarnMessage = getConfig().getString(
-                "SeruBans.messages.warn.WarnMessage");
-        WarnPlayerMessage = getConfig().getString(
-                "SeruBans.messages.warn.WarnPlayerMessage");
+        WarnMessage = getConfig().getString("SeruBans.messages.warn.WarnMessage");
+        WarnPlayerMessage = getConfig().getString("SeruBans.messages.warn.WarnPlayerMessage");
         UnBanMessage = getConfig().getString("SeruBans.messages.UnBanMessage");
 
         /*
@@ -169,23 +165,18 @@ public class SeruBans extends JavaPlugin {
          * Add Classes
          */
 
-        BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name,
-                this);
-        TempBanCommand TempBan = new TempBanCommand(TempBanMessage,
-                GlobalTempBanMessage, name, this);
-        KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage,
-                name, this);
-        WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage,
-                name, this);
+        BanCommand Ban = new BanCommand(BanMessage, GlobalBanMessage, name, this);
+        TempBanCommand TempBan = new TempBanCommand(TempBanMessage, GlobalTempBanMessage, name, this);
+        KickCommand Kick = new KickCommand(KickMessage, GlobalKickMessage, name, this);
+        WarnCommand Warn = new WarnCommand(WarnMessage, WarnPlayerMessage, name, this);
         UnbanCommand Unban = new UnbanCommand(this);
-        MySqlDatabase sqldb = new MySqlDatabase(host, username, password,
-                database, this);
         SeruBansCommand DebugC = new SeruBansCommand(this);
         CheckBanCommand CheckBan = new CheckBanCommand(this);
         UnTempbanThread UnTempanThread = new UnTempbanThread(this);
         SearchCommand Search = new SearchCommand(this);
         UpdateCommand Update = new UpdateCommand(this);
-
+        this.db = new MysqlBansDataProvider(host, username, password, database, this);
+        this.dc = new DataCache();
         /*
          * init commands
          */
@@ -200,26 +191,24 @@ public class SeruBans extends JavaPlugin {
         getCommand("bupdate").setExecutor(Update);
         getCommand("serubans").setExecutor(DebugC);
 
-        MySqlDatabase.startSQL();
+        // TODO add db start function
+        // db.startSQL();
 
         /*
          * Create listener
          */
 
-        pm.registerEvents(new SeruBansPlayerListener(this, BanMessage,
-                TempBanMessage), this);
+        pm.registerEvents(new SeruBansPlayerListener(this, this.db, BanMessage, TempBanMessage), this);
         /*
          * Create Thread
          */
 
-        checkTempBansTask = getServer().getScheduler().runTaskTimerAsynchronously(this,
-                UnTempanThread, 1200, 1200);
-        dbKeepAliveTask = getServer().getScheduler()
-                .runTaskTimerAsynchronously(this, sqldb, 5800, 5800);
+        checkTempBansTask = getServer().getScheduler().runTaskTimerAsynchronously(this, UnTempanThread, 1200, 1200);
+        dbKeepAliveTask = getServer().getScheduler().runTaskTimerAsynchronously(this, this.db, 5800, 5800);
 
     }
 
-    public static void printInfo(String line) {
+    public void printInfo(String line) {
         self.log.info("[SeruBans] " + line);
     }
 
@@ -234,36 +223,33 @@ public class SeruBans extends JavaPlugin {
      * without them having permissions. If the silent argument is true, it will
      * only be broadcasted to those with the silent permission.
      * 
-     * @param line Message to be broadcasted
+     * @param line
+     *            Message to be broadcasted
      * @param silent
      */
-    public static void printServer(String line, boolean silent) {
+    public void printServer(String line, boolean silent) {
         Player[] players = Bukkit.getOnlinePlayers();
         for (Player player : players) {
-            if ((player.hasPermission(BROADCASTPERM) || player
-                    .hasPermission(BROADCASTPERMSILENT)) && !silent) {
+            if ((player.hasPermission(BROADCASTPERM) || player.hasPermission(BROADCASTPERMSILENT)) && !silent) {
                 player.sendMessage(ArgProcessing.GetColor(line));
             }
             if (player.hasPermission(BROADCASTPERMSILENT) && silent) {
-                player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA
-                        + "Silent" + ChatColor.DARK_AQUA + "] "
-                        + ChatColor.WHITE + ArgProcessing.GetColor(line));
+                player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "Silent" + ChatColor.DARK_AQUA + "] " + ChatColor.WHITE + ArgProcessing.GetColor(line));
             }
 
         }
     }
 
-    public static void printError(String line) {
+    public void printError(String line) {
         self.log.severe("[SeruBans] " + line);
     }
 
-    public static void printWarning(String line) {
+    public void printWarning(String line) {
         self.log.warning("[SeruBans] " + line);
     }
 
-    public static boolean hasPermission(CommandSender sender, String permission) {
-        if (sender.hasPermission(permission) || sender.isOp()
-                || (!(sender instanceof Player))) {
+    public boolean hasPermission(CommandSender sender, String permission) {
+        if (sender.hasPermission(permission) || sender.isOp() || (!(sender instanceof Player))) {
             return true;
         } else {
             sender.sendMessage(ChatColor.RED + "You do not have permission!");
@@ -271,7 +257,7 @@ public class SeruBans extends JavaPlugin {
         }
     }
 
-    public static String getVersion() {
+    public String getVersion() {
         return version;
     }
     /*

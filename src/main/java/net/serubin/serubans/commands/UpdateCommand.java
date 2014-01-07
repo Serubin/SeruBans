@@ -5,8 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
 import net.serubin.serubans.util.HashMaps;
-import net.serubin.serubans.util.MySqlDatabase;
 
 public class UpdateCommand implements CommandExecutor {
 
@@ -47,7 +47,7 @@ public class UpdateCommand implements CommandExecutor {
                 String repl = " " + args[0] + " ";
                 reason = reasonRaw.toString().replace(repl, "");
 
-                MySqlDatabase.updateReason(bId, reason);
+                MysqlBansDataProvider.updateReason(bId, reason);
                 sender.sendMessage(ChatColor.GREEN + "Reason for Id " + bId
                         + " changed to '" + reason + "'");
                 plugin.printInfo(sender.getName()

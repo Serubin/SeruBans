@@ -54,8 +54,7 @@ public class ArgProcessing {
         for (String s : args) {
             reasonRaw.append(" " + s);
         }
-        reason = reasonRaw.toString().replaceFirst(
-                " " + args[0] + " " + args[1] + " ", "");
+        reason = reasonRaw.toString().replaceFirst(" " + args[0] + " " + args[1] + " ", "");
         // return string
         return reason;
     }
@@ -67,8 +66,7 @@ public class ArgProcessing {
         for (String s : args) {
             reasonRaw.append(" " + s);
         }
-        reason = reasonRaw.toString().replaceFirst(
-                " " + args[0] + " " + args[1] + " " + args[2] + " ", "");
+        reason = reasonRaw.toString().replaceFirst(" " + args[0] + " " + args[1] + " " + args[2] + " ", "");
         // return string
         return reason;
     }
@@ -93,8 +91,7 @@ public class ArgProcessing {
         return line;
     }
 
-    public static String GlobalMessage(String line, String reason, String mod,
-            String victim) {
+    public static String GlobalMessage(String line, String reason, String mod, String victim) {
         line = line.replaceAll("%victim%", victim);
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
@@ -108,8 +105,7 @@ public class ArgProcessing {
         return line;
     }
 
-    public static String GlobalTempBanMessage(String line, String reason,
-            String mod, String victim, String time) {
+    public static String GlobalTempBanMessage(String line, String reason, String mod, String victim, String time) {
         line = line.replaceAll("%victim%", victim);
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
@@ -117,8 +113,7 @@ public class ArgProcessing {
         return line;
     }
 
-    public static String PlayerTempBanMessage(String line, String reason,
-            String mod, String time) {
+    public static String PlayerTempBanMessage(String line, String reason, String mod, String time) {
 
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
@@ -187,11 +182,9 @@ public class ArgProcessing {
     public static long getUnixTimeStamp(Timestamp timestamp) {
         long unixTS = 0;
         try {
-            unixTS = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                    .parse(timestamp.toString()).getTime();
+            unixTS = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp.toString()).getTime();
         } catch (ParseException e) {
-            SeruBans.self.log
-                    .severe("Could not convert SQL Timestamp to unix timestamp, This means tempbans probably did not get loaded properly.");
+            SeruBans.self.log.severe("Could not convert SQL Timestamp to unix timestamp, This means tempbans probably did not get loaded properly.");
 
             e.printStackTrace();
         }
@@ -221,6 +214,6 @@ public class ArgProcessing {
             argNew[i - 1] = args[i];
         }
         return argNew;
-    }
 
+    }
 }
