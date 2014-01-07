@@ -30,7 +30,7 @@ public class SeruBans extends JavaPlugin {
      */
 	
 	//TODO remove hashmaps - no need to keep things in the memeory
-	//TODO ever minute polls on all players logged in to check if new bans appear
+	//TODO every minute polls on all players logged in to check if new bans appear
 	//TODO check for new ban - kick if found. Same with tempbans
 	//TODO add bungee message channel
 	
