@@ -1,34 +1,26 @@
 package net.serubin.serubans.commands;
 
+import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.dataproviders.BansDataProvider;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.dataproviders.IBansDataProvider;
-import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
-import net.serubin.serubans.util.ArgProcessing;
-import net.serubin.serubans.util.DataCache;
-import net.serubin.serubans.util.HashMaps;
 
 public class UnbanCommand implements CommandExecutor {
 
     private SeruBans plugin;
-    private IBansDataProvider db;
-    private DataCache dc;
+    private BansDataProvider db;
 
-    public UnbanCommand(SeruBans plugin, IBansDataProvider db, DataCache dc) {
+    public UnbanCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
         this.db = db;
-        this.dc = dc;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
 
-        int type;
         boolean silent = false;
         if (commandLabel.equalsIgnoreCase("unban")) {
             if (!plugin.hasPermission(sender, SeruBans.UNBANPERM)) {
@@ -40,7 +32,7 @@ public class UnbanCommand implements CommandExecutor {
                 if (args[0].contains("s")) {
                     silent = true;
                 }
-                args = ArgProcessing.stripFirstArg(args);
+                args = plugin.text().stripFirstArg(args);
             }
 
             if (args.length > 1) {

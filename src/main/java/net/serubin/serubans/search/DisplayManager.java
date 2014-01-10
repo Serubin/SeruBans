@@ -1,14 +1,16 @@
 package net.serubin.serubans.search;
 
 import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.util.ArgProcessing;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class DisplayManager {
+   
+    private SeruBans plugin;
 
+    public DisplayManager(SeruBans plugin){
+        this.plugin = plugin;
+    }
 
     public String createTitle(String name) {
 
@@ -19,18 +21,18 @@ public class DisplayManager {
             newLine.append("-");
         }
 
-        return ArgProcessing.GetColor(newLine.toString());
+        return plugin.text().GetColor(newLine.toString());
     }
 
     public void sendLine(CommandSender sender, String line) {
         int len = 56;
         if (line.length() < len)
-            sender.sendMessage(ArgProcessing.GetColor("&8|&7" + line));
+            sender.sendMessage(plugin.text().GetColor("&8|&7" + line));
         else {
             for (int i = 0; i < line.length(); i += len) {
                 String str = (i + len > line.length() ? line.substring(i)
                         : line.substring(i, i + len));
-                sender.sendMessage(ArgProcessing.GetColor("&8|&7 " + str));
+                sender.sendMessage(plugin.text().GetColor("&8|&7 " + str));
             }
         }
     }

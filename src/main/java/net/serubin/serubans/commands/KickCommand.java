@@ -1,11 +1,7 @@
 package net.serubin.serubans.commands;
 
 import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.dataproviders.IBansDataProvider;
-import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
-import net.serubin.serubans.util.ArgProcessing;
-import net.serubin.serubans.util.CheckPlayer;
-import net.serubin.serubans.util.DataCache;
+import net.serubin.serubans.dataproviders.BansDataProvider;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -16,13 +12,11 @@ import org.bukkit.entity.Player;
 public class KickCommand implements CommandExecutor {
 
     private SeruBans plugin;
-    private DataCache dc;
-    private IBansDataProvider db;
+    private BansDataProvider db;
 
-    public KickCommand(SeruBans plugin, IBansDataProvider db, DataCache dc) {
+    public KickCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
         this.db = db;
-        this.dc = dc;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,
@@ -54,13 +48,13 @@ public class KickCommand implements CommandExecutor {
                     if (args[0].contains("h")) {
                         display = SeruBans.HIDE;
                     }
-                    args = ArgProcessing.stripFirstArg(args);
+                    args = plugin.text().stripFirstArg(args);
                 }
             }
 
             // Checks for user defined reason.
             if (args.length > 1) {
-                reason = ArgProcessing.reasonArgs(args);
+                reason = plugin.text().reasonArgs(args);
             } else {
                 reason = "Undefined";
             }
@@ -75,11 +69,6 @@ public class KickCommand implements CommandExecutor {
                 args[0] = victim.getName();
             }
 
-            // Checks to see if player is registered in database
-            if (!dc.checkPlayer(args[0].toLowerCase())) {
-                db.addPlayer(args[0]);
-            }
-
             // Checks to see if player is online, cancels otherwise
             if (!online) {
                 sender.sendMessage(ChatColor.RED + "This Player was not found!");
@@ -89,7 +78,7 @@ public class KickCommand implements CommandExecutor {
             db.addBan(victim.getName(), SeruBans.KICK, 0, mod, reason, display);
             
             // prints to players on server with perms
-            plugin.printServer(ArgProcessing.GlobalMessage(
+            plugin.printServer(plugin.text().GlobalMessage(
                     plugin.GlobalKickMessage, reason, mod, victim.getName()),
                     silent);
             // logs its
@@ -99,13 +88,11 @@ public class KickCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.GOLD + "Ban Id: " + ChatColor.YELLOW
                     + Integer.toString(db.getLastBanId()));
             // kicks player of the server
-            victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing.PlayerMessage(
+            victim.kickPlayer(plugin.text().GetColor(plugin.text().PlayerMessage(
                     plugin.KickMessage, reason, mod)));
             // adds player to db
             return true;
-
         }
-
         return false;
     }
 

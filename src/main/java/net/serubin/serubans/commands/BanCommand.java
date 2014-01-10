@@ -1,9 +1,8 @@
 package net.serubin.serubans.commands;
 
 import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.dataproviders.IBansDataProvider;
-import net.serubin.serubans.util.ArgProcessing;
-import net.serubin.serubans.util.DataCache;
+import net.serubin.serubans.dataproviders.BansDataProvider;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,13 +12,11 @@ import org.bukkit.entity.Player;
 public class BanCommand implements CommandExecutor {
 
     private SeruBans plugin;
-    private IBansDataProvider db;
-    private DataCache dc;
+    private BansDataProvider db;
 
-    public BanCommand(SeruBans plugin, IBansDataProvider db, DataCache dc) {
+    public BanCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
         this.db = db;
-        this.dc = dc;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,
@@ -51,14 +48,14 @@ public class BanCommand implements CommandExecutor {
                     if (args[0].contains("h")) {
                         display = SeruBans.HIDE;
                     }
-                    args = ArgProcessing.stripFirstArg(args);
+                    args = plugin.text().stripFirstArg(args);
                 }
 
             }
 
             // Checks for user defined reason.
             if (args.length > 1) {
-                reason = ArgProcessing.reasonArgs(args);
+                reason = plugin.text().reasonArgs(args);
             } else {
                 reason = "Undefined";
 
@@ -74,21 +71,17 @@ public class BanCommand implements CommandExecutor {
                 args[0] = victim.getName();
             }
 
-            // Checks to see if player is registered in database
-            if (!dc.checkPlayer(args[0].toLowerCase())) {
-                db.addPlayer(args[0]);
-            }
             // Checks to see if player is already banned
-            if (db.getPlayerBannedInfo(args[0]) == null) {
+            if (db.getPlayerStatus(args[0])) {
                 sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
                         + " is already banned!");
                 return true;
             }
 
             // prints to players on server with perms
-            plugin.printServer(ArgProcessing.GlobalMessage(
-                    plugin.GlobalBanMessage, reason, mod, victim.getName()),
-                    silent);
+            plugin.printServer(
+                    plugin.text().GlobalMessage(plugin.GlobalBanMessage,
+                            reason, mod, victim.getName()), silent);
             // Adds ban
             db.addBan(victim.getName(), SeruBans.BAN, 0, mod, reason, display);
 
@@ -101,8 +94,9 @@ public class BanCommand implements CommandExecutor {
                     + Integer.toString(db.getLastBanId()));
             // kicks player
             if (online) {
-                victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing.PlayerMessage(
-                        plugin.BanMessage, reason, mod)));
+                victim.kickPlayer(plugin.text().GetColor(
+                        plugin.text().PlayerMessage(plugin.BanMessage, reason,
+                                mod)));
             }
             return true;
         }

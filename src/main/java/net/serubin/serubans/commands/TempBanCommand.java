@@ -1,29 +1,22 @@
 package net.serubin.serubans.commands;
 
+import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.dataproviders.BansDataProvider;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.dataproviders.IBansDataProvider;
-import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
-import net.serubin.serubans.util.ArgProcessing;
-import net.serubin.serubans.util.CheckPlayer;
-import net.serubin.serubans.util.DataCache;
-import net.serubin.serubans.util.HashMaps;
-
 public class TempBanCommand implements CommandExecutor {
 
     private SeruBans plugin;
-    private IBansDataProvider db;
-    private DataCache dc;
+    private BansDataProvider db;
 
-    public TempBanCommand(SeruBans plugin, IBansDataProvider db, DataCache dc) {
+    public TempBanCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
         this.db = db;
-        this.dc = dc;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,
@@ -56,13 +49,13 @@ public class TempBanCommand implements CommandExecutor {
                     if (args[0].contains("h")) {
                         display = SeruBans.HIDE;
                     }
-                    args = ArgProcessing.stripFirstArg(args);
+                    args = plugin.text().stripFirstArg(args);
                 }
             }
 
             // Checks for user defined reason.
             if (args.length > 3) {
-                reason = ArgProcessing.reasonArgsTB(args);
+                reason = plugin.text().reasonArgsTB(args);
             } else {
                 reason = "Undefined";
             }
@@ -76,30 +69,24 @@ public class TempBanCommand implements CommandExecutor {
                 args[0] = victim.getName();
             }
 
-            // Checks to see if player is registered
-            if (!dc.checkPlayer(args[0].toLowerCase())) {
-                db.addPlayer(args[0]);
-            }
-
             // Checks to see if player is already banned
-            if (db.getPlayerBannedInfo(args[0]) != null
-                    || db.getPlayerTempBannedInfo(args[0]) != null) {
+            if (db.getPlayerStatus(args[0])) {
                 sender.sendMessage(ChatColor.GOLD + args[0] + ChatColor.RED
                         + " is already banned!");
                 return true;
             }
 
             // Handles ban length
-            long length = ArgProcessing.parseTimeSpec(args[1], args[2]);
+            long length = plugin.text().parseTimeSpec(args[1], args[2]);
             plugin.printDebug("Ban length " + Long.toString(length));
 
             if (length == 0)
                 return false;
             length = System.currentTimeMillis() / 1000 + length;
-            String date = ArgProcessing.getStringDate(length);
+            String date = plugin.text().getStringDate(length);
 
             // prints to players on server with perms
-            plugin.printServer(ArgProcessing.GlobalTempBanMessage(
+            plugin.printServer(plugin.text().GlobalTempBanMessage(
                     plugin.GlobalTempBanMessage, reason, mod, victim.getName(),
                     date), silent);
 
@@ -116,7 +103,7 @@ public class TempBanCommand implements CommandExecutor {
 
             // kicks player of the server
             if (online) {
-                victim.kickPlayer(ArgProcessing.GetColor(ArgProcessing.PlayerTempBanMessage(
+                victim.kickPlayer(plugin.text().GetColor(plugin.text().PlayerTempBanMessage(
                         plugin.TempBanMessage, reason, mod, date)));
             }
             return true;

@@ -3,11 +3,10 @@ package net.serubin.serubans.commands;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
+import net.serubin.serubans.dataproviders.BansDataProvider;
 import net.serubin.serubans.util.BanInfo;
 import net.serubin.serubans.util.HelpMessages;
 
@@ -19,20 +18,22 @@ import org.bukkit.command.CommandSender;
 public class SeruBansCommand implements CommandExecutor {
 
     private SeruBans plugin;
+    private BansDataProvider db;
 
-    public SeruBansCommand(SeruBans plugin) {
+    public SeruBansCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
+        this.db = db;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("serubans")) {
-            if (SeruBans.hasPermission(sender, SeruBans.HELPPERM)
-                    || SeruBans.hasPermission(sender, SeruBans.DEBUGPERM)) {
+            if (plugin.hasPermission(sender, SeruBans.HELPPERM)
+                    || plugin.hasPermission(sender, SeruBans.DEBUGPERM)) {
                 if (args.length == 0) {
                     sender.sendMessage(ChatColor.GREEN + "Serubans "
                             + ChatColor.YELLOW + " version "
-                            + SeruBans.getVersion());
+                            + plugin.getVersion());
                     sender.sendMessage(ChatColor.YELLOW + "For help with: ");
                     sender.sendMessage(ChatColor.GREEN + "    banning "
                             + ChatColor.YELLOW + "type " + ChatColor.GREEN
@@ -101,7 +102,7 @@ public class SeruBansCommand implements CommandExecutor {
                     // Debug help
                     HelpMessages.debugHelp(sender);
                 } else {
-                    if (SeruBans.hasPermission(sender, SeruBans.DEBUGPERM)) {
+                    if (plugin.hasPermission(sender, SeruBans.DEBUGPERM)) {
                         if (args[0].startsWith("-")) {
                             if (args[0].contains("e")) {
                                 plugin.log
@@ -124,8 +125,8 @@ public class SeruBansCommand implements CommandExecutor {
     }
 
     public void exportToBannedPlayersTxtFile(CommandSender sender) {
-        List<BanInfo> permBans = MysqlBansDataProvider.getPermBans();
-        List<BanInfo> tempBans = MysqlBansDataProvider.getTempBans();
+        List<BanInfo> permBans = db.getPermBans();
+        List<BanInfo> tempBans = db.getTempBans();
         if ((permBans == null) && (tempBans == null)) {
             plugin.log.info("There are no bans to export.");
             return;

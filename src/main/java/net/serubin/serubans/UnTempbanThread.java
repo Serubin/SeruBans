@@ -2,15 +2,15 @@ package net.serubin.serubans;
 
 import java.util.List;
 
-import net.serubin.serubans.dataproviders.IBansDataProvider;
+import net.serubin.serubans.dataproviders.BansDataProvider;
 import net.serubin.serubans.util.BanInfo;
 
 public class UnTempbanThread implements Runnable {
 
 	private SeruBans plugin;
-	private IBansDataProvider db;
+	private BansDataProvider db;
 
-	public UnTempbanThread(SeruBans plugin, IBansDataProvider db) {
+	public UnTempbanThread(SeruBans plugin, BansDataProvider db) {
 		this.plugin = plugin;
 		this.db = db;
 	}
@@ -27,7 +27,7 @@ public class UnTempbanThread implements Runnable {
 		// checks if temp ban time is up
 		for (BanInfo tempban : tempbanInfo) {
 			if (tempban.getLength() < (System.currentTimeMillis() / 1000)) {
-				db.untempBan(tempban.getBanId());
+				db.unbanPlayer(tempban.getPlayerName());
 				
 				plugin.printDebug(tempban.getPlayerName()
 						+ "has been unbanned by per minute tempban checker");

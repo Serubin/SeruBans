@@ -1,8 +1,7 @@
 package net.serubin.serubans.commands;
 
 import net.serubin.serubans.SeruBans;
-import net.serubin.serubans.dataproviders.IBansDataProvider;
-import net.serubin.serubans.util.ArgProcessing;
+import net.serubin.serubans.dataproviders.BansDataProvider;
 import net.serubin.serubans.util.BanInfo;
 
 import org.bukkit.ChatColor;
@@ -13,9 +12,9 @@ import org.bukkit.command.CommandSender;
 public class CheckBanCommand implements CommandExecutor {
 
     private SeruBans plugin;
-    private IBansDataProvider db;
+    private BansDataProvider db;
 
-    public CheckBanCommand(SeruBans plugin, IBansDataProvider db) {
+    public CheckBanCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
         this.db = db;
     }
@@ -31,17 +30,10 @@ public class CheckBanCommand implements CommandExecutor {
                 return false;
             }
 
-            boolean isBanned = true;
-            String player = args[0].toLowerCase();
-            BanInfo banInfo = db.getPlayerBannedInfo(player);
-            if (banInfo == null) {
-                banInfo = db.getPlayerTempBannedInfo(player);
-                if (banInfo == null) {
-                    isBanned = false;
-                }
-            }
+            boolean isBanned = db.getPlayerStatus(args[0]);
 
             if (isBanned) {
+                BanInfo banInfo = db.getCurrentBan(args[0]);
                 sender.sendMessage(ChatColor.RED + args[0] + " is banned.");
                 // Additional ban info
                 sender.sendMessage(ChatColor.RED + "Ban id: "
@@ -51,7 +43,7 @@ public class CheckBanCommand implements CommandExecutor {
                 if (banInfo.getType() == SeruBans.TEMPBAN) {
                     sender.sendMessage(ChatColor.RED + "Length: "
                             + ChatColor.YELLOW
-                            + ArgProcessing.getStringDate(banInfo.getLength()));
+                            + plugin.text().getStringDate(banInfo.getLength()));
                 }
             } else {
                 sender.sendMessage(ChatColor.GREEN + args[0]

@@ -1,27 +1,30 @@
 package net.serubin.serubans.commands;
 
 import net.serubin.serubans.SeruBans;
+import net.serubin.serubans.dataproviders.BansDataProvider;
 import net.serubin.serubans.search.SearchMethods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class SearchCommand implements CommandExecutor {
 
     private SeruBans plugin;
-    private SearchMethods search = new SearchMethods();
+    private SearchMethods search;
+    private BansDataProvider db;
 
-    public SearchCommand(SeruBans plugin) {
+    public SearchCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
+        this.db = db;
+        new SearchMethods(this.plugin, this.db);
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("bsearch")) {
-            if (SeruBans.hasPermission(sender, SeruBans.SEARCHPERM)) {
+            if (plugin.hasPermission(sender, SeruBans.SEARCHPERM)) {
                 boolean idB = false;
                 boolean playerB = false;
                 boolean typeB = false;

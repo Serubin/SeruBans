@@ -2,9 +2,7 @@ package net.serubin.serubans;
 
 import java.util.List;
 
-import net.serubin.serubans.dataproviders.IBansDataProvider;
-import net.serubin.serubans.dataproviders.MysqlBansDataProvider;
-import net.serubin.serubans.util.ArgProcessing;
+import net.serubin.serubans.dataproviders.BansDataProvider;
 import net.serubin.serubans.util.BanInfo;
 
 import org.bukkit.entity.Player;
@@ -17,11 +15,11 @@ import org.bukkit.event.player.PlayerLoginEvent;
 public class SeruBansPlayerListener implements Listener {
 
 	private SeruBans plugin;
-	private IBansDataProvider db;
+	private BansDataProvider db;
 	private String banMessage;
 	private String tempBanMessage;
 
-	public SeruBansPlayerListener(SeruBans plugin, IBansDataProvider db,
+	public SeruBansPlayerListener(SeruBans plugin, BansDataProvider db,
 			String banMessage, String tempBanMessage) {
 		this.plugin = plugin;
 		this.db = db;
@@ -49,8 +47,8 @@ public class SeruBansPlayerListener implements Listener {
 			String reason = banInfo.getReason();
 			String mod = banInfo.getModName();
 
-			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ArgProcessing
-					.GetColor(ArgProcessing.PlayerMessage(banMessage, reason,
+			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, plugin.text()
+					.GetColor(plugin.text().PlayerMessage(banMessage, reason,
 							mod)));
 			return;
 		}
@@ -62,7 +60,7 @@ public class SeruBansPlayerListener implements Listener {
 			// Checks if tempban is over
 			Long length = tempbanInfo.getLength();
 			if (length < (System.currentTimeMillis() / 1000)) {
-				db.untempBan(tempbanInfo.getBanId());
+				db.unbanPlayer(tempbanInfo.getPlayerName());
 				return;
 			}
 			plugin.log.warning(name + " LOGIN DENIED - TEMPBANNED");
@@ -70,10 +68,10 @@ public class SeruBansPlayerListener implements Listener {
 			String reason = tempbanInfo.getReason();
 			String mod = tempbanInfo.getModName();
 
-			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ArgProcessing
-					.GetColor(ArgProcessing.PlayerTempBanMessage(
+			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, plugin.text()
+					.GetColor(plugin.text().PlayerTempBanMessage(
 							tempBanMessage, reason, mod,
-							ArgProcessing.getStringDate(length))));
+							plugin.text().getStringDate(length))));
 		}
 	}
 
@@ -98,7 +96,7 @@ public class SeruBansPlayerListener implements Listener {
 			plugin.printInfo("Warning player, ban id:"
 					+ Integer.toString(warn.getBanId()));
 
-			final String message = ArgProcessing.GetColor(ArgProcessing
+			final String message = plugin.text().GetColor(plugin.text()
 					.PlayerMessage(plugin.WarnPlayerMessage, warn.getReason(),
 							warn.getModName()));
 

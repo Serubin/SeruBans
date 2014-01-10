@@ -6,36 +6,15 @@ import java.util.Date;
 
 import net.serubin.serubans.SeruBans;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
+public class TextProcessor {
 
-public class ArgProcessing {
+    private SeruBans plugin;
 
-    static OfflinePlayer offPlayer;
-
-    public static Player getVictim(String[] args) {
-        Server server = Bukkit.getServer();
-        Player victim = server.getPlayer(args[0]);
-
-        if (victim != null) {
-            // if victim is on return victim
-            return victim;
-        } else {
-            // if not check offline players (try catch)
-            try {
-                victim = offPlayer.getPlayer();
-            } catch (NullPointerException NPE) {
-                // if not found victim is null
-                victim = null;
-
-            }
-            return victim;
-        }
+    public TextProcessor(SeruBans plugin) {
+        this.plugin = plugin;
     }
 
-    public static String reasonArgs(String[] args) {
+    public String reasonArgs(String[] args) {
         StringBuilder reasonRaw = new StringBuilder();
         String reason;
         // combine args into a string
@@ -47,31 +26,20 @@ public class ArgProcessing {
         return reason;
     }
 
-    public static String reasonOptArgs(String[] args) {
+    public String reasonArgsTB(String[] args) {
         StringBuilder reasonRaw = new StringBuilder();
         String reason;
         // combine args into a string
         for (String s : args) {
             reasonRaw.append(" " + s);
         }
-        reason = reasonRaw.toString().replaceFirst(" " + args[0] + " " + args[1] + " ", "");
+        reason = reasonRaw.toString().replaceFirst(
+                " " + args[0] + " " + args[1] + " " + args[2] + " ", "");
         // return string
         return reason;
     }
 
-    public static String reasonArgsTB(String[] args) {
-        StringBuilder reasonRaw = new StringBuilder();
-        String reason;
-        // combine args into a string
-        for (String s : args) {
-            reasonRaw.append(" " + s);
-        }
-        reason = reasonRaw.toString().replaceFirst(" " + args[0] + " " + args[1] + " " + args[2] + " ", "");
-        // return string
-        return reason;
-    }
-
-    public static String GetColor(String line) {
+    public String GetColor(String line) {
         line = line.replace("&0", "§0");
         line = line.replace("&1", "§1");
         line = line.replace("&2", "§2");
@@ -91,21 +59,23 @@ public class ArgProcessing {
         return line;
     }
 
-    public static String GlobalMessage(String line, String reason, String mod, String victim) {
+    public String GlobalMessage(String line, String reason, String mod,
+            String victim) {
         line = line.replaceAll("%victim%", victim);
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
         return line;
     }
 
-    public static String PlayerMessage(String line, String reason, String mod) {
+    public String PlayerMessage(String line, String reason, String mod) {
 
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
         return line;
     }
 
-    public static String GlobalTempBanMessage(String line, String reason, String mod, String victim, String time) {
+    public String GlobalTempBanMessage(String line, String reason, String mod,
+            String victim, String time) {
         line = line.replaceAll("%victim%", victim);
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
@@ -113,7 +83,8 @@ public class ArgProcessing {
         return line;
     }
 
-    public static String PlayerTempBanMessage(String line, String reason, String mod, String time) {
+    public String PlayerTempBanMessage(String line, String reason, String mod,
+            String time) {
 
         line = line.replaceAll("%reason%", reason);
         line = line.replaceAll("%kicker%", mod);
@@ -121,7 +92,7 @@ public class ArgProcessing {
         return line;
     }
 
-    public static long parseTimeSpec(String time, String unit) {
+    public long parseTimeSpec(String time, String unit) {
         long sec;
         try {
             sec = Integer.parseInt(time) * 60;
@@ -164,14 +135,14 @@ public class ArgProcessing {
         return sec;
     }
 
-    public static Timestamp getDateTime() {
+    public Timestamp getDateTime() {
         java.sql.Timestamp date;
         java.util.Date today = new java.util.Date();
         date = new java.sql.Timestamp(today.getTime());
         return date;
     }
 
-    public static String getStringDate(long length) {
+    public String getStringDate(long length) {
         Date date = new Date();
         date.setTime(length * 1000);
         String dates = date.toString();
@@ -179,19 +150,20 @@ public class ArgProcessing {
         return dates;
     }
 
-    public static long getUnixTimeStamp(Timestamp timestamp) {
+    public long getUnixTimeStamp(Timestamp timestamp) {
         long unixTS = 0;
         try {
-            unixTS = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp.toString()).getTime();
+            unixTS = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(
+                    timestamp.toString()).getTime();
         } catch (ParseException e) {
-            SeruBans.self.log.severe("Could not convert SQL Timestamp to unix timestamp, This means tempbans probably did not get loaded properly.");
+            plugin.log.severe("Could not convert SQL Timestamp to unix timestamp, This means tempbans probably did not get loaded properly.");
 
             e.printStackTrace();
         }
         return unixTS;
     }
 
-    public static String getBanTypeString(int Type) {
+    public String getBanTypeString(int Type) {
         String TypeString = "";
         if (Type == SeruBans.BAN)
             TypeString = "Ban";
@@ -208,7 +180,7 @@ public class ArgProcessing {
         return TypeString;
     }
 
-    public static String[] stripFirstArg(String[] args) {
+    public String[] stripFirstArg(String[] args) {
         String[] argNew = new String[args.length - 1];
         for (int i = 1; i < args.length; i++) {
             argNew[i - 1] = args[i];
