@@ -1,0 +1,24 @@
+=-=-=-=-=-=-=-= Change Log =-=-=-=-=-=-=-=
+---2.4---
+- Added search suggestions
+- Added config.php
+- Changed some css
+---2.3.1---
+- Hot fix: Added autocomplete support for hiden items
+- Hot Fix: Fixed editing bans
+- Fixed Deleting bans
+---2.3---
+- Added autocomplete for search
+
+---2.2---
+- Added config.php
+- stablized bugs
+
+---2.1---
+- Changed search to allow partial searchs
+- added popups for edit and delete
+
+---2.0---
+- Added custom search
+- Changed graphics to look more like absolution
+- Added pages

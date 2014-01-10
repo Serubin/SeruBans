@@ -1,0 +1,28 @@
+/*
+ * SeruBans - CSS Item
+ * Author: Serubin323 (Solomon Rubin)
+ * Version: 2.4
+ * 
+ *
+ *
+ */
+ 
+h1{border-bottom:1px solid #990000;font:20px bold Arial, Helvetica, sans-serif;text-shadow:0 1px 0 #2c587b,1px 2px 2px #aaa;color:#123;}
+h2{border-bottom:1px solid #990000;font:18px bold Arial, Helvetica, sans-serif;text-shadow:0 1px 0 #2c587b,1px 2px 2px #aaa;color:#123;}
+h3{border-bottom:1px solid #990000;font:16px bold Arial, Helvetica, sans-serif;text-shadow:0 1px 0 #2c587b,1px 2px 2px #aaa;color:#123;}
+p{font:14px bold Arial, Helvetica, sans-serif;}
+p span{font:16px bold Arial, Helvetica, sans-serif;text-shadow:0 1px 0 #123,1px 2px 2px #aaa;}
+h1 .button_bar{display:inline;float:right;}
+/*Login button*/
+#login{background:url(img/loginbg.gif) no-repeat;width:68px;height:27px;background-position:top;margin:1px 0 3px 0;color:#fff;border:0;}
+#login:hover{background-position:bottom;}
+#hide{background:url(img/buttonbg.png)no-repeat;width:90px;height:27px;background-position:top;margin:1px 0 3px 0;color:#fff;border:0;}
+#hide:hover{background-position:bottom;}
+#content{width:450px;background:#fff;margin:15 auto;word-wrap:break-word;padding:5px 5px 5px 5px;border-radius:5px;}
+#footer{overflow:hidden;width:100%;margin-top:30px;background:url("img/toolbar.gif") repeat-x;border-top:1px solid #aaa;height:36px;}
+#footer-inside{position:relative;width:740px;margin:0 auto;color:#aaa;}
+#footer-inside a{border-bottom:1px dashed #aaa;color:#fff;text-decoration:none;}
+#footer-inside p{padding:0px;margin:4px;}
+#footer-inside #back-to-top{color:#fafafa;font-weight:bold;}
+#footer-inside #back-to-top a{line-height:20px;color:#aaa;font-weight:normal;border:none;}
+#footer-inside #back-to-top a:hover{color:#f7f7f7;}

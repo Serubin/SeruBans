@@ -1,0 +1,55 @@
+/*
+ * SeruBans - CSS
+ * Author: Serubin323 (Solomon Rubin)
+ * Version: 2.4
+ * 
+ *
+ *
+ */
+body{background:#071924 url(img/bg.png) repeat-y center;font:16px Segoe UI, Tahoma, Geneva, sans-serif;margin:0;padding:0;}
+#header{background:url(img/bgheader.gif) repeat-x;height:112px;width:100%;margin:0;padding:0;}
+#headerright{background:url(img/bgheader-right.png) no-repeat right;}
+#headerleft{background:url(img/bgheader-left.png) no-repeat left;}
+#title{background:url(img/title.png) no-repeat;width:416px;height:112px;}
+#header_right{position: absolute;top:5px;bottom:auto;left:500px;width:416px;height:112px;}
+/*Login*/
+#logoutform{color:#fff;padding:50px 50px 0 0;float:right;}
+#loginform{color:#fff;padding:40px 0 0 0;}
+/*Login button*/
+#login{background:url(img/loginbg.gif) no-repeat;width:68px;height:27px;background-position:top;margin:1px 0 3px 0;color:#fff;border:0;}
+#login:hover{background-position:bottom;}
+#hide{background:url(img/buttonbg.png)no-repeat;width:90px;height:27px;background-position:top;margin:1px 0 3px 0;color:#fff;border:0;}
+#hide:hover{background-position:bottom;}
+#content{width:1000px;background:#fff;margin:15px auto;padding:5px 5px 5px 5px;none;border-radius:5px;}
+/*BanList*/
+.odd{background:url(img/nav.png) repeat-x bottom #f5f9fd;border-bottom:2px solid #aaa;}
+#banshead{background:url(http://www.escapecraft.net/phpBB3/styles/absolution/theme/images/custom-cat-header.gif) repeat-x bottom #727272;height:40px;color:#fff;}
+#banstable{margin:60px auto;bottom:auto;padding:5px;padding-bottom:20px;width:975px;max-width:980px;}
+.reason{max-width:310px;word-wrap:break-word;}
+.date{max-width:135px;}
+.length{max-width:135px;}
+.search{margin:7px 0 0 10px;padding:7px 0 0 0;position:absolute;z-index:15;}
+#bottom{margin: 0 0 10px 10px;padding: 0 0 10px 10px;}
+#bottom span{display:inline;}
+/* Suggestions */
+#suggestions{list-style:none;width:400px;}
+#sugg-text ul{margin:0 90px 0 100px;list-style:none;border:#000 solid 1px;border-top:0;background:#fff;padding:5px;box-shadow: 2px 4px 5px #000;}
+#sugg-text a{padding:0 5px 0 5px;text-decoration:none;color:#000;width:190px;display:block;}
+#sugg-text a:hover{background:#aaa;}
+
+/* #footer */
+#footer{overflow:hidden;width:100%;margin-top:130px;background:url("img/toolbar.gif") repeat-x;border-top:1px solid #aaa;height:36px;}
+#footer-inside{position:relative;width:740px;margin:0 auto;color:#aaa;}
+#footer-inside a{border-bottom:1px dashed #aaa;color:#fff;text-decoration:none;}
+#footer-inside p{padding:0px;margin:4px;}
+#footer-inside #back-to-top{color:#fafafa;font-weight:bold;}
+#footer-inside #back-to-top a{line-height:20px;color:#aaa;font-weight:normal;border:none;}
+#footer-inside #back-to-top a:hover{color:#f7f7f7;}
+.ttoolbar {width:100%;height:36px;background-image:url("util/img/toolbar.gif");background-repeat:repeat-x;margin-bottom:6px;font-family:"Tahoma", Geneva, sans-serif;font-size:11px;font-weight:bold;color:#ffffff;}
+/* Scroll Bar*/
+::-webkit-scrollbar {height:8px;width:8px;padding:0;margin:0;}
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment  {display:none;}
+::-webkit-scrollbar-track-piece {background-color:#3b3b3b;}
+::-webkit-scrollbar-thumb:vertical {-webkit-border-radius: 6px;-webkit-border-radius: 6px;background:#FFC200 url(img/bg.png) repeat-y center;border:#666 solid 1px;}
+::-webkit-scrollbar-thumb:horizontal {-webkit-border-radius: 6px;-webkit-border-radius: 6px;background:#FFC200 url(img/bg.png) repeat-y center;border:#666 solid 1px;}

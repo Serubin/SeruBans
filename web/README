@@ -1,0 +1,21 @@
+To use this webpage you must create another database. (Should be created by the plugin now)
+
+"CREATE TABLE IF NOT EXISTS `log` (
+  `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
+  `action` enum('delete','unban','update') NOT NULL,
+  `banid` int(8) unsigned NOT NULL,
+  `ip` text NOT NULL,
+  `data` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=28 ;"
+
+With this you should be all set!
+
+
+SETUP:
+You just set passwords for all of the following files:
+config.php
+
+KNOWN BUG:
+None? Pm me if you find any! (Serubin323)
