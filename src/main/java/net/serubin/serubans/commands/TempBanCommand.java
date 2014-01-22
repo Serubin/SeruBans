@@ -87,14 +87,14 @@ public class TempBanCommand implements CommandExecutor {
 
             // prints to players on server with perms
             plugin.printServer(plugin.text().GlobalTempBanMessage(
-                    plugin.GlobalTempBanMessage, reason, mod, victim.getName(),
+                    plugin.GlobalTempBanMessage, reason, mod, args[0],
                     date), silent);
 
             // Adds ban to database
             db.addBan(args[0], SeruBans.TEMPBAN, length, mod, reason, display);
 
             // logs it
-            plugin.log.info(mod + " banned " + victim.getName() + " for "
+            plugin.log.info(mod + " banned " + args[0] + " for "
                     + reason);
 
             // sends kicker ban id

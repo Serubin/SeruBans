@@ -31,6 +31,7 @@ public class SeruBans extends JavaPlugin {
      * By Serubin323, Solomon Rubin
      */
 
+    // TODO add reload config / database
     public SeruBans plugin;
     public Logger log = Logger.getLogger("Minecraft");
     private boolean debug;
@@ -171,9 +172,10 @@ public class SeruBans extends JavaPlugin {
          */
 
         // Creates database
-        //TODO ADD FLAT FILE
+        // TODO ADD FLAT FILE
         this.db = new MysqlBansDataProvider(host, username, password, database,
                 this);
+        this.text = new TextProcessor(this);
 
         UnTempbanThread UnTempanThread = new UnTempbanThread(this, db);
 
@@ -215,6 +217,12 @@ public class SeruBans extends JavaPlugin {
         dbKeepAliveTask = getServer().getScheduler().runTaskTimerAsynchronously(
                 this, new DataProviderTimers(db), 5800, 5800);
 
+    }
+
+    public void reload() {
+        printInfo("Plugin reloading...");
+        onDisable();
+        onEnable();
     }
 
     public void printInfo(String line) {

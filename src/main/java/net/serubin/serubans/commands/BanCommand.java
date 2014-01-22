@@ -81,12 +81,12 @@ public class BanCommand implements CommandExecutor {
             // prints to players on server with perms
             plugin.printServer(
                     plugin.text().GlobalMessage(plugin.GlobalBanMessage,
-                            reason, mod, victim.getName()), silent);
+                            reason, mod, args[0]), silent);
             // Adds ban
-            db.addBan(victim.getName(), SeruBans.BAN, 0, mod, reason, display);
+            db.addBan(args[0], SeruBans.BAN, 0, mod, reason, display);
 
             // logs it
-            plugin.printInfo(mod + " banned " + victim.getName() + " for "
+            plugin.printInfo(mod + " banned " + args[0] + " for "
                     + reason);
 
             // sends kicker ban id

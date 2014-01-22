@@ -70,18 +70,18 @@ public class WarnCommand implements CommandExecutor {
             }
 
             // adds ban to database
-            db.addBan(victim.getName(), SeruBans.WARN, 0, mod, reason, display);
+            db.addBan(args[0], SeruBans.WARN, 0, mod, reason, display);
             plugin.printServer(plugin.text().GlobalMessage(plugin.WarnMessage,
-                    reason, mod, victim.getName()), silent);
+                    reason, mod, args[0]), silent);
             // logs i t
-            plugin.log.info(mod + " warned " + victim.getName() + " for "
+            plugin.log.info(mod + " warned " + args[0] + " for "
                     + reason);
             // tells victim
             if (online) {
                 victim.sendMessage(plugin.text().GetColor(plugin.text().PlayerMessage(
                         plugin.WarnPlayerMessage, reason, mod)));
             } else {
-                db.addWarn(db.getPlayer(args[0].toLowerCase()),
+                db.addWarn(db.getPlayer(args[0]),
                         db.getLastBanId());
             }
             // sends kicker ban id

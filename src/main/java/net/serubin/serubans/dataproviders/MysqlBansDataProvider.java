@@ -24,6 +24,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 
     private int lastBanId;
 
+    //TODO add on destroy to close connection
     /**
      * Initiates Mysql object
      * 
@@ -212,12 +213,12 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT type, bans.id, mod, users.id, name, length, reason"
-                    + " FROM bans"
-                    + " INNER JOIN users"
-                    + "  ON bans.player_id=users.id"
-                    + " WHERE type = ?"
-                    + " AND name = ?");
+            ps = conn.prepareStatement("SELECT `type`, bans.id, `mod`, users.id, `name`, `length`, `reason`"
+                    + " FROM `bans`"
+                    + " INNER JOIN `users`"
+                    + " ON bans.player_id=users.id"
+                    + " WHERE `type`=?"
+                    + " AND `name`=?");
             ps.setInt(1, status);
             ps.setString(2, name);
             rs = ps.executeQuery();
@@ -246,9 +247,10 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT ban_id" + " FROM warns"
-                    + " INNER JOIN users" + "  ON warns.player_id=id"
-                    + " WHERE name = \"" + name + "\"");
+            ps = conn.prepareStatement("SELECT `ban_id`" + " FROM `warns`"
+                    + " INNER JOIN `users`" + "  ON warns.player_id=id"
+                    + " WHERE `name`=?");
+            ps.setString(1, name);
             rs = ps.executeQuery();
 
             List<BanInfo> warnInfo = new ArrayList<BanInfo>();
@@ -449,10 +451,10 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT bans.id, users.id, name"
-                    + " FROM bans" + " INNER JOIN users"
-                    + "  ON bans.player_id=users.id"
-                    + " WHERE type = ? OR type = ?" + " AND name = ?");
+            ps = conn.prepareStatement("SELECT bans.id, users.id, `name`"
+                    + " FROM `bans`" + " INNER JOIN `users`"
+                    + " ON bans.player_id=users.id"
+                    + " WHERE `type`=? OR `type`=?" + " AND `name`=?");
             ps.setInt(1, SeruBans.BAN);
             ps.setInt(2, SeruBans.TEMPBAN);
             ps.setString(3, name);
@@ -478,14 +480,14 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT type, bans.id, mod, users.id, name, length, reason"
+            ps = conn.prepareStatement("SELECT bans.player_id, `type`, bans.id, `mod`, users.id, `name`, `length`, `reason`"
                     + " FROM bans"
                     + " INNER JOIN users"
-                    + "  ON bans.player_id=users.id"
-                    + " WHERE type = ? OR type ?" + " AND name = ?");
+                    + " ON bans.player_id=users.id"
+                    + " WHERE `type`=? OR `type`=?" + " AND `name`=?");
             ps.setInt(1, SeruBans.BAN);
             ps.setInt(2, SeruBans.TEMPBAN);
-            ps.setString(2, name);
+            ps.setString(3, name);
             rs = ps.executeQuery();
             while (rs.next()) {
                 BanInfo banInfo = new BanInfo(rs.getInt("bans.id"),
@@ -582,7 +584,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
     private boolean updateBanType(int type, int bId) {
         PreparedStatement ps = null;
         try {
-            ps = conn.prepareStatement("UPDATE bans SET type=? WHERE id=?;");
+            ps = conn.prepareStatement("UPDATE `bans` SET `type`=? WHERE `id`=?;");
             ps.setInt(1, type);
             ps.setInt(2, bId);
             ps.executeUpdate();
@@ -606,7 +608,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         PreparedStatement ps2 = null;
         try {
-            ps = conn.prepareStatement("UPDATE bans SET reason=? WHERE id=?;");
+            ps = conn.prepareStatement("UPDATE `bans` SET `reason`=? WHERE `id`=?;");
             ps2 = conn.prepareStatement("INSERT INTO `log`(`action`, `banid`, `ip`, `data`) VALUES ('update',?,'In-Game',?)");
             String data = "UPDATE:Id=" + id + "Reason=" + reason;
             ps2.setInt(1, id);
@@ -629,7 +631,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         plugin.printInfo("Attempting to add player " + player + " to database;");
         // add player
         try {
-            ps = conn.prepareStatement("INSERT INTO users (name) VALUES(?);",
+            ps = conn.prepareStatement("INSERT INTO `users` (`name`) VALUES(?);",
                     Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, player.toLowerCase());
             ps.executeUpdate();
@@ -661,7 +663,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         try {
             ps = conn.prepareStatement(
-                    "INSERT INTO warns (player_id, ban_id) VALUES(?,?);",
+                    "INSERT INTO `warns` (`player_id`, `ban_id`) VALUES(?,?);",
                     Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, playerId);
             ps.setInt(2, banId);
@@ -684,7 +686,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
     public boolean removeWarn(int playerId, int banId) {
         PreparedStatement ps = null;
         try {
-            ps = conn.prepareStatement("DELETE FROM warns WHERE player_id=? AND ban_id=?;");
+            ps = conn.prepareStatement("DELETE FROM `warns` WHERE `player_id`=? AND `ban_id`=?;");
             ps.setInt(1, playerId);
             ps.setInt(2, banId);
             ps.executeUpdate();
@@ -735,12 +737,13 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT id" + " FROM bans"
-                    + " WHERE name = \"" + name + "\" AND type =?");
-            ps.setInt(1, status);
+            ps = conn.prepareStatement("SELECT bans.id, users.name, `type`, bans.player_id" + " FROM `bans` INNER JOIN `users`, ON bans.player_id=users.id"
+                    + " WHERE users.name=? AND type=?");
+            ps.setString(1, name);
+            ps.setInt(2, status);
             rs = ps.executeQuery();
             while (rs.next()) {
-                return rs.getInt("id");
+                return rs.getInt("bans.id");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -753,10 +756,10 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT bans.id, users.id, mod, name, reason, length"
-                    + " FROM bans"
-                    + " INNER JOIN users"
-                    + "  ON bans.player_id=users.id" + " WHERE type =?");
+            ps = conn.prepareStatement("SELECT bans.id, bans.player_id, users.id, `mod`, `name`, `reason`, `length`"
+                    + " FROM `bans`"
+                    + " INNER JOIN `users`"
+                    + " ON bans.player_id=users.id" + " WHERE `type`=?");
             ps.setInt(1, status);
             rs = ps.executeQuery();
             List<BanInfo> listInfo = new ArrayList<BanInfo>();
