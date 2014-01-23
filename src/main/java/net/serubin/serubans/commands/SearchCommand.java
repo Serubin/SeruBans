@@ -18,7 +18,7 @@ public class SearchCommand implements CommandExecutor {
     public SearchCommand(SeruBans plugin, BansDataProvider db) {
         this.plugin = plugin;
         this.db = db;
-        new SearchMethods(this.plugin, this.db);
+        this.search = new SearchMethods(this.plugin, this.db);
     }
 
     public boolean onCommand(CommandSender sender, Command cmd,

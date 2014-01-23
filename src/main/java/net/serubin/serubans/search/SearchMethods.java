@@ -84,12 +84,21 @@ public class SearchMethods {
             plugin.printDebug(NPE.toString());
             return true;
         }
+        // Handles unbans
+        if (type == SeruBans.BAN) {
+            PlayerInfo.addAll(db.getPlayerInfo(player, SeruBans.UNBAN));
+        }
+        if (type == SeruBans.TEMPBAN) {
+            PlayerInfo.addAll(db.getPlayerInfo(player, SeruBans.UNTEMPBAN));
+        }
+
         if (PlayerInfo == null || PlayerInfo.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "No Results");
             return true;
         }
 
         Iterator<BanInfo> playerInfoIterator = PlayerInfo.iterator();
+
         dm.sendLine(
                 sender,
                 dm.createTitle(player + " Type:"
@@ -97,8 +106,12 @@ public class SearchMethods {
         dm.sendLine(sender, "ID - Mod - Date - (Length) - Reason");
         while (playerInfoIterator.hasNext()) {
             BanInfo info = playerInfoIterator.next();
-            String line = info.getBanId() + " - " + info.getModName() + " - "
-                    + plugin.text().getStringDate(info.getDate());
+            String line = info.getBanId()
+                    + " - "
+                    + info.getModName()
+                    + " - "
+                    + plugin.text().getStringDate(info.getDate(),
+                            "MM/dd/yy HH:mm:yy");
             if (type == SeruBans.TEMPBAN) {
                 line = line + " - "
                         + plugin.text().getStringDate(info.getLength());
@@ -132,8 +145,12 @@ public class SearchMethods {
         dm.sendLine(sender, "Date: " + ChatColor.GOLD
                 + plugin.text().getStringDate(BanId.getDate()));
         if (BanId.getLength() != 0) {
-            dm.sendLine(sender, "Length: " + ChatColor.GOLD
-                    + plugin.text().getStringDate(BanId.getLength()));
+            dm.sendLine(
+                    sender,
+                    "Length: "
+                            + ChatColor.GOLD
+                            + plugin.text().getStringDate(BanId.getLength(),
+                                    "MM/dd/yy HH:mm:yy"));
         }
         dm.sendLine(sender, "Reason: " + ChatColor.GOLD + BanId.getReason());
         dm.sendLine(

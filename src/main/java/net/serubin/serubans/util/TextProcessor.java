@@ -2,6 +2,7 @@ package net.serubin.serubans.util;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.serubin.serubans.SeruBans;
@@ -139,15 +140,22 @@ public class TextProcessor {
         java.sql.Timestamp date;
         java.util.Date today = new java.util.Date();
         date = new java.sql.Timestamp(today.getTime());
+        
         return date;
     }
 
     public String getStringDate(long length) {
-        Date date = new Date();
-        date.setTime(length * 1000);
+        Date date = new Date(length);
         String dates = date.toString();
 
         return dates;
+    }
+
+    public String getStringDate(long length, String format) {
+        Date date = new Date(length);
+        SimpleDateFormat date_format = new SimpleDateFormat(format);
+        
+        return date_format.format(date);
     }
 
     public long getUnixTimeStamp(Timestamp timestamp) {

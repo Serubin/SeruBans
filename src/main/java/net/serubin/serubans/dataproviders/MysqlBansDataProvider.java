@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -24,7 +25,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 
     private int lastBanId;
 
-    //TODO add on destroy to close connection
+    // TODO add on destroy to close connection
     /**
      * Initiates Mysql object
      * 
@@ -281,9 +282,9 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         ResultSet rs = null;
 
         try {
-            ps = conn.prepareStatement("SELECT bans.id, p.name as playername,p.id as playerid, `date`, "
+            ps = conn.prepareStatement("SELECT bans.id, p.name as playername, p.id as playerid, `date`, "
                     + "`display`, `type`, `length`, m.name as modname,p.id as modid, `reason` FROM bans,"
-                    + " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND playername=?");
+                    + " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND p.name=?");
             ps.setString(1, name);
             rs = ps.executeQuery();
 
@@ -295,7 +296,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
                         rs.getInt("playerid"), rs.getString("playername"),
                         rs.getInt("type"), rs.getInt("modid"),
                         rs.getString("modname"), rs.getLong("length"),
-                        rs.getLong("date"), rs.getString("reason"), this));
+                        plugin.text().getUnixTimeStamp((Timestamp) rs.getObject("date")), rs.getString("reason"), this));
 
             }
             return playerInfo;
@@ -321,7 +322,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         try {
             ps = conn.prepareStatement("SELECT bans.id, p.name as playername,p.id as playerid, `date`, "
                     + "`display`, `type`, `length`, m.name as modname,p.id as modid, `reason` FROM bans,"
-                    + " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND playername=? AND type=?");
+                    + " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND p.name=? AND type=?");
             ps.setString(1, name);
             ps.setInt(2, type);
             rs = ps.executeQuery();
@@ -334,7 +335,9 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
                         rs.getInt("playerid"), rs.getString("playername"),
                         rs.getInt("type"), rs.getInt("modid"),
                         rs.getString("modname"), rs.getLong("length"),
-                        rs.getLong("date"), rs.getString("reason"), this));
+                        plugin.text().getUnixTimeStamp(
+                                (Timestamp) rs.getObject("date")),
+                        rs.getString("reason"), this));
 
             }
             return playerInfo;
@@ -359,8 +362,8 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 
         try {
             ps = conn.prepareStatement("SELECT bans.id, p.name as playername,p.id as playerid, `date`, "
-                    + "`display`, `type`, `length`, m.name as modname,p.id as modid, `reason`, FROM bans,"
-                    + " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND ban.id=?");
+                    + "`display`, `type`, `length`, m.name as modname,p.id as modid, `reason` FROM bans,"
+                    + " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND bans.id=?");
             ps.setInt(1, id);
             rs = ps.executeQuery();
 
@@ -372,7 +375,9 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
                         rs.getInt("playerid"), rs.getString("playername"),
                         rs.getInt("type"), rs.getInt("modid"),
                         rs.getString("modname"), rs.getLong("length"),
-                        rs.getLong("date"), rs.getString("reason"), this);
+                        plugin.text().getUnixTimeStamp(
+                                (Timestamp) rs.getObject("date")),
+                        rs.getString("reason"), this);
 
             }
             return banInfo;
@@ -451,13 +456,13 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT bans.id, users.id, `name`"
-                    + " FROM `bans`" + " INNER JOIN `users`"
+            ps = conn.prepareStatement("SELECT bans.id, users.id, `name`, `type`"
+                    + " FROM `bans` INNER JOIN `users`"
                     + " ON bans.player_id=users.id"
-                    + " WHERE `type`=? OR `type`=?" + " AND `name`=?");
-            ps.setInt(1, SeruBans.BAN);
-            ps.setInt(2, SeruBans.TEMPBAN);
-            ps.setString(3, name);
+                    + " WHERE `name`=? AND (`type`=? OR `type`=?)");
+            ps.setString(1, name);
+            ps.setInt(2, SeruBans.BAN);
+            ps.setInt(3, SeruBans.TEMPBAN);
             rs = ps.executeQuery();
             if (rs.next()) {
                 return true;
@@ -631,7 +636,8 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         plugin.printInfo("Attempting to add player " + player + " to database;");
         // add player
         try {
-            ps = conn.prepareStatement("INSERT INTO `users` (`name`) VALUES(?);",
+            ps = conn.prepareStatement(
+                    "INSERT INTO `users` (`name`) VALUES(?);",
                     Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, player.toLowerCase());
             ps.executeUpdate();
@@ -737,7 +743,8 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT bans.id, users.name, `type`, bans.player_id" + " FROM `bans` INNER JOIN `users`, ON bans.player_id=users.id"
+            ps = conn.prepareStatement("SELECT bans.id, users.name, `type`, bans.player_id"
+                    + " FROM `bans` INNER JOIN `users` ON bans.player_id=users.id"
                     + " WHERE users.name=? AND type=?");
             ps.setString(1, name);
             ps.setInt(2, status);

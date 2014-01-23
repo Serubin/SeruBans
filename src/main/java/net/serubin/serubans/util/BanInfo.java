@@ -125,4 +125,11 @@ public class BanInfo {
     public void setReason(String reason) {
         this.reason = reason;
     }
+
+    public String toString() {
+        return "[" + this.banId + ", " + this.type + ", " + this.playerId
+                + ", " + this.playerName + ", " + this.modId + ", "
+                + this.modName + ", " + this.date + ", " + this.length + ", "
+                + this.reason + "]";
+    }
 }

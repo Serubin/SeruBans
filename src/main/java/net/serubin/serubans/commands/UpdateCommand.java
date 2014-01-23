@@ -39,7 +39,7 @@ public class UpdateCommand implements CommandExecutor {
                     return true;
                 }
                 
-                if (db.validateBanId(bId)) {
+                if (!db.validateBanId(bId)) {
                     sender.sendMessage(ChatColor.RED + Integer.toString(bId)
                             + " is not a valid ban id.");
                     return false;
