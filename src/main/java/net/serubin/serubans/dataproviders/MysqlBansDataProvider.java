@@ -248,7 +248,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT `ban_id`" + " FROM `warns`"
+            ps = conn.prepareStatement("SELECT `ban_id` users.id, users.name" + " FROM `warns`"
                     + " INNER JOIN `users`" + "  ON warns.player_id=id"
                     + " WHERE `name`=?");
             ps.setString(1, name);
