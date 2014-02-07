@@ -248,18 +248,16 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = conn.prepareStatement("SELECT `ban_id` users.id, users.name" + " FROM `warns`"
-                    + " INNER JOIN `users`" + "  ON warns.player_id=id"
-                    + " WHERE `name`=?");
+            ps = conn.prepareStatement("SELECT `ban_id`, users.id, users.name"
+                    + " FROM `warns`" + " INNER JOIN `users`"
+                    + "  ON warns.player_id=users.id" + " WHERE `name`=?");
             ps.setString(1, name);
             rs = ps.executeQuery();
 
             List<BanInfo> warnInfo = new ArrayList<BanInfo>();
 
             while (rs.next()) {
-                BanInfo banInfo = new BanInfo(rs.getInt("bans.id"),
-                        rs.getInt("users.id"), SeruBans.WARN, rs.getInt("mod"),
-                        rs.getString("reason"), this);
+                BanInfo banInfo = this.getBanInfo(rs.getInt("ban_id"));
                 warnInfo.add(banInfo);
             }
             return warnInfo;
@@ -296,7 +294,9 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
                         rs.getInt("playerid"), rs.getString("playername"),
                         rs.getInt("type"), rs.getInt("modid"),
                         rs.getString("modname"), rs.getLong("length"),
-                        plugin.text().getUnixTimeStamp((Timestamp) rs.getObject("date")), rs.getString("reason"), this));
+                        plugin.text().getUnixTimeStamp(
+                                (Timestamp) rs.getObject("date")),
+                        rs.getString("reason"), this));
 
             }
             return playerInfo;
