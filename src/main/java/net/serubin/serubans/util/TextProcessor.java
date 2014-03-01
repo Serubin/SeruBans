@@ -145,14 +145,14 @@ public class TextProcessor {
     }
 
     public String getStringDate(long length) {
-        Date date = new Date(length);
+        Date date = new Date(length*1000);
         String dates = date.toString();
 
         return dates;
     }
 
     public String getStringDate(long length, String format) {
-        Date date = new Date(length);
+        Date date = new Date(length*1000);
         SimpleDateFormat date_format = new SimpleDateFormat(format);
         
         return date_format.format(date);
