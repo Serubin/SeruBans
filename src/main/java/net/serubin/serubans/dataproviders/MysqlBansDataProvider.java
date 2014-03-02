@@ -86,7 +86,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	 */
 	protected void createTable() {
 		try {
-			plugin.printInfo("Searching for storage table");
+			plugin.printInfo("Searching for storage tables");
 			ResultSet rs = conn.getMetaData().getTables(null, null, "bans",
 					null);
 			if (!rs.next()) {
@@ -157,6 +157,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		plugin.printInfo("Loaded tables");
 	}
 
 	public void maintainConnection() {
