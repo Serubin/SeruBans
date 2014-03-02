@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 	<name>SeruBans</name>
 	<url></url>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -24,11 +24,20 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.7.2-R0.2</version>
+			<version>1.7.2-R0.3</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<optional>false</optional>
 		</dependency>
-
 	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources/</directory>
+			</resource>
+		</resources>
+	</build>
 </project>
