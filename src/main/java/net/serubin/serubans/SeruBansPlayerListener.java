@@ -1,6 +1,7 @@
 package net.serubin.serubans;
 
 import java.util.List;
+import java.util.UUID;
 
 import net.serubin.serubans.dataproviders.BansDataProvider;
 import net.serubin.serubans.util.BanInfo;
@@ -34,12 +35,12 @@ public class SeruBansPlayerListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName();
-		String lcName = name.toLowerCase();
+		UUID uuid = player.getUniqueId();
 
 		plugin.printDebug(name + " is attempting to login");
 
 		// Checks if player is banned
-		BanInfo banInfo = db.getPlayerBannedInfo(lcName);
+		BanInfo banInfo = db.getPlayerBannedInfo(uuid);
 
 		if (banInfo != null) {
 			plugin.log.warning(name + " LOGIN DENIED - BANNED");
@@ -47,20 +48,22 @@ public class SeruBansPlayerListener implements Listener {
 			String reason = banInfo.getReason();
 			String mod = banInfo.getModName();
 
-			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, plugin.text()
-					.GetColor(plugin.text().PlayerMessage(banMessage, reason,
-							mod)));
+			event.disallow(
+					PlayerLoginEvent.Result.KICK_BANNED,
+					plugin.text().GetColor(
+							plugin.text()
+									.PlayerMessage(banMessage, reason, mod)));
 			return;
 		}
 
 		// Checks if player is tempbanned
-		BanInfo tempbanInfo = db.getPlayerTempBannedInfo(lcName);
+		BanInfo tempbanInfo = db.getPlayerTempBannedInfo(uuid);
 
 		if (tempbanInfo != null) {
 			// Checks if tempban is over
 			Long length = tempbanInfo.getLength();
 			if (length < (System.currentTimeMillis() / 1000)) {
-				db.unbanPlayer(tempbanInfo.getPlayerName());
+				db.unbanPlayer(uuid);
 				return;
 			}
 			plugin.log.warning(name + " LOGIN DENIED - TEMPBANNED");
@@ -68,10 +71,12 @@ public class SeruBansPlayerListener implements Listener {
 			String reason = tempbanInfo.getReason();
 			String mod = tempbanInfo.getModName();
 
-			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, plugin.text()
-					.GetColor(plugin.text().PlayerTempBanMessage(
-							tempBanMessage, reason, mod,
-							plugin.text().getStringDate(length))));
+			event.disallow(
+					PlayerLoginEvent.Result.KICK_BANNED,
+					plugin.text().GetColor(
+							plugin.text().PlayerTempBanMessage(tempBanMessage,
+									reason, mod,
+									plugin.text().getStringDate(length))));
 		}
 	}
 
@@ -82,8 +87,8 @@ public class SeruBansPlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		String name = player.getName();
-		String lcName = name.toLowerCase();
-		List<BanInfo> warnInfo = db.getPlayerWarnsInfo(lcName);
+		UUID uuid = player.getUniqueId();
+		List<BanInfo> warnInfo = db.getPlayerWarnsInfo(uuid);
 
 		// Checks if players has warns to be notified of
 		if (warnInfo == null) {
@@ -96,9 +101,9 @@ public class SeruBansPlayerListener implements Listener {
 			plugin.printInfo("Warning player, ban id:"
 					+ Integer.toString(warn.getBanId()));
 
-			final String message = plugin.text().GetColor(plugin.text()
-					.PlayerMessage(plugin.WarnPlayerMessage, warn.getReason(),
-							warn.getModName()));
+			final String message = plugin.text().GetColor(
+					plugin.text().PlayerMessage(plugin.WarnPlayerMessage,
+							warn.getReason(), warn.getModName()));
 
 			plugin.getServer().getScheduler()
 					.scheduleSyncDelayedTask(plugin, new Runnable() {

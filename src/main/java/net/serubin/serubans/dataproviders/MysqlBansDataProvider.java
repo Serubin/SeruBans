@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import net.serubin.serubans.SeruBans;
 import net.serubin.serubans.util.BanInfo;
@@ -145,14 +146,25 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 				plugin.printWarning("No 'users' data table found, Attempting to create one...");
 				PreparedStatement ps = conn
 						.prepareStatement("CREATE TABLE IF NOT EXISTS `users` ( "
-								+ "`id` mediumint unsigned not null auto_increment, "
-								+ "`name` varchar(16) not null, "
+								+ "`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,"
+								+ "`name` varchar(16) NOT NULL,"
+								+ "`uuid` varchar(128) NOT NULL,"
 								+ "primary key (`id`), UNIQUE key `player` (`name`));");
 				ps.executeUpdate();
 				ps.close();
 				plugin.printWarning("'users' data table created!");
 			}
 			rs.close();
+
+			rs = conn.getMetaData().getColumns(null, null, "users", "uuid");
+			if (rs.next()) {
+				plugin.printWarning("'users' table out of date, Attempting to update one...");
+				PreparedStatement ps = conn
+						.prepareStatement("ALTER TABLE  `users` ADD  `uuid` VARCHAR( 128 ) NOT NULL;");
+				ps.executeUpdate();
+				ps.close();
+				plugin.printWarning("'users' data table modified!");
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -181,12 +193,12 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	 *  Note getPlayerTempBannedInfo
 	 * </pre>
 	 * 
-	 * @param name
+	 * @param uuid
 	 *            Player name
 	 * @return BanInfo Type for ban
 	 */
-	public BanInfo getPlayerBannedInfo(String name) {
-		return getPlayerBanInfo(name, SeruBans.BAN);
+	public BanInfo getPlayerBannedInfo(UUID player) {
+		return getPlayerBanInfo(player, SeruBans.BAN);
 	}
 
 	/**
@@ -196,27 +208,27 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	 *  Note getPlayerBannedInfo
 	 * </pre>
 	 * 
-	 * @param name
-	 *            Player name
+	 * @param player
+	 *            Player uuid
 	 * @return BanInfo Type for tempban
 	 */
-	public BanInfo getPlayerTempBannedInfo(String name) {
-		return getPlayerBanInfo(name, SeruBans.TEMPBAN);
+	public BanInfo getPlayerTempBannedInfo(UUID player) {
+		return getPlayerBanInfo(player, SeruBans.TEMPBAN);
 	}
 
-	private BanInfo getPlayerBanInfo(String name, int status) {
+	private BanInfo getPlayerBanInfo(UUID player, int status) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn
-					.prepareStatement("SELECT `type`, bans.id, `mod`, users.id, `name`, `length`, `reason`"
+					.prepareStatement("SELECT `type`, bans.id, `mod`, users.id, `name`, `uuid`, `length`, `reason`"
 							+ " FROM `bans`"
 							+ " INNER JOIN `users`"
 							+ " ON bans.player_id=users.id"
 							+ " WHERE `type`=?"
-							+ " AND `name`=?");
+							+ " AND `uuid`=?");
 			ps.setInt(1, status);
-			ps.setString(2, name);
+			ps.setString(2, player.toString());
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				BanInfo banInfo = new BanInfo(rs.getInt("bans.id"),
@@ -235,18 +247,18 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	/**
 	 * Gets all warns for given player
 	 * 
-	 * @param name
-	 *            Player name
+	 * @param player
+	 *            Player uuid
 	 * @return a list of warns. Null if none
 	 */
-	public List<BanInfo> getPlayerWarnsInfo(String name) {
+	public List<BanInfo> getPlayerWarnsInfo(UUID player) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT `ban_id`, users.id, users.name"
+			ps = conn.prepareStatement("SELECT `ban_id`, users.id, users.uuid"
 					+ " FROM `warns`" + " INNER JOIN `users`"
-					+ "  ON warns.player_id=users.id" + " WHERE `name`=?");
-			ps.setString(1, name);
+					+ "  ON warns.player_id=users.id" + " WHERE `uuid`=?");
+			ps.setString(1, player.toString());
 			rs = ps.executeQuery();
 
 			List<BanInfo> warnInfo = new ArrayList<BanInfo>();
@@ -266,20 +278,20 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	/**
 	 * Gets all player ban data
 	 * 
-	 * @param name
-	 *            player name
+	 * @param player
+	 *            player uuid
 	 * @return ban data
 	 */
-	public List<BanInfo> getPlayerInfo(String name) {
+	public List<BanInfo> getPlayerInfo(UUID player) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		try {
 			ps = conn
-					.prepareStatement("SELECT bans.id, p.name as playername, p.id as playerid, `date`, "
+					.prepareStatement("SELECT bans.id, p.name as playername, p.uuid, p.id as playerid, `date`, "
 							+ "`display`, `type`, `length`, m.name as modname,p.id as modid, `reason` FROM bans,"
-							+ " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND p.name=?");
-			ps.setString(1, name);
+							+ " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND p.uuid=?");
+			ps.setString(1, player.toString());
 			rs = ps.executeQuery();
 
 			List<BanInfo> playerInfo = new ArrayList<BanInfo>();
@@ -307,20 +319,20 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	/**
 	 * Gets all player ban data for type
 	 * 
-	 * @param name
-	 *            player name
+	 * @param player
+	 *            player uuid
 	 * @return ban data
 	 */
-	public List<BanInfo> getPlayerInfo(String name, int type) {
+	public List<BanInfo> getPlayerInfo(UUID player, int type) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		try {
 			ps = conn
-					.prepareStatement("SELECT bans.id, p.name as playername,p.id as playerid, `date`, "
+					.prepareStatement("SELECT bans.id, p.name as playername, p.uuid ,p.id as playerid, `date`, "
 							+ "`display`, `type`, `length`, m.name as modname,p.id as modid, `reason` FROM bans,"
-							+ " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND p.name=? AND type=?");
-			ps.setString(1, name);
+							+ " users p,users m WHERE bans.player_id = p.id AND bans.mod = m.id AND p.uuid=? AND type=?");
+			ps.setString(1, player.toString());
 			ps.setInt(2, type);
 			rs = ps.executeQuery();
 
@@ -422,21 +434,22 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	 * 
 	 * <pre>
 	 * Will create new id if the player is not in the database
-	 * @param name player name
+	 * @param player player uuid
 	 * @return player id
 	 */
-	public int getPlayer(String name) {
+	public int getPlayer(UUID player) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn
-					.prepareStatement("SELECT `id`, `name` FROM `users` WHERE `name`=?");
-			ps.setString(1, name);
+					.prepareStatement("SELECT `id`, `uuid` FROM `users` WHERE `uuid`=?");
+			ps.setString(1, player.toString());
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getInt("id");
 			} else {
-				return addPlayer(name);
+				return addPlayer(plugin.getServer().getOfflinePlayer(player)
+						.getName(), player);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -447,21 +460,20 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	/**
 	 * Checks if player is banned
 	 * 
-	 * @param name
-	 *            player
+	 * @param player
+	 *            player uuid
 	 * @return true : false
 	 */
-	public boolean getPlayerStatus(String name) {
-		name = name.toLowerCase();
+	public boolean getPlayerStatus(UUID player) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn
-					.prepareStatement("SELECT bans.id, users.id, `name`, `type`"
+					.prepareStatement("SELECT bans.id, users.id, `uuid`, `type`"
 							+ " FROM `bans` INNER JOIN `users`"
 							+ " ON bans.player_id=users.id"
-							+ " WHERE `name`=? AND (`type`=? OR `type`=?)");
-			ps.setString(1, name);
+							+ " WHERE `uuid`=? AND (`type`=? OR `type`=?)");
+			ps.setString(1, player.toString());
 			ps.setInt(2, SeruBans.BAN);
 			ps.setInt(3, SeruBans.TEMPBAN);
 			rs = ps.executeQuery();
@@ -477,24 +489,23 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	/**
 	 * Get BanInfo for players current ban.
 	 * 
-	 * @param name
-	 *            player
+	 * @param player
+	 *            player uuid
 	 * @return null of not found.
 	 */
-	public BanInfo getCurrentBan(String name) {
-		name = name.toLowerCase();
+	public BanInfo getCurrentBan(UUID player) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn
-					.prepareStatement("SELECT bans.player_id, `type`, bans.id, `mod`, users.id, `name`, `length`, `reason`"
+					.prepareStatement("SELECT bans.player_id, `type`, bans.id, `mod`, users.id, `name`, `uuid`, `length`, `reason`"
 							+ " FROM bans"
 							+ " INNER JOIN users"
 							+ " ON bans.player_id=users.id"
-							+ " WHERE `type`=? OR `type`=?" + " AND `name`=?");
+							+ " WHERE `type`=? OR `type`=?" + " AND `uuid`=?");
 			ps.setInt(1, SeruBans.BAN);
 			ps.setInt(2, SeruBans.TEMPBAN);
-			ps.setString(3, name);
+			ps.setString(3, player.toString());
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				BanInfo banInfo = new BanInfo(rs.getInt("bans.id"),
@@ -517,10 +528,10 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	/**
 	 * Unban a player (temp or perm ban)
 	 * 
-	 * @param victim
-	 *            player
+	 * @param player
+	 *            player uuid
 	 */
-	public boolean unbanPlayer(String player) {
+	public boolean unbanPlayer(UUID player) {
 		BanInfo banTest = getPlayerBannedInfo(player);
 		if (banTest != null) {
 			updateBanType(SeruBans.UNBAN, banTest.getBanId());
@@ -549,10 +560,8 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	 *            Ban reason
 	 * @param display
 	 */
-	public boolean addBan(String victim, int type, long length, String mod,
+	public boolean addBan(UUID victim, int type, long length, UUID mod,
 			String reason, int display) {
-		victim = victim.toLowerCase();
-		mod = mod.toLowerCase();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		// add player
@@ -635,7 +644,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 		return true;
 	}
 
-	private int addPlayer(String player) {
+	private int addPlayer(String player, UUID uuid) {
 		player = player.toLowerCase();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -643,9 +652,10 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 		// add player
 		try {
 			ps = conn.prepareStatement(
-					"INSERT INTO `users` (`name`) VALUES(?);",
+					"INSERT INTO `users` (`name`, `uuid`) VALUES(?,?);",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, player.toLowerCase());
+			ps.setString(2, uuid.toString());
 			ps.executeUpdate();
 			rs = ps.getGeneratedKeys();
 			if (rs.next()) {
@@ -732,29 +742,34 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 		return getBans(SeruBans.TEMPBAN);
 	}
 
-	public int getCurrentBanId(String name) {
-		name = name.toLowerCase();
-		int banId = getBanId(name, SeruBans.BAN);
+	/**
+	 * Get ban Id based on player name and status
+	 * 
+	 * @param name
+	 * @param status
+	 * @return
+	 */
+	public int getCurrentBanId(UUID player) {
+		int banId = getBanId(player, SeruBans.BAN);
 		if (banId != 0) {
 			return banId;
 		}
-		banId = getBanId(name, SeruBans.TEMPBAN);
+		banId = getBanId(player, SeruBans.TEMPBAN);
 		if (banId != 0) {
 			return banId;
 		}
 		return 0;
 	}
 
-	private int getBanId(String name, int status) {
-		name = name.toLowerCase();
+	private int getBanId(UUID player, int status) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn
-					.prepareStatement("SELECT bans.id, users.name, `type`, bans.player_id"
+					.prepareStatement("SELECT bans.id, users.uuid, `type`, bans.player_id"
 							+ " FROM `bans` INNER JOIN `users` ON bans.player_id=users.id"
-							+ " WHERE users.name=? AND type=?");
-			ps.setString(1, name);
+							+ " WHERE users.uuid=? AND type=?");
+			ps.setString(1, player.toString());
 			ps.setInt(2, status);
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -765,6 +780,24 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 		}
 
 		return 0;
+	}
+
+	public UUID getUUID(int id) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT id, uuid, name "
+					+ " FROM `users`" + " WHERE id=?");
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return UUID.fromString(rs.getString("uuid"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	private List<BanInfo> getBans(int status) {

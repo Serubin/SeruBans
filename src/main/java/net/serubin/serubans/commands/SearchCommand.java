@@ -21,7 +21,8 @@ public class SearchCommand implements CommandExecutor {
         this.search = new SearchMethods(this.plugin, this.db);
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd,
+    @SuppressWarnings("deprecation")
+	public boolean onCommand(CommandSender sender, Command cmd,
             String commandLabel, String[] args) {
         if (commandLabel.equalsIgnoreCase("bsearch")) {
             if (plugin.hasPermission(sender, SeruBans.SEARCHPERM)) {
@@ -65,7 +66,7 @@ public class SearchCommand implements CommandExecutor {
                 if (playerB && !typeB && !idB) {
                     plugin.printDebug(sender.getName()
                             + " is searching player " + player);
-                    search.searchPlayer(player.toLowerCase(), sender);
+                    search.searchPlayer(player, plugin.getServer().getOfflinePlayer(player).getUniqueId(), sender);
                     return true;
                 } else if (playerB && typeB && !idB) {
                     plugin.printDebug(sender.getName() + " is searching "
@@ -96,7 +97,7 @@ public class SearchCommand implements CommandExecutor {
                                 + ChatColor.YELLOW + "kicks");
                         return true;
                     }
-                    search.searchType(player.toLowerCase(), typeInt, sender);
+                    search.searchType(player, plugin.getServer().getOfflinePlayer(player).getUniqueId(), typeInt, sender);
                     return true;
                 } else if (idB && !typeB && !playerB) {
                     search.searchId(id, sender);

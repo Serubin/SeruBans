@@ -27,8 +27,8 @@ public class UnTempbanThread implements Runnable {
 		// checks if temp ban time is up
 		for (BanInfo tempban : tempbanInfo) {
 			if (tempban.getLength() < (System.currentTimeMillis() / 1000)) {
-				db.unbanPlayer(tempban.getPlayerName());
-				
+				db.unbanPlayer(tempban.getPlayerUUID());
+
 				plugin.printDebug(tempban.getPlayerName()
 						+ "has been unbanned by per minute tempban checker");
 			}
