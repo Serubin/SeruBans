@@ -36,6 +36,7 @@ public class SeruBansPlayerListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName();
 		UUID uuid = player.getUniqueId();
+		db.updatePlayerInfo(name, uuid);
 
 		plugin.printDebug(name + " is attempting to login");
 
@@ -86,7 +87,6 @@ public class SeruBansPlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		String name = player.getName();
 		UUID uuid = player.getUniqueId();
 		List<BanInfo> warnInfo = db.getPlayerWarnsInfo(uuid);
 

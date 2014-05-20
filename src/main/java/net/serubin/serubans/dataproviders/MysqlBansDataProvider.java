@@ -855,6 +855,57 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 	}
 
 	/**
+	 * Updates player UUID or Name. To be called on login
+	 * 
+	 * @param name
+	 * @param uuid
+	 */
+	public void updatePlayerInfo(String name, UUID uuid) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM `users` WHERE `uuid`=?");
+			ps.setString(1, uuid.toString());
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				if (rs.getString("name") != name) {
+					setPlayerName(rs.getInt("id"), name);
+				}
+			} else {
+				setPlayerUUID(name, uuid);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setPlayerName(int id, String name) {
+		PreparedStatement ps = null;
+		try {
+			ps = conn
+					.prepareStatement("UPDATE `users` SET `name`=? WHERE `id`=?");
+			ps.setString(1, name);
+			ps.setInt(2, id);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setPlayerUUID(String name, UUID uuid) {
+		PreparedStatement ps = null;
+		try {
+			ps = conn
+					.prepareStatement("UPDATE `users` SET `uuid`=? WHERE `name`=?");
+			ps.setString(1, uuid.toString());
+			ps.setString(2, name);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Gets last ban id.
 	 * 
 	 * @return lastBanId

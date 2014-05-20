@@ -210,6 +210,14 @@ public interface BansDataProvider {
 	public boolean validateBanId(int id);
 
 	/**
+	 * Updates player UUID or Name. To be called on login
+	 * 
+	 * @param name
+	 * @param uuid
+	 */
+	public void updatePlayerInfo(String name, UUID uuid);
+
+	/**
 	 * Gets last ban id logged
 	 * 
 	 * @return ban id
