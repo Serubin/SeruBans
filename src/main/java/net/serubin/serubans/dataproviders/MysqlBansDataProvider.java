@@ -157,7 +157,7 @@ public class MysqlBansDataProvider implements Runnable, BansDataProvider {
 			rs.close();
 
 			rs = conn.getMetaData().getColumns(null, null, "users", "uuid");
-			if (rs.next()) {
+			if (!rs.next()) {
 				plugin.printWarning("'users' table out of date, Attempting to update one...");
 				PreparedStatement ps = conn
 						.prepareStatement("ALTER TABLE  `users` ADD  `uuid` VARCHAR( 128 ) NOT NULL;");

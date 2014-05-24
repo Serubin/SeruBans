@@ -120,8 +120,6 @@ public class SeruBans extends JavaPlugin {
 		version = this.getDescription().getVersion();
 		name = this.getDescription().getName();
 
-		log.info(name + " version " + version + " has started...");
-
 		PluginManager pm = getServer().getPluginManager();
 
 		getConfig().options().copyDefaults(true);
